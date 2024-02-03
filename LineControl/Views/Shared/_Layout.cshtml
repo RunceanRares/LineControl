@@ -20,7 +20,7 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
                           <ul class="navbar-nav">
@@ -35,14 +35,14 @@
                                   <li class="nav-item px-xl-3 py-xl-2">
                                     <a class="dropdown-item" asp-area="" asp-controller="Device" asp-action="Create">Add Device</a>
                                   </li>
+                                   <li class="nav-item px-xl-3 py-xl-2">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Device" asp-action="Edit">Edit </a>
+                                  </li>
                                   <li class="nav-item px-xl-3 py-xl-2">
                                     <a class="dropdown-item" asp-area="" asp-controller="Device" asp-action="History">History</a>
                                   </li>
                                   <li class="nav-item px-xl-3 py-xl-2">
                                     <a class="dropdown-item" asp-area="" asp-controller="Device" asp-action="Reservation">Reservation</a>
-                                  </li>
-                                  <li class="nav-item px-xl-3 py-xl-2">
-                                    <a class="dropdown-item" asp-area="" asp-controller="Device" asp-action="Edit">Edit </a>
                                   </li>
                               </ul>
                             </li>
@@ -60,7 +60,7 @@
                                   <a class="dropdown-item" asp-area="" asp-controller="CalibrationOrder" asp-action="Create">Add Calibration</a>
                                 </li>
                                 <li class="nav-item px-xl-3 py-xl-2">
-                                   <a class="dropdown-item" asp-area="" asp-controller="CalibrationOrder" asp-action="Edit">Edir Calibration</a>
+                                   <a class="dropdown-item" asp-area="" asp-controller="CalibrationOrder" asp-action="Edit">Edit </a>
                                 </li>
                               </ul>
                             </li>
@@ -72,13 +72,13 @@
                               </button>
                               <ul class="dropdown-menu">
                                   <li class="nav-item px-xl-3 py-xl-2">
-                                     <a class="dropdown-item" asp-area="" asp-controller="User" asp-action="Index">Details User</a>
+                                     <a class="dropdown-item" asp-area="" asp-controller="User" asp-action="Index">Details</a>
                                   </li>
                                   <li class="nav-item px-xl-3 py-xl-2">
-                                    <a class="dropdown-item" asp-area="" asp-controller="User" asp-action="Create">Add User</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="User" asp-action="CreateUser">Add User</a>
                                   </li>
                                   <li class="nav-item px-xl-3 py-xl-2">
-                                    <a class="dropdown-item" asp-area="" asp-controller="User" asp-action="Rights">Authorization</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="User" asp-action="Edit">Edit</a>
                                   </li>
                               </ul>
                             </li>
@@ -90,10 +90,13 @@
                               </button>
                               <ul class="dropdown-menu">
                                   <li class="nav-item px-xl-3 py-xl-2">
-                                     <a class="dropdown-item" asp-area="" asp-controller=" ActivityType" asp-action="Index">Details</a>
+                                     <a class="dropdown-item" asp-area="" asp-controller="ActivityType" asp-action="Index">Details</a>
                                   </li>
                                   <li class="nav-item px-xl-3 py-xl-2">
-                                    <a class="dropdown-item" asp-area="" asp-controller=" ActivityType" asp-action="Create">Add Activity</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="ActivityType" asp-action="Create">Add Activity</a>
+                                  </li>
+                                   <li class="nav-item px-xl-3 py-xl-2">
+                                    <a class="dropdown-item" asp-area="" asp-controller="ActivityType" asp-action="Edit">Edit</a>
                                   </li>
                               </ul>
                             </li>

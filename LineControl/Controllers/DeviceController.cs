@@ -8,5 +8,25 @@ namespace LineControl.Controllers
     {
       return View();
     }
+
+    public async Task<ActionResult> Create()
+    {
+      return View();
+    }
+
+    public async Task<ActionResult> Edit()
+    {
+      return View();
+    }
+
+    public async Task<ActionResult> History()
+    {
+      return View();
+    }
+
+    public async Task<ActionResult> Reservation()
+    {
+      return View();
+    }
   }
 }

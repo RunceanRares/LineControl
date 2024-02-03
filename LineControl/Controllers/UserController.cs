@@ -8,5 +8,15 @@ namespace LineControl.Controllers
     {
       return View();
     }
+
+    public async Task<ActionResult> CreateUser()
+    {
+      return View();
+    }
+
+    public async Task<ActionResult> Edit()
+    {
+      return View();
+    }
   }
 }

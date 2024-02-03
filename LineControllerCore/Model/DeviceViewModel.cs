@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LineControl.Models
 {
@@ -39,5 +40,10 @@ namespace LineControl.Models
 
     [Display(Name = "Issue comment")]
     public string? IssueComment { get; set; }
+
+    public string? InventoryNumber { get; set; }
+
+    [Column(TypeName = "DECIMAL(18, 3)")]
+    public decimal? CostFactor { get; set; }
   }
 }

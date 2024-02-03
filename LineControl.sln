@@ -5,7 +5,9 @@ VisualStudioVersion = 17.8.34408.163
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LineControl", "LineControl\LineControl.csproj", "{EE668398-0137-4B0F-B30A-16BF46A3AA5F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LineControllerCore", "LineControllerCore\LineControllerCore.csproj", "{7A5673FD-2434-478B-A6C0-6CB3A22CADCC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LineControllerCore", "LineControllerCore\LineControllerCore.csproj", "{7A5673FD-2434-478B-A6C0-6CB3A22CADCC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LineControllerInfrastructure", "LineControllerInfrastructure\LineControllerInfrastructure.csproj", "{6C9CAFBD-6D7C-4998-B2E6-DC225107C851}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{7A5673FD-2434-478B-A6C0-6CB3A22CADCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A5673FD-2434-478B-A6C0-6CB3A22CADCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A5673FD-2434-478B-A6C0-6CB3A22CADCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C9CAFBD-6D7C-4998-B2E6-DC225107C851}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C9CAFBD-6D7C-4998-B2E6-DC225107C851}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C9CAFBD-6D7C-4998-B2E6-DC225107C851}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C9CAFBD-6D7C-4998-B2E6-DC225107C851}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -15,4 +15,32 @@ html {
 
 body {
   margin-bottom: 60px;
+  background-image: url('../lib/imga.jpg');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+.navbar {
+  background-color: black !important;
+  color: white;
+}
+.navbar-brand {
+  color: white !important;
+}
+.nav-link{
+  color: white !important;
+}
+.navbar-collapse {
+  color: white !important;
+}
+.navbar-nav .dropdown-item {
+  color: white !important; 
+}
+.btn.dropdown-toggle {
+  color: white !important;
+}
+.dropdown-menu {
+  background-color: black; 
+}
+.dropdown-item:hover {
+  background-color:#373636;
 }
