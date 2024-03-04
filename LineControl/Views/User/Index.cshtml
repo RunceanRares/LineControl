@@ -1,5 +1,40 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model UserViewModel
 @{
+  ViewData["Title"] = "Users";
 }
+<div class="row">
+  <div class="col">
+    <h2>@ViewData["Title"]</h2>
+  </div>
+</div>
+@(Html.Kendo().Grid<UserViewModel>().Name("Grid")
+  .Columns(columns =>
+  {
+    columns.Bound(c => c.PersonalNumber).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(c => c.FirstName).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(c => c.LastName).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(c => c.UserName).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(c => c.Email).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(c => c.CostCenter).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+  })
+   .ToolBar(toolbar =>
+    {
+      toolbar.Create().Text("Add new user");
+    })
+    .Editable(editable => editable.Mode(GridEditMode.InLine))
+    .Pageable()
+    .Sortable()
+    .Scrollable()
+    .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+    .DataSource(dataSource => dataSource
+      .Ajax()
+      .Model(m =>
+      {
+        m.Id(p => p.Id);
+      })
+      .Read(read => read.Action("ReadUsers", "User"))
+      .PageSize(15))
+      .Resizable(r => r.Columns(true))
+      .HtmlAttributes(new { @class = "s-gridContent" })
+      .Deferred(true)
+ )

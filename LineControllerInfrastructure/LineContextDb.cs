@@ -12,6 +12,8 @@ namespace LineControllerInfrastructure
 
     public DbSet<User> Users { get; set; } = null;
 
+    public DbSet<CompanyLocation> CompanyLocations { get; set; } = null;
+
     public override int SaveChanges()
     {
       HandleSoftDelete();

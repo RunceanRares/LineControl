@@ -1,5 +1,22 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@Html.AntiForgeryToken()
+<div class="s-formContent row justify-content-md-center">
+  <div class="form-row form-group">
+    <div class="col s-paddingBtn">
+      @(Html.Kendo().Button()
+          .Name("AddButton")
+          .ThemeColor(ThemeColor.Primary)
+          .Icon("add")
+          .Content("Add")
+          .HtmlAttributes(new { type = "submit" })
+          .Deferred(true)
+          )
+      @(Html.Kendo().Button()
+          .Name("CancelButton")
+          .Icon("cancel")
+          .Content("Cancel")
+          .Tag("a href='" + Url.Action("Index", "Questions") + "'")
+          .Deferred(true)
+          )
+
+    </div>
+  </div>

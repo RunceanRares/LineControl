@@ -1,4 +1,21 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿(function ($, window, document) { 
+  var gridElement = $('.s-gridContent');
+  var htmlContent = $('html');
+  var headerContent = $('.s-header-content');
+  var pageTitle = $('.s-pageTitle');
+  var footerContent = $('.sticky-footer');
 
-// Write your JavaScript code.
+  function GridResize() {
+    gridElement.height(Math.floor(htmlContent[0].getBoundingClientRect().height) - headerContent.outerHeight() - pageTitle.outerHeight() - footerContent.outerHeight());
+    gridElement.data('kendoGrid').resize();
+  }
+  $(document).ready(function () {
+
+    $("form").kendoValidator();
+    gridElement.data('kendoGrid') != undefined) {
+      GridResize();
+      $(window).resize(function () {
+        GridResize();
+      });
+    }
+})

@@ -1,37 +1,43 @@
 using FluentAssertions.Common;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using LineControl.Common;
+using LineControllerCore.Interface;
+using LineControllerCore.Service;
+using LineControllerInfrastructure;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Serialization;
 using NLog;
 using NLog.Web;
 using System.Globalization;
-using System.Security.Claims;
 
 var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 
 try
 {
   var builder = WebApplication.CreateBuilder(args);
+
   builder.Services.AddKendo();
 
-  builder.Services.AddRazorPages();
-
-  builder.Logging.ClearProviders();
-
-  // Add services to the container.
-  builder.Services.AddControllersWithViews();
+  builder.Services.AddDbContext<LineContextDb>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+    x => x.MigrationsAssembly("LineControllerInfrastructure")));
 
   builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Negotiate.NegotiateDefaults.AuthenticationScheme)
     .AddNegotiate();
+
+  builder.Services.AddScoped<IIdentityService, IdentityService>();
+  builder.Services.AddScoped<IUserService, UserService>();
+  builder.Services.AddScoped<ICompanyLocationService, CompanyLocationService>();
 
   builder.Services.AddAuthorization(options =>
   {
     options.FallbackPolicy = options.DefaultPolicy;
   });
 
+  builder.Services.AddRazorPages();
+
   builder.Logging.ClearProviders();
   builder.Host.UseNLog();
+  builder.Services.AddControllersWithViews().AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
   var app = builder.Build();
 
@@ -69,4 +75,8 @@ try
 catch (Exception exception)
 {
     Console.WriteLine(exception);
+}
+finally
+{
+  LogManager.Shutdown();
 }

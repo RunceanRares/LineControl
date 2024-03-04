@@ -1,0 +1,33 @@
+﻿@using LineControllerCore.Model
+@model CompanyLocationViewModel
+@{
+  ViewData["Title"] = "Company";
+}
+
+<div class="row s-pageTitle">
+  <div class="col">
+    <h1>Company Location</h1>
+  </div>
+</div>
+@(Html.Kendo().Grid<CompanyLocationViewModel>().Name("Company")
+  .Columns(columns =>
+  {
+    columns.Bound(s => s.Code).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").ShowOperators(false).SuggestionOperator(FilterType.Contains)));
+    columns.Bound(s => s.Name).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").ShowOperators(false).SuggestionOperator(FilterType.Contains)));
+    columns.Bound(s => s.Country).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").ShowOperators(false).SuggestionOperator(FilterType.Contains)));
+  })
+   .Pageable()
+    .Sortable()
+    .Scrollable()
+    .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+    .DataSource(dataSource => dataSource
+      .Ajax()
+      .Model(m => m.Id(p => p.Id))
+      .Read("GetCompanies", "CompanyLocation")
+      .ServerOperation(true)
+      .PageSize(15)
+    )
+    .Resizable(r => r.Columns(true))
+    .HtmlAttributes(new { @class = "s-gridContent" })
+    .Deferred(true)
+ )
