@@ -7,19 +7,38 @@
     <h2>@ViewData["Title"]</h2>
   </div>
 </div>
-@(Html.Kendo().Grid<UserViewModel>().Name("Grid")
+@(
+Html.Kendo().Grid<UserViewModel>().Name("Grid")
   .Columns(columns =>
   {
+    columns.Command(c =>
+    {
+      c.Custom("edituser")
+                        .Text(" ")
+                        .IconClass("k-icon k-i-edit")
+                        .Click("openEditUser")
+                        .HtmlAttributes(new
+                        {
+                          data_url = Url.Action("Edit", "User", new { id = "__id__" })
+                        });
+    });
     columns.Bound(c => c.PersonalNumber).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
     columns.Bound(c => c.FirstName).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
     columns.Bound(c => c.LastName).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
     columns.Bound(c => c.UserName).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
     columns.Bound(c => c.Email).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
     columns.Bound(c => c.CostCenter).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(c => c.Department).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(c => c.Phone).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(c => c.Status).ClientTemplate("#=Status ? 'Yes' : 'No' #").Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(c => c.Title).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.ForeignKey(p => p.ManagerId, ds => ds.Read(r => r.Action("GetManagers", "User")), "Id", "Display")
+           .Title("Manager").Filterable(f => f.Cell(cell => cell
+           .ShowOperators(false))).MinScreenWidth(450);
   })
    .ToolBar(toolbar =>
     {
-      toolbar.Create().Text("Add new user");
+      toolbar.ClientTemplate("<a class='k-button k-button-md k-rounded k-button-solid k-button-solid-base' href='" + Url.Action("Create", "User") + "'><span class='k-icon k-i-add'></span>Add User</a>");
     })
     .Editable(editable => editable.Mode(GridEditMode.InLine))
     .Pageable()
@@ -35,6 +54,6 @@
       .Read(read => read.Action("ReadUsers", "User"))
       .PageSize(15))
       .Resizable(r => r.Columns(true))
-      .HtmlAttributes(new { @class = "s-gridContent" })
+      .HtmlAttributes(new { @class = "s-gridContent", data_action_edit = Url.Action("Edit", "User")})
       .Deferred(true)
  )

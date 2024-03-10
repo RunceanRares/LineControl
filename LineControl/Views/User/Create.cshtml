@@ -1,24 +1,21 @@
 ﻿@model UserViewModel
-
 @{
-  ViewData["Title"] = "Edit User";
+   ViewData["Title"] = "Add User";
 }
 <div class="row s-pageTitle">
   <div class="col">
-    <h1>Edit User</h1>
+    <h2>Add User</h2>
   </div>
 </div>
-@using (Html.BeginForm("Edit", "User", FormMethod.Post, new { @class = "ControllForm"}))
-{
+
+@using (Html.BeginForm("Create", "User", FormMethod.Post, new { @class = "ControllForm"}))
+{ 
   @Html.AntiForgeryToken()
-  <input type="hidden" asp-for="Id" />
-  <div class="s-formContent row justify-content-md-center">
+  <div class="s-formContent row justify-content-md-center ">
     <div class="form-row form-group">
-      <div class="form-row form-group">
-        <div class="col s-paddingBtn">
-          <button class="btn btn-primary s-button" type="submit"><i class='k-icon k-i-save'></i><span>Save</span></button>
-          <button class="btn btn-danger s-button s-CancelBtn" data-request-url="@Url.Action("Index", "User")"><i class='k-icon k-i-cancel'></i><span> Cancel</span></button>
-        </div>
+      <div class="col s-paddingBtn">
+        <button class="btn btn-primary s-button" type="submit"><i class='k-icon k-i-add'></i><span>Add</span></button>
+        <button class="btn btn-danger s-button s-CancelBtn" data-request-url="@Url.Action("Index", "User")"><i class='k-icon k-i-cancel'></i><span> Cancel</span></button>
       </div>
     </div>
     <div class="form-row form-group">
@@ -117,6 +114,15 @@
       </div>
       <div class="col-12">
         @(Html.Kendo().TextAreaFor(m => m.Title)
+            .HtmlAttributes(new { @class = "s-customTextArea" })
+            .Rows(1).Deferred(true)
+            )
+      </div>
+      <div class="col-12">
+        <label class="s-label" asp-for="@Model.ManagerId">Manager</label>
+      </div>
+      <div class="col-12">
+        @(Html.Kendo().TextAreaFor(m => m.ManagerId)
             .HtmlAttributes(new { @class = "s-customTextArea" })
             .Rows(1).Deferred(true)
             )

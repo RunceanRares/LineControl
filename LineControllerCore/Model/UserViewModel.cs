@@ -33,14 +33,5 @@ namespace LineControl.Models
     public int CompanyLocationId { get; set; }
 
     public string? Phone { get; set; }
-
-    public string DisplayName
-    {
-      get
-      {
-        return $"{LastName}, {FirstName} {Department}";
-      }
-    }
-
   }
 }

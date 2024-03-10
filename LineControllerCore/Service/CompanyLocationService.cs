@@ -30,5 +30,14 @@ namespace LineControllerCore.Service
         Country = s.Country,
       }).ToList();
     }
+
+    public CompanyLocationViewModel CreateCompany(CompanyLocationViewModel company)
+    {
+      var companyLocationViewModel = new CompanyLocation() { Id = company.Id, Code = company.Code, Name = company.Name, Country = company.Country };
+
+      context.CompanyLocations.Add(companyLocationViewModel);
+      context.SaveChanges();
+      return company;
+    }
   }
 }

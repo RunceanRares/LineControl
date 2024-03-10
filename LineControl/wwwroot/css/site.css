@@ -44,3 +44,13 @@ body {
 .dropdown-item:hover {
   background-color:#373636;
 }
+.btn-primary.s-button {
+  background-color: green; 
+}
+.form-group {
+  font-weight: bold;
+}
+.k-button{
+  border-block-color:black;
+  border:outset;
+}

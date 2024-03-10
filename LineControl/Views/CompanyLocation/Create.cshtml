@@ -1,0 +1,42 @@
+﻿@using LineControllerCore.Model
+@model CompanyLocationViewModel
+@{
+  ViewData["Title"] = "Add Company ";
+}
+
+<div class="row s-pageTitle">
+  <div class="col">
+    <h1>Add Company Location</h1>
+  </div>
+</div>
+
+@using (Html.BeginForm("Create", "CompanyLocation", FormMethod.Post, new { @class = "ControllForm"}))
+{ 
+  @Html.AntiForgeryToken()
+  <div class="s-formContent row justify-content-md-center ">
+    <div class="form-row form-group">
+      <div class="col s-paddingBtn">
+        <button class="btn btn-primary s-button" type="submit"><i class='k-icon k-i-add'></i><span>Add</span></button>
+        <button class="btn btn-danger s-button s-CancelBtn" data-request-url="@Url.Action("Index", "CompanyLocation")"><i class='k-icon k-i-cancel'></i><span> Cancel</span></button>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <label class="col-md-8 col-form-label" asp-for="@Model.Code" style="font-weight:bold">Code</label>
+      <div class="col-md-12">
+        @Html.EditorFor(m => m.Code)
+      </div>
+    </div>
+    <div class="row mb-3">
+      <label class="col-md-8 col-form-label" asp-for="@Model.Name" style="font-weight:bold"></label>
+      <div class="col-md-12">
+        @Html.EditorFor(m => m.Name)
+      </div>
+    </div>
+    <div class="row mb-3">
+      <label class="col-md-8 col-form-label" asp-for="@Model.Country" style="font-weight:bold"></label>
+      <div class="col-md-12">
+        @Html.EditorFor(m => m.Country)
+      </div>
+    </div>
+   </div>
+}

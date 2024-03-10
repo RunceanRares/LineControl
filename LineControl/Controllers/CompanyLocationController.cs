@@ -1,6 +1,8 @@
 ﻿using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using LineControl.Models;
 using LineControllerCore.Interface;
+using LineControllerCore.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LineControl.Controllers
@@ -23,6 +25,26 @@ namespace LineControl.Controllers
     {
       var company = service.GetCompanies();
       return Json(company.ToList().ToDataSourceResult(dataSourceRequest));
+    }
+
+    public IActionResult Create()
+    {
+      return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Create(CompanyLocationViewModel company)
+    {
+      if (ModelState.IsValid)
+      {
+        service.CreateCompany(company);
+        return RedirectToAction("Index");
+      }
+      else
+      {
+        return View(company);
+      }
     }
   }
 }
