@@ -1,5 +1,61 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using LineControllerCore.Model
+@model ActivityTypeViewModel
+
 @{
+  ViewData["Title"] = "Edit ActivityType";
+}
+<div class="row s-pageTitle">
+  <div class="col">
+    <h1>Edit Activity</h1>
+  </div>
+</div>
+@using (Html.BeginForm("Edit", "ActivityType", FormMethod.Post, new { @class = "ControllForm"}))
+{
+  @Html.AntiForgeryToken()
+  <input type="hidden" asp-for="Id" />
+  <div class="s-formContent row justify-content-md-center">
+    <div class="form-row form-group">
+      <div class="form-row form-group">
+        <div class="col s-paddingBtn">
+          <button class="btn btn-primary s-button" type="submit"><i class='k-icon k-i-save'></i><span>Save</span></button>
+          <button class="btn btn-danger s-button s-CancelBtn" data-request-url="@Url.Action("Index", "ActivityType")"><i class='k-icon k-i-cancel'></i><span> Cancel</span></button>
+        </div>
+      </div>
+    <div class="col-12">
+      <label class="s-label" asp-for="@Model.CostCenter">Cost Center</label>
+    </div>
+    <div class="col-12">
+      @(Html.Kendo().TextAreaFor(m => m.CostCenter)
+          .HtmlAttributes(new { @class = "s-customTextArea" })
+          .Rows(1).Deferred(true)
+          )
+    </div>
+    <div class="col-12">
+      <label class="s-label" asp-for="@Model.Code">Code</label>
+    </div>
+    <div class="col-12">
+      @(Html.Kendo().TextAreaFor(m => m.Code)
+          .HtmlAttributes(new { @class = "s-customTextArea" })
+          .Rows(1).Deferred(true)
+          )
+    </div> <div class="col-12">
+      <label class="s-label" asp-for="@Model.Name">Name</label>
+    </div>
+    <div class="col-12">
+      @(Html.Kendo().TextAreaFor(m => m.Name)
+          .HtmlAttributes(new { @class = "s-customTextArea" })
+          .Rows(1).Deferred(true)
+          )
+    </div>
+    <div class="col-12">
+      <label class="s-label" asp-for="@Model.PassiveCostFactor">Passive Cost Factor</label>
+    </div>
+    <div class="col-12">
+      @(Html.Kendo().TextAreaFor(m => m.PassiveCostFactor)
+          .HtmlAttributes(new { @class = "s-customTextArea" })
+          .Rows(1).Deferred(true)
+          )
+    </div>
+   </div>
+  </div>
 }

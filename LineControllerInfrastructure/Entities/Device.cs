@@ -22,6 +22,7 @@ namespace LineControllerInfrastructure.Entities
     public int? CreatedById { get; set; }
 
     public User CreatedBy { get; set; }
+
     public DeviceClass DeviceClass { get; set; }
 
     [ForeignKey(nameof(DeviceClass))]
@@ -57,6 +58,23 @@ namespace LineControllerInfrastructure.Entities
     public string? Accessories { get; set; }
 
     public string? Comment { get; set; }
+
+    public string EquipmentNumber { get; set; }
+
+    public string CalibrationTester { get; set; }
+
+    public string CalibrationLocation { get; set; }
+
+    public DateTime? CalibrationDate { get; set; }
+
+    public int? CalibrationInterval { get; set; }
+
+    [Column(TypeName = "DECIMAL(18, 3)")]
+    public decimal? CalibrationResult { get; set; }
+    
+    public bool Reservation { get; set; }
+
+    public decimal MaterialNumber { get; set; }
 
   }
 }

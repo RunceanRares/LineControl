@@ -3,12 +3,7 @@ using LineControllerCore.Interface;
 using LineControllerCore.Model;
 using LineControllerInfrastructure;
 using LineControllerInfrastructure.Entities;
-using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace LineControllerCore.Service
 {
@@ -126,6 +121,13 @@ namespace LineControllerCore.Service
       context.Users.Update(userModel);
       context.SaveChanges();
       return user;
+    }
+
+    public async Task<int?> GetUserIdAsync(string userName)
+    {
+      return await context.Users.Where(u => u.UserName == userName && u.Status == UserStatusViewModel.StatusActive)
+                                .Select(u => (int?)u.Id)
+                                .FirstOrDefaultAsync().ConfigureAwait(false);
     }
 
     private static UserSelectViewModel ConvertUserToUserSelectViewModel(User user)

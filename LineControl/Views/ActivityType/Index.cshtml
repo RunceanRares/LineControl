@@ -1,22 +1,52 @@
-﻿@Html.AntiForgeryToken()
-<div class="s-formContent row justify-content-md-center">
-  <div class="form-row form-group">
-    <div class="col s-paddingBtn">
-      @(Html.Kendo().Button()
-          .Name("AddButton")
-          .ThemeColor(ThemeColor.Primary)
-          .Icon("add")
-          .Content("Add")
-          .HtmlAttributes(new { type = "submit" })
-          .Deferred(true)
-          )
-      @(Html.Kendo().Button()
-          .Name("CancelButton")
-          .Icon("cancel")
-          .Content("Cancel")
-          .Tag("a href='" + Url.Action("Index", "Questions") + "'")
-          .Deferred(true)
-          )
+﻿@using LineControllerCore.Model
+@model ActivityTypeViewModel
 
-    </div>
+@{
+  ViewData["Title"] = "ActivityType";
+}
+
+<div class="row s-pageTitle">
+  <div class="col">
+    <h1>ActivityType</h1>
   </div>
+</div>
+
+@(Html.Kendo().Grid<ActivityTypeViewModel>().Name("ActivityType")
+  .Columns(columns =>
+  {
+    columns.Command(c =>
+    {
+       c.Custom("editActivity")
+                         .Text(" ")
+                         .IconClass("k-icon k-i-edit")
+                         .Click("openEditActivity")
+                         .HtmlAttributes(new
+                         {
+                           @class = "s-grid-editActivity",
+                           data_url = Url.Action("Edit", "ActivityType", new { id = "__id__" })
+                         });
+    });
+    columns.Bound(s => s.Code).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").ShowOperators(false).SuggestionOperator(FilterType.Contains)));
+    columns.Bound(s => s.Name).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").ShowOperators(false).SuggestionOperator(FilterType.Contains)));
+    columns.Bound(s => s.CostCenter).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").ShowOperators(false).SuggestionOperator(FilterType.Contains)));
+    columns.Bound(s => s.PassiveCostFactor).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").ShowOperators(false).SuggestionOperator(FilterType.Contains)));
+  })
+  .ToolBar(toolbar =>
+    {
+      toolbar.ClientTemplate("<a class='k-button k-button-md k-rounded k-button-solid k-button-solid-base' href='" + Url.Action("Create", "ActivityType") + "'><span class='k-icon k-i-add'></span>Add Activity</a>");
+    })
+   .Pageable()
+    .Sortable()
+    .Scrollable()
+    .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+    .DataSource(dataSource => dataSource
+      .Ajax()
+      .Model(m => m.Id(p => p.Id))
+      .Read("GetActivityType", "ActivityType")
+      .ServerOperation(true)
+      .PageSize(15)
+    )
+    .Resizable(r => r.Columns(true))
+    .HtmlAttributes(new { @class = "s-gridContent", data_action_edit = Url.Action("Edit", "ActivityType") })
+    .Deferred(true)
+ )

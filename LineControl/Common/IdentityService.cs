@@ -5,12 +5,13 @@ namespace LineControl.Common
 {
   public class IdentityService : IIdentityService
   {
-
+    private readonly IUserGroupService userGroupService;
     private readonly IHttpContextAccessor httpContextAccessor;
 
-    public IdentityService(IHttpContextAccessor httpContextAccessor)
+    public IdentityService(IHttpContextAccessor httpContextAccessor, IUserGroupService userGroupService)
     {
       this.httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+      this.userGroupService = userGroupService;
     }
 
     private ClaimsPrincipal User => httpContextAccessor.HttpContext!.User;
@@ -40,7 +41,31 @@ namespace LineControl.Common
 
     public bool IsMember(string roleName)
     {
-      throw new NotImplementedException();
+      try
+      {
+        string sessionKey = "Line" + roleName;
+        string? sessionValue = httpContextAccessor.HttpContext!.Session.GetString(sessionKey);
+        if (string.IsNullOrEmpty(sessionValue))
+        {
+          bool isMember = userGroupService.IsMember(User, roleName);
+          if (isMember)
+          {
+            httpContextAccessor.HttpContext.Session.SetString(sessionKey, bool.TrueString);
+          }
+          else
+          {
+            httpContextAccessor.HttpContext.Session.SetString(sessionKey, bool.FalseString);
+          }
+
+          return isMember;
+        }
+
+        return string.Equals(sessionValue, bool.TrueString, StringComparison.InvariantCultureIgnoreCase);
+      }
+      catch (InvalidOperationException)
+      {
+        return userGroupService.IsMember(User, roleName);
+      }
     }
   }
 }

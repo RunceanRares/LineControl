@@ -4,7 +4,7 @@ namespace LineControl.Controllers
 {
   public class DeviceController : Controller
   {
-    public IActionResult Index()
+    public async Task<ActionResult> Index()
     {
       return View();
     }

@@ -1,5 +1,149 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using LineControllerCore.Model
+@using LineControl.Common
+@using Microsoft.VisualStudio.TestPlatform.ObjectModel
+@model DeviceFilter
+@inject IMemoryCache cache
 @{
+  ViewData["Title"] = "Devices";
 }
+<div class="row">
+  <div class="col-12 col-sm-3 col-lg-6">
+    <h2>@ViewData["Title"]</h2>
+  </div>
+</div>
+<div class="row s-flex-fill mt-3">
+  <div class="col" id="devicepanel">
+    @(Html.Kendo().Grid<DeviceViewModel>()
+        .Name("devicesGrid")
+         .Columns(columns =>
+        {
+          @* int noButtons = 0;
+          if (Model.CanEditDevice)
+          {
+            noButtons++;
+          }
+          if (Model.CanViewDevice)
+          {
+            noButtons++;
+          }
+          if (Model.CanIssue)
+          {
+            noButtons++;
+          }
+          if (Model.CanViewIssueHistory)
+          {
+            noButtons++;
+          }
+          if (Model.CanViewDeviceHistory)
+          {
+            noButtons++;
+          }
+          if (Model.CanCalibrate)
+          {
+            noButtons++;
+          }
+          string widthValue = ButtonWidthExtensions.GetButtonsWidth(noButtons);
+          if (widthValue != null)
+          {
+            columns.Command(command =>
+            {
+              if (Model.CanViewDevice)
+              {
+                command.Custom("detaildevice")
+            .Text(" ")
+            .IconClass("k-icon k-i-hyperlink-open")
+            .Click("device.details")
+            .HtmlAttributes(new { data_url = Url.Action("Details", "Device", new { id = "__id__" }) });
+              }
+              if (Model.CanEditDevice)
+              {
+                command.Custom("editdevice")
+            .Text(" ")
+            .IconClass("k-icon k-i-edit")
+            .Click("device.edit")
+            .HtmlAttributes(new { data_url = Url.Action("Edit", "Device", new { id = "__id__" }) });
+              }
+              if (Model.CanIssue)
+              {
+                command.Custom("issuedevice")
+            .Text(" ")
+            .IconClass("s-i-deviceissue")
+            .Click("device.issue")
+            .HtmlAttributes(new { @class = "s-device-issuebutton", data_url = Url.Action("Issue", "Device", new { id = "__id__" }) });
+              }
+              if (Model.CanViewIssueHistory)
+              {
+                command.Custom("issuehistory")
+            .Text(" ")
+            .IconClass("k-icon k-i-txt")
+            .Click("device.issuehistory")
+            .HtmlAttributes(new { data_url = Url.Action("IssueHistory", "Device", new { id = "__id__" }) });
+              }
+              if (Model.CanViewDeviceHistory)
+              {
+                command.Custom("devicehistory")
+            .Text(" ")
+            .IconClass("k-icon k-i-js")
+            .Click("device.devicehistory")
+            .HtmlAttributes(new { data_url = Url.Action("History", "Device", new { id = "__id__" }) });
+              }
+              if (Model.CanCalibrate)
+              {
+                command.Custom("devicecalibrate")
+            .Text(" ")
+            .IconClass("s-i-calibration")
+            .Click("device.devicecalibrate")
+            .HtmlAttributes(new { data_url = Url.Action("Calibrate", "Device", new { id = "__id__" }) });
+              }
+            }).Width(widthValue).HeaderHtmlAttributes(new { id = "actionsColumn" }).MinScreenWidth(992);
+          }
+          var col = columns.Bound(p => p.ItemNumber);
+          if (Model.CanViewDevice)
+          {
+            col.ClientTemplate($"<a class='s-link-color' href='{Url.Action("Details", "Device", new { id = "#=Id#" })}'>#=ItemNumber#</a>");
+          } *@
+          columns.Bound(p => p.DeviceModel);
+          columns.Bound(p => p.Designation);
+          columns.Bound(p => p.StatusName);
+          columns.Bound(p => p.ActivityType).Hidden();
+          columns.Bound(p => p.CostFactor).Hidden().HtmlAttributes(new { @class = "text-end" });
+          columns.Bound(p => p.InventoryNumber).Hidden();
+          columns.Bound(p => p.EquipmentNumber).Hidden();
+          columns.Bound(p => p.SerialNumber).Hidden();
+          columns.Bound(p => p.MaterialNumber).Hidden();
+          columns.Bound(p => p.IssueDate);
+          columns.Bound(p => p.EquipmentNumber);
+          columns.Bound(p => p.IssueComment).Hidden();
+          columns.Bound(p => p.Accounting).Hidden();
+          columns.Bound(p => p.Accessories).Hidden().HtmlAttributes(new { @class = "s-grid-multiline" });
+          columns.Bound(p => p.CalibrationDueDate).HtmlAttributes(new { @class = "s-device-column-calibrationdue" });
+          columns.Bound(p => p.CalibrationLocation).Hidden();
+          columns.Bound(p => p.CalibrationInterval).Hidden();
+          columns.Bound(p => p.CreatedBy).ClientTemplate("# if (CreatedBy) { # #=CreatedBy# # } else { # --- # }#").Hidden();
+          columns.Bound(p => p.CreationDate).Hidden();
+        })
+        .Pageable(pageable => pageable.Refresh(true)
+        .PageSizes(new int[] { 50 })
+        .Input(true)
+        .ButtonCount(3))
+        .HtmlAttributes(new { @class = "s-device-filter-grid s-grid-resize s-device-nodata" })
+        .Sortable()
+        .ColumnMenu()
+        .AutoBind(false)
+        .Scrollable(s => s.Height(null))
+        .Reorderable(reorderable => reorderable.Columns(true))
+        .DataSource(dataSource => dataSource.Ajax()
+        .PageSize(20)
+        .Read(read => read.Action("GetDevices", "Device")
+        .Data("device.getListFilter"))
+        .Model(model => model.Id(p => p.Id))
+        .Events(events => events.Error("device.dataSourceError")))
+        .Events(events =>
+        {
+          events.DataBound("device.filterDataBound");
+          events.Sort("device.filterSort");
+        })
+        .Deferred()
+        )
+  </div>
+</div>

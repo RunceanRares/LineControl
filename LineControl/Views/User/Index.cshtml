@@ -19,6 +19,7 @@ Html.Kendo().Grid<UserViewModel>().Name("Grid")
                         .Click("openEditUser")
                         .HtmlAttributes(new
                         {
+                          @class = "s-grid-userEdit",
                           data_url = Url.Action("Edit", "User", new { id = "__id__" })
                         });
     });

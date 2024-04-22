@@ -3,12 +3,15 @@ using LineControl.Common;
 using LineControllerCore.Interface;
 using LineControllerCore.Service;
 using LineControllerInfrastructure;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Serialization;
 using NLog;
 using NLog.Web;
 using System.Globalization;
+using LineControllerCore.Mapping;
 
 var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 
@@ -27,6 +30,12 @@ try
   builder.Services.AddScoped<IIdentityService, IdentityService>();
   builder.Services.AddScoped<IUserService, UserService>();
   builder.Services.AddScoped<ICompanyLocationService, CompanyLocationService>();
+  builder.Services.AddScoped<IActivityTypeService, ActivityTypeService>();
+  builder.Services.AddScoped<IActiveDirectoryService, ActiveDirectoryService>();
+  builder.Services.AddScoped<IUserRoleService, UserRoleService>();
+  builder.Services.AddScoped<IUserGroupService, UserGroupService>();
+
+  // builder.Services.Configure<UserGroupOptions>();
 
   builder.Services.AddAuthorization(options =>
   {
@@ -38,6 +47,8 @@ try
   builder.Logging.ClearProviders();
   builder.Host.UseNLog();
   builder.Services.AddControllersWithViews().AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+
+  builder.Services.AddAutoMapper(typeof(ActivityTypeMapperProfile).Assembly);
 
   var app = builder.Build();
 

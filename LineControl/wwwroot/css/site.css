@@ -54,3 +54,19 @@ body {
   border-block-color:black;
   border:outset;
 }
+.s-grid-userEdit{
+  background-color:green;
+}
+.k-icon{
+  color:white;
+}
+span.k-icon.k-i-add {
+  color: black;
+}
+
+span.k-icon:hover{
+  color:green;
+}
+.s-grid-editActivity {
+  background-color: green;
+}

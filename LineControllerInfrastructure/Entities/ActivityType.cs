@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LineControllerInfrastructure.Entities
 {
+  [Table("ActivityTypes")]
   public class ActivityType : BaseModel
   {
     [Column("ActivityTypeId")]
@@ -11,7 +12,8 @@ namespace LineControllerInfrastructure.Entities
     [Required]
     public string Code { get; set; }
 
-    [Required]
+    [Display(Name = "Activity type")]
+    [Required(ErrorMessage = "The 'Activity type' field is required.")]
     public string? Name { get; set; }
 
     [Required]
@@ -20,5 +22,8 @@ namespace LineControllerInfrastructure.Entities
     [Required]
     [Column(TypeName = "DECIMAL(18, 2)")]
     public decimal Rate { get; set; }
+
+    [Column(TypeName = "DECIMAL(18, 3)")]
+    public decimal? PassiveCostFactor { get; set; }
   }
 }

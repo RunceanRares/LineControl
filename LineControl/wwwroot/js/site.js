@@ -9,6 +9,7 @@
     gridElement.height(Math.floor(htmlContent[0].getBoundingClientRect().height) - headerContent.outerHeight() - pageTitle.outerHeight() - footerContent.outerHeight());
     gridElement.data('kendoGrid').resize();
   }
+
   $(document).ready(function () {
 
     $("form").kendoValidator();
@@ -34,5 +35,14 @@
     var userId = data.Id; //Extrage id ul 
     var url = this.element.data('action-edit'); //extrage adresa url de editare(aici face referire la metoda din controller)
     window.location.href = url + "/" + userId; //actualizeaza locatia paginii
+  }
+
+  window.openEditActivity = function (e) {
+    e.preventDefault();
+    var tr = $(e.target).closest("tr"); //selecteaza cel mai apropiat element
+    var data = this.dataItem(tr); //extrage datele randului
+    var activityId = data.Id; //Extrage id ul 
+    var url = this.element.data('action-edit'); //extrage adresa url de editare(aici face referire la metoda din controller)
+    window.location.href = url + "/" + activityId; //actualizeaza locatia paginii
   }
 })(jQuery, window, document);

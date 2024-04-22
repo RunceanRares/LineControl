@@ -15,5 +15,7 @@ namespace LineControllerCore.Interface
     UserViewModel GetUserById(int id);
 
     UserViewModel Update(UserViewModel user);
+
+    Task<int?> GetUserIdAsync(string userName);
   }
 }

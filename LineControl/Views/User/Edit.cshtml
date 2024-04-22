@@ -121,6 +121,15 @@
             .Rows(1).Deferred(true)
             )
       </div>
+      <div class="col-12">
+        <label class="s-label" asp-for="@Model.ManagerId">Manager</label>
+      </div>
+      <div class="col-12">
+        @(Html.Kendo().TextAreaFor(m => m.ManagerId)
+            .HtmlAttributes(new { @class = "s-customTextArea" })
+            .Rows(1).Deferred(true)
+            )
+      </div>
     </div>
   </div>
 }
