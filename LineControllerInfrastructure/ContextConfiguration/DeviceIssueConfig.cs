@@ -1,34 +1,33 @@
 ﻿using LineControllerInfrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LineControllerInfrastructure.ContextConfiguration
 {
-  public class DeviceIssueConfig : IEntityTypeConfiguration<DeviceIssue>
+  public class DeviceIssueConfig : BaseModelConfig<DeviceIssue>
   {
-    public void Configure(EntityTypeBuilder<DeviceIssue> builder)
+    public override void Configure(EntityTypeBuilder<DeviceIssue> builder)
     {
       builder.ToTable("DeviceIssue");
 
-      builder.HasOne(di => di.Collector)
-             .WithMany()
-             .HasForeignKey(di => di.CollectorId)
-             .OnDelete(DeleteBehavior.NoAction);
+      builder.Property(i => i.AccountingType).HasConversion<int?>();
+      builder.Property(i => i.IssueDate).HasConversion<DateTime>();
+      builder.Property(i => i.ReturnDatePlanned).HasConversion<DateTime>();
+      builder.Property(i => i.ReturnDateActual).HasConversion<DateTime>();
+      builder.Property<int>("AvoidDuplicate").HasComputedColumnSql("CASE WHEN [ReturnDateActual] IS NULL THEN [DeviceId] ELSE -[DeviceIssueId] END");
+      builder.HasIndex(i => i.ReturnDateActual).IsClustered(false);
 
-      builder.HasOne(di => di.CreatedBy)
-             .WithMany()
-             .HasForeignKey(di => di.CreatedById)
-             .OnDelete(DeleteBehavior.NoAction);
+      builder.HasOne(i => i.Device)
+         .WithMany(d => d.Issues)
+         .HasForeignKey(i => i.DeviceId)
+         .OnDelete(DeleteBehavior.Restrict);
 
-      builder.HasOne(di => di.Recipient)
-             .WithMany()
-             .HasForeignKey(di => di.RecipientId)
-             .OnDelete(DeleteBehavior.NoAction);
+      builder.HasOne(i => i.Recipient)
+         .WithMany()
+         .HasForeignKey(i => i.RecipientId)
+         .OnDelete(DeleteBehavior.Restrict);
+
+      base.Configure(builder);
     }
   }
 }

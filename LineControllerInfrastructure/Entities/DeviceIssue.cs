@@ -5,8 +5,6 @@ namespace LineControllerInfrastructure.Entities
 {
   public class DeviceIssue : BaseModel
   {
-    public const string AvoidDuplicateIndexName = "IX_DeviceIssue_AvoidDuplicate";
-
     [Column("DeviceIssueId")]
     public override int Id { get => base.Id; set => base.Id = value; }
 
@@ -15,12 +13,12 @@ namespace LineControllerInfrastructure.Entities
     [ForeignKey(nameof(Device))]
     public int DeviceId { get; set; }
 
-    public User Recipient { get; set; }
+    public User? Recipient { get; set; }
 
     [ForeignKey(nameof(Recipient))]
     public int RecipientId { get; set; }
 
-    public User Collector { get; set; }
+    public User? Collector { get; set; }
 
     [ForeignKey(nameof(Collector))]
     public int? CollectorId { get; set; }
@@ -42,6 +40,6 @@ namespace LineControllerInfrastructure.Entities
     [ForeignKey(nameof(CreatedBy))]
     public int? CreatedById { get; set; }
 
-    public User CreatedBy { get; set; }
+    public User? CreatedBy { get; set; }
   }
 }

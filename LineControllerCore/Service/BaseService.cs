@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LineControllerCore.Interface;
 using LineControllerInfrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -15,11 +16,18 @@ namespace LineControllerCore.Service
       Logger = logger;
     }
 
+    protected BaseService(IMapper mapper)
+    {
+      Mapper = mapper;
+    }
+
     protected internal LineContextDb Context { get; }
 
     protected DbSet<TEntity> Entities { get; }
 
     protected IMapper Mapper { get; }
+
+    protected IIdentityService IdentityService { get; }
 
     protected ILogger Logger { get; }
   }

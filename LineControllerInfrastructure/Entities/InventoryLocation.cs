@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
 
 namespace LineControllerInfrastructure.Entities
 {
@@ -7,6 +6,8 @@ namespace LineControllerInfrastructure.Entities
   {
     [Column("InventoryLocationId")]
     public override int Id { get => base.Id; set => base.Id = value; }
+
+    public string Name { get; set; }
 
     public int ResponsibleId { get; set; }
 

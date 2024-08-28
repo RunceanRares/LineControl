@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
 
 namespace LineControllerInfrastructure.Entities
@@ -48,5 +45,15 @@ namespace LineControllerInfrastructure.Entities
 
     [ForeignKey(nameof(Issue))]
     public int? IssueId { get; set; }
+    public InventoryLocation InventoryLocation { get; set; }
+
+    [ForeignKey(nameof(InventoryLocation))]
+    public int InventoryLocationId { get; set; }
+    public DateTime CreationDate { get; set; }
+
+    [ForeignKey(nameof(CreatedBy))]
+    public int CreatedById { get; set; }
+
+    public User CreatedBy { get; set; }
   }
 }

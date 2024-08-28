@@ -1,0 +1,102 @@
+﻿@model DeviceClassModeViewModel
+@{
+  ViewData["Title"] = "Edit DeviceClassModel";
+}
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-header">
+      <h2>Edit Device Class Model</h2>
+    </div>
+    <div class="card-body">
+      @using (Html.BeginForm("EditDeviceClassMode", "DeviceClassMode", FormMethod.Post, new { @class = "ControllForm" }))
+      {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.ModeId)
+        <div class="s-formContent row justify-content-md-center">
+          <div class="form-row form-group">
+            <div class="form-row form-group">
+              <div class="col s-paddingBtn">
+                <button class="btn btn-primary s-button" type="submit"><i class='k-icon k-i-save'></i><span>Save</span></button>
+                <button class="btn btn-danger s-button s-CancelBtn" data-request-url="@Url.Action("Index", "DeviceClassMode")"><i class='k-icon k-i-cancel'></i><span> Cancel</span></button>
+              </div>
+            </div>
+            <div class="form-row form-group">
+              <div class="col-12">
+                <label class="s-label" asp-for="@Model.OutputMin">Output Min</label>
+              </div>
+              <div class="col-12">
+                @(Html.Kendo().TextAreaFor(m => m.OutputMin)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true)
+                    )
+              </div>
+              <div class="col-12">
+                <label class="s-label" asp-for="@Model.OutputMax">Output Max</label>
+              </div>
+              <div class="col-12">
+                @(Html.Kendo().TextAreaFor(m => m.OutputMax)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true)
+                    )
+              </div>
+              <div class="col-12">
+                <label class="s-label" asp-for="@Model.OutputUnit">Output Unit</label>
+              </div>
+              <div class="col-12">
+                @(Html.Kendo().TextAreaFor(m => m.OutputUnit)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true)
+                    )
+              </div>
+              <div class="col-12">
+                <label class="s-label" asp-for="@Model.MeasurementMin">Measurement Min</label>
+              </div>
+              <div class="col-12">
+                @(Html.Kendo().TextAreaFor(m => m.MeasurementMin)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true)
+                    )
+              </div>
+              <div class="col-12">
+                <label class="s-label" asp-for="@Model.MeasurementMax">Measurement Max</label>
+              </div>
+              <div class="col-12">
+                @(Html.Kendo().TextAreaFor(m => m.MeasurementMax)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true)
+                    )
+              </div>
+              <div class="col-12">
+                <label class="s-label" asp-for="@Model.MeasurementUnit">Measurement Unit</label>
+              </div>
+              <div class="col-12">
+                @(Html.Kendo().TextAreaFor(m => m.MeasurementUnit)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true)
+                    )
+              </div>
+              <div class="col-12">
+                <label class="s-label" asp-for="@Model.MaterialNumber">Material Number</label>
+              </div>
+              <div class="col-12">
+                @(Html.Kendo().TextAreaFor(m => m.MaterialNumber)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true)
+                    )
+              </div>
+              <div class="col-12">
+                <label class="s-label" asp-for="@Model.Description">Description</label>
+              </div>
+              <div class="col-12">
+                @(Html.Kendo().TextAreaFor(m => m.Description)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true)
+                    )
+              </div>
+          </div>
+        </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

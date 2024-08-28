@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace LineControllerInfrastructure.Entities
 {
@@ -10,6 +11,10 @@ namespace LineControllerInfrastructure.Entities
     [ForeignKey(nameof(DeviceModel))]
     public int DeviceModelId { get; set; }
 
-    public DeviceModel DeviceModel { get; set; }
+
+    public DeviceModel? DeviceModel { get; set; }
+
+    [ExcludeFromCodeCoverage]
+    public virtual ICollection<DeviceClassMode> Modes { get; } = new List<DeviceClassMode>();
   }
 }

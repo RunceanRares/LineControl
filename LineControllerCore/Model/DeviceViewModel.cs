@@ -14,6 +14,9 @@ namespace LineControl.Models
     [Display(Name = "Designation")]
     public string Designation { get; set; }
 
+    [Display(Name = "Integrated in")]
+    public string ParentItemNumber { get; set; }
+
     [Display(Name = "Model")]
     public string DeviceModel { get; set; }
 
@@ -38,10 +41,22 @@ namespace LineControl.Models
     [DataType(DataType.Date)]
     public DateTime IssueDate { get; set; }
 
+    public DateTime CalibrationDate { get; set; }
+
     [Display(Name = "Issue comment")]
     public string IssueComment { get; set; }
 
+    [Display(Name = "Inventory location")]
+    public string InventoryLocation { get; set; }
+
+    [Display(Name = "Storage place")]
+    public string StoragePlace { get; set; }
+
     public string InventoryNumber { get; set; }
+
+    public decimal? PassiveCostFactor { get; set; }
+
+    public string Comment { get; set; }
 
     [Column(TypeName = "DECIMAL(18, 3)")]
     public decimal CostFactor { get; set; }
@@ -54,9 +69,6 @@ namespace LineControl.Models
 
     [Display(Name = "Calibration location")]
     public string CalibrationLocation { get; set; }
-
-    [Display(Name = "Accounting number")]
-    public string Accounting { get; set; }
 
     [Display(Name = "Accessories")]
     public string Accessories { get; set; }
@@ -88,5 +100,18 @@ namespace LineControl.Models
 
     [Display(Name = "Created by")]
     public string CreatedBy { get; set; }
+
+    [Display(Name = "Accounting number")]
+    public string AccountingNumber { get; set; }
+
+    public bool HasReservations { get; set; }
+
+    public int? IssueId { get; set; }
+
+    public string CreatedByFirstName { get; set; }
+
+    public string CreatedByLastName { get; set; }
+
+    public string CreatedByDepartment { get; set; }
   }
 }

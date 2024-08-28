@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using LineControllerInfrastructure.Entities.Enums;
 
 namespace LineControllerInfrastructure.Entities
 {
@@ -13,5 +12,6 @@ namespace LineControllerInfrastructure.Entities
     public string Name { get; set; }
 
     public bool Deactivated { get; set; }
+
   }
 }

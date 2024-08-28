@@ -1,10 +1,7 @@
-using FluentAssertions.Common;
 using LineControl.Common;
 using LineControllerCore.Interface;
 using LineControllerCore.Service;
 using LineControllerInfrastructure;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Serialization;
@@ -12,6 +9,8 @@ using NLog;
 using NLog.Web;
 using System.Globalization;
 using LineControllerCore.Mapping;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 
@@ -34,8 +33,18 @@ try
   builder.Services.AddScoped<IActiveDirectoryService, ActiveDirectoryService>();
   builder.Services.AddScoped<IUserRoleService, UserRoleService>();
   builder.Services.AddScoped<IUserGroupService, UserGroupService>();
+  builder.Services.AddScoped<IDeviceService, DeviceService>();
+  builder.Services.AddScoped<ILinkService, LinkService>();
+  builder.Services.AddScoped<ICalibrationDevice, CalibrationDeviceService>();
+  builder.Services.AddScoped<IDeviceClassMode, DeviceClassModeService>();
 
-  // builder.Services.Configure<UserGroupOptions>();
+  builder.Services.Configure<IdentityOptions>(options =>
+  {
+    options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier;
+    options.ClaimsIdentity.UserNameClaimType = ClaimTypes.Name;
+  });
+
+  builder.Services.AddHttpContextAccessor();
 
   builder.Services.AddAuthorization(options =>
   {
@@ -43,12 +52,18 @@ try
   });
 
   builder.Services.AddRazorPages();
+  builder.Services.AddLogging();
 
   builder.Logging.ClearProviders();
   builder.Host.UseNLog();
-  builder.Services.AddControllersWithViews().AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
-
+ 
   builder.Services.AddAutoMapper(typeof(ActivityTypeMapperProfile).Assembly);
+  builder.Services.AddAutoMapper(typeof(UserMapperProfile).Assembly);
+  builder.Services.AddAutoMapper(typeof(DeviceMapperProfiler).Assembly);
+  builder.Services.AddAutoMapper(typeof(DeviceClassModeMapperProfile).Assembly);
+  builder.Services.AddAutoMapper(typeof(DeviceClassMapperProfile).Assembly);
+  builder.Services.AddAutoMapper(typeof(DeviceModelMapperProfile).Assembly);
+  builder.Services.AddControllersWithViews().AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
   var app = builder.Build();
 

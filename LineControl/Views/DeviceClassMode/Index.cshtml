@@ -1,0 +1,83 @@
+﻿<div class="row">
+  <div class="col-xs-12 col-md-6">
+    <h2 class="text-center">Device Class Mode</h2>
+    @(Html.Kendo().Grid<DeviceClassModeViewModel>().Name("DeviceClassModeGrid")
+        .Columns(column =>
+        {
+          column.Command(c =>
+          {
+            c.Custom("editdeviceclassmode")
+                    .Text(" ")
+                    .IconClass("k-icon k-i-edit")
+                    .Click("openEditDeviceClassMode")
+                    .HtmlAttributes(new
+                    {
+                      @class = "s-grid-deviceClassModeEdit",
+                      data_url = Url.Action("EditDeviceClassMode", "DeviceClassMode", new { id = "__id__" })
+                    });
+          });
+          column.Bound(c => c.MeasurementMin).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450).Hidden();
+          column.Bound(c => c.MeasurementMax).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450).Hidden();
+          column.Bound(c => c.MeasurementUnit).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450).Hidden();
+          column.Bound(c => c.OutputMin).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+          column.Bound(c => c.OutputMax).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+          column.Bound(c => c.OutputUnit).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+          column.Bound(c => c.Description).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+          column.Bound(c => c.MaterialNumber).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+        })
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Pageable()
+        .Sortable()
+        .Scrollable()
+        .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .Model(m =>
+        {
+          m.Id(p => p.ModeId);
+        })
+        .Read(read => read.Action("GetDeviceClassMode", "DeviceClassMode"))
+        .PageSize(15))
+        .Resizable(r => r.Columns(true))
+        .HtmlAttributes(new { @class = "s-gridContent", data_action_edit = Url.Action("EditDeviceClassMode", "DeviceClassMode") })
+        .Deferred(true)
+        )
+  </div>
+  <div class="col-xs-12 col-md-6">
+    <h2 class="text-center">Device Mode</h2>
+    @(Html.Kendo().Grid<DeviceModelViewModel>().Name("DeviceModeGrid")
+        .Columns(columns =>
+        {
+          columns.Command(c =>
+          {
+            c.Custom("editdevice")
+                    .Text(" ")
+                    .IconClass("k-icon k-i-edit")
+                    .Click("openEditDeviceMode")
+                    .HtmlAttributes(new
+                    {
+                      @class = "s-grid-deviceModeEdit",
+                      data_url = Url.Action("EditDeviceMode", "DeviceClassMode", new { id = "__id__" })
+                    });
+          });
+          columns.Bound(p => p.Name).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+        })
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Pageable()
+        .Sortable()
+        .Scrollable()
+        .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+        .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(m =>
+          {
+            m.Id(p => p.Id);
+          })
+          .Read(read => read.Action("GetDeviceMode", "DeviceClassMode"))
+          .PageSize(15))
+        .Resizable(r => r.Columns(true))
+        .HtmlAttributes(new { @class = "s-gridContent", data_action_edit = Url.Action("EditDeviceMode", "DeviceClassMode") })
+        .Deferred(true)
+        )
+  </div>
+</div>

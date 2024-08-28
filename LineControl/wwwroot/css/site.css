@@ -70,3 +70,36 @@ span.k-icon:hover{
 .s-grid-editActivity {
   background-color: green;
 }
+.s-grid-deviceEdit {
+  background-color: green;
+}
+.s-grid-deviceModeEdit {
+  background-color: green;
+}
+.s-grid-deviceClassModeEdit {
+  background-color: green;
+}
+.s-device-measurementrangelist {
+  background-color: #e9ecef;
+  height: calc(2.5rem + 4px + var(--bs-body-font-size)*1.5*2);
+  opacity: 1;
+  width: 100%;
+}
+
+  .s-device-measurementrangelist .k-input-inner {
+    -ms-flex-align: normal;
+    align-items: normal;
+  }
+
+  .s-device-measurementrangelist .k-list, .s-device-measurementrangelist .k-list-item.k-hover, .s-device-measurementrangelist .k-list-item.k-selected, .s-device-measurementrangelist .k-list-item.k-selected.k-hover, .s-device-measurementrangelist .k-list-item.k-selected:hover, .s-device-measurementrangelist .k-list-item:hover, .s-device-measurementrangelist.k-listbox .k-list-scroller {
+    background-color: #e9ecef;
+    color: #212529;
+  }
+
+  .s-device-measurementrangelist .k-list-item.k-focus, .s-device-measurementrangelist .k-list-item:focus {
+    box-shadow: none;
+  }
+
+  .s-device-measurementrangelist .k-list .k-item {
+    padding: .25rem 1rem;
+  }

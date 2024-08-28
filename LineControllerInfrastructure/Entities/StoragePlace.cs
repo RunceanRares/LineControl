@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LineControllerInfrastructure.Entities
 {
@@ -31,6 +28,8 @@ namespace LineControllerInfrastructure.Entities
 
     public string Place { get; set; }
 
+    public bool Default { get; set; }
+
     public int InventoryLocationId { get; set; }
 
     [ForeignKey(nameof(InventoryLocationId))]
@@ -38,5 +37,6 @@ namespace LineControllerInfrastructure.Entities
 
     [ExcludeFromCodeCoverage]
     public virtual ICollection<Device> Devices { get; } = new List<Device>();
+
   }
 }

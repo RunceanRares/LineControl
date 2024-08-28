@@ -10,23 +10,20 @@ namespace LineControllerCore.Service
 {
   public class ActivityTypeService : BaseService<ActivityType>, IActivityTypeService
   {
-    private readonly LineContextDb context;
-
     public ActivityTypeService(LineContextDb context, IMapper mapper, ILogger<ActivityTypeService> logger)
          : base(context, mapper, logger)
     {
-      this.context = context;
     }
 
     public IQueryable<ActivityTypeViewModel> GetSelectViewModels()
     {
-      return context.ActivityTypes.Where(s => s.Id != null).ProjectTo<ActivityTypeViewModel>(Mapper.ConfigurationProvider);
+      return Context.ActivityTypes.Where(s => s.Id != null).ProjectTo<ActivityTypeViewModel>(Mapper.ConfigurationProvider);
     }
 
     public ActivityTypeViewModel GetActivityById(int id)
     {
-      var query = context.ActivityTypes.FirstOrDefault(s => s.Id == id);
-      if (query == null)
+      var query = Context.ActivityTypes.FirstOrDefault(s => s.Id == id);
+      if (query is null)
       {
         return null;
       }

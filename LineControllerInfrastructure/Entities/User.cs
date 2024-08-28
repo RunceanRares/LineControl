@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using LineControllerInfrastructure.Entities.Enums;
+using Microsoft.AspNetCore.Identity;
 
 namespace LineControllerInfrastructure.Entities
 {
@@ -33,18 +30,20 @@ namespace LineControllerInfrastructure.Entities
 
     public int? ManagerId { get; set; }
 
+    [ForeignKey(nameof(ManagerId))]
     public User Manager { get; set; }
 
     public string? Email { get; set; }
     
     public int Status { get; set; }
 
-    [MaxLength(30)]
-    public string Phone { get; set; }
+    public string? Phone { get; set; }
 
     [ForeignKey(nameof(CompanyLocation))]
     public int CompanyLocationId { get; set; }
 
     public CompanyLocation CompanyLocation { get; set; }
+
+    public UserRoles UserRoles { get; set; }
   }
 }

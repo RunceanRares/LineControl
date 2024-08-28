@@ -3,17 +3,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LineControllerInfrastructure.Entities
 {
-  [Table("ActivityTypes")]
   public class ActivityType : BaseModel
   {
     [Column("ActivityTypeId")]
     public override int Id { get => base.Id; set => base.Id = value; }
 
     [Required]
-    public string Code { get; set; }
+    public string? Code { get; set; }
 
-    [Display(Name = "Activity type")]
-    [Required(ErrorMessage = "The 'Activity type' field is required.")]
     public string? Name { get; set; }
 
     [Required]

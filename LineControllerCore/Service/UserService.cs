@@ -1,19 +1,24 @@
-﻿using LineControl.Models;
+﻿using AutoMapper;
+using AutoMapper.Execution;
+using AutoMapper.QueryableExtensions;
+using LineControl.Models;
 using LineControllerCore.Interface;
 using LineControllerCore.Model;
 using LineControllerInfrastructure;
+using LineControllerInfrastructure.ContextConfiguration;
 using LineControllerInfrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace LineControllerCore.Service
 {
-  public class UserService : IUserService
+  public class UserService : BaseService<User>, IUserService
   {
-    private readonly LineContextDb context;
+    private readonly IUserRoleService userRoleService;
 
-    public UserService(LineContextDb context)
+    public UserService(LineContextDb context, IMapper mapper, ILogger<UserService> logger, IUserRoleService userRoleService) : base(context, mapper, logger)
     {
-      this.context = context;
+      this.userRoleService = userRoleService;
     }
 
     public UserViewModel Add(UserViewModel userViewModel)
@@ -23,7 +28,7 @@ namespace LineControllerCore.Service
 
     public List<UserViewModel> Get()
     {
-      return context.Users.Select(s => new UserViewModel
+      return Context.Users.Select(s => new UserViewModel
       {
         Id = s.Id,
         UserName = s.UserName,
@@ -43,7 +48,7 @@ namespace LineControllerCore.Service
 
     public IQueryable<UserSelectViewModel> GetManager()
     {
-      return context.Users.Where(s => s.Manager != null).Select(s => s.Manager).Distinct().Select(s => ConvertUserToUserSelectViewModel(s!)).AsQueryable();
+      return Context.Users.Where(s => s.Manager != null).Select(s => s.Manager).Distinct().Select(s => ConvertUserToUserSelectViewModel(s!)).AsQueryable();
     }
 
     public UserViewModel AddUser(UserViewModel user)
@@ -67,14 +72,14 @@ namespace LineControllerCore.Service
       };
 #pragma warning restore CS8601 // Possible null reference assignment.
 
-      context.Users.Add(userModel);
-      context.SaveChanges();
+      Context.Users.Add(userModel);
+      Context.SaveChanges();
       return user;
     }
 
     public UserViewModel GetUserById(int id)
     {
-      var user = context.Users.Where(s => s.Id == id).FirstOrDefault();
+      var user = Context.Users.Where(s => s.Id == id).FirstOrDefault();
       if (user is not null)
       {
         return new UserViewModel
@@ -118,14 +123,14 @@ namespace LineControllerCore.Service
         Title = user.Title,
         Phone = user.Phone,
       };
-      context.Users.Update(userModel);
-      context.SaveChanges();
+      Context.Users.Update(userModel);
+      Context.SaveChanges();
       return user;
     }
 
     public async Task<int?> GetUserIdAsync(string userName)
     {
-      return await context.Users.Where(u => u.UserName == userName && u.Status == UserStatusViewModel.StatusActive)
+      return await Context.Users.Where(u => u.UserName == userName && u.Status == UserStatusViewModel.StatusActive)
                                 .Select(u => (int?)u.Id)
                                 .FirstOrDefaultAsync().ConfigureAwait(false);
     }
@@ -139,6 +144,69 @@ namespace LineControllerCore.Service
         LastName = user.LastName,
         Department = user.Department
       };
+    }
+
+    private async Task<IEnumerable<DisplayUserViewModel>> getManager()
+    {
+      return await Context.Users.Where(s => s.Manager != null).Select(s => s.Manager).OrderBy(s => s.FirstName)
+                                                              .ProjectTo<DisplayUserViewModel>(Mapper.ConfigurationProvider)
+                                                              .ToListAsync().ConfigureAwait(false);
+    }
+
+    private async Task<UniqueValidation> existUserName(UserViewModel user)
+    {
+      if (await Context.Users.AnyAsync(s => s.UserName == user.UserName & s.Id != user.Id).ConfigureAwait(false))
+      {
+        return new UniqueValidation(nameof(user.UserName));
+      }
+
+      return new UniqueValidation();
+    }
+
+    private IEnumerable<UserRoleViewModel> getUserRole(string name)
+    {
+      var roles = Context.Roles.Where(s => !s.Deactivated).ToList();
+      try
+      {
+        return roles.Select(s =>
+        {
+          bool member = false;
+          try
+          {
+            member = userRoleService.IsMember(name, s.Name);
+          }
+          catch (InvalidOperationException)
+          {
+            throw;
+          }
+          catch (Exception ex)
+          {
+            Logger.LogError(ex.Message);
+          }
+
+          return new UserRoleViewModel()
+          {
+            Id = s.Id,
+            Name = s.Name,
+            IsSelected = member,
+          };
+        });
+
+      }
+      catch (InvalidOperationException ex)
+      {
+        if (ex.Message != $"The user {name} does not exist")
+        {
+          Logger.LogError(ex.Message);
+        }
+
+        return roles.Select(r => new UserRoleViewModel()
+        {
+          Id = r.Id,
+          Name = r.Name,
+          IsSelected = false,
+        });
+      }
     }
   }
 }

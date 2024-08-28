@@ -45,4 +45,31 @@
     var url = this.element.data('action-edit'); //extrage adresa url de editare(aici face referire la metoda din controller)
     window.location.href = url + "/" + activityId; //actualizeaza locatia paginii
   }
+
+  window.openEditDevice = function (e) {
+    e.preventDefault();
+    var tr = $(e.target).closest("tr"); //selecteaza cel mai apropiat element
+    var data = this.dataItem(tr); //extrage datele randului
+    var deviceId = data.Id; //Extrage id ul 
+    var url = this.element.data('action-edit'); //extrage adresa url de editare(aici face referire la metoda din controller)
+    window.location.href = url + "/" + deviceId; //actualizeaza locatia paginii
+  }
+
+  window.openEditDeviceMode = function (e) {
+    e.preventDefault();
+    var tr = $(e.target).closest("tr");
+    var data = this.dataItem(tr);
+    var deviceModeId = data.Id;
+    var url = this.element.data('action-edit');
+    window.location.href = url + "/" + deviceModeId;
+  }
+
+  window.openEditDeviceClassMode = function (e) {
+    e.preventDefault();
+    var tr = $(e.target).closest("tr");
+    var data = this.dataItem(tr);
+    var deviceClassModeId = data.Id;
+    var url = this.element.data('action-edit');
+    window.location.href = url + "/" + deviceClassModeId;
+  }
 })(jQuery, window, document);

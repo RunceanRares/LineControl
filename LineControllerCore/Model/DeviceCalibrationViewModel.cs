@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace LineControl.Models
+namespace LineControllerCore.Models
 {
   public class DeviceCalibrationViewModel
   {

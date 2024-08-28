@@ -2,13 +2,6 @@
 using LineControllerCore.Model;
 using LineControllerInfrastructure;
 using LineControllerInfrastructure.Entities;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace LineControllerCore.Service
 {
   public class CompanyLocationService : ICompanyLocationService

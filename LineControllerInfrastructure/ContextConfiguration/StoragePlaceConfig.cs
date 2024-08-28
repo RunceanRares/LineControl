@@ -1,30 +1,42 @@
 ﻿using LineControllerInfrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LineControllerInfrastructure.ContextConfiguration
 {
-  public class StoragePlaceConfig : IEntityTypeConfiguration<StoragePlace>
+  public class StoragePlaceConfig : BaseModelConfig<StoragePlace>
   {
-    public void Configure(EntityTypeBuilder<StoragePlace> builder)
+    public override void Configure(EntityTypeBuilder<StoragePlace> builder)
     {
-      builder.ToTable("StoragePlace");
+      builder.ToTable(
+            "StoragePlace",
+            t => t.HasCheckConstraint(
+               "CK_StoragePlace_Building_RoomDesignation",
+               "ISNULL([Building], '') + ISNULL([RoomDesignation], '') > ''"));
+
+      builder.HasIndex(sp => sp.InventoryLocationId);
+
+      builder.HasIndex(sp => new { sp.InventoryLocationId, sp.CompanyLocationId, sp.Building, sp.Floor, sp.RoomNumber, sp.RoomDesignation, sp.Place })
+            .IsUnique();
+
+      builder.HasIndex(sp => new { sp.InventoryLocationId, sp.Default })
+             .IsUnique()
+             .HasFilter("[Default] = 1");
 
       builder.HasOne(sp => sp.InventoryLocation)
              .WithMany(il => il.StoragePlaces)
-             .HasForeignKey(sp => sp.InventoryLocationId)
-             .OnDelete(DeleteBehavior.NoAction);
+             .HasForeignKey(sp => sp.InventoryLocationId).OnDelete(DeleteBehavior.Restrict);
+
+      builder.HasOne(sp => sp.CompanyLocation)
+             .WithMany()
+             .HasForeignKey(sp => sp.CompanyLocationId).OnDelete(DeleteBehavior.Restrict);
 
       builder.HasOne(sp => sp.Responsible)
              .WithMany()
              .HasForeignKey(sp => sp.ResponsibleId)
-             .OnDelete(DeleteBehavior.NoAction);
+             .OnDelete(DeleteBehavior.Restrict).OnDelete(DeleteBehavior.Restrict);
+
+      base.Configure(builder);
     }
   }
 }

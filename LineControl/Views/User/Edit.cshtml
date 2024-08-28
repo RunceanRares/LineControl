@@ -3,133 +3,137 @@
 @{
   ViewData["Title"] = "Edit User";
 }
-<div class="row s-pageTitle">
-  <div class="col">
-    <h1>Edit User</h1>
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-header">
+      <h2>Edit User</h2>
+    </div>
+    <div class="card-body">
+      @using (Html.BeginForm("Edit", "User", FormMethod.Post, new { @class = "ControllForm"}))
+      {
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <div class="s-formContent row justify-content-md-center">
+          <div class="form-row form-group">
+            <div class="form-row form-group">
+              <div class="col s-paddingBtn">
+                <button class="btn btn-primary s-button" type="submit"><i class='k-icon k-i-save'></i><span>Save</span></button>
+                <button class="btn btn-danger s-button s-CancelBtn" data-request-url="@Url.Action("Index", "User")"><i class='k-icon k-i-cancel'></i><span> Cancel</span></button>
+              </div>
+            </div>
+          </div>
+          <div class="form-row form-group">
+            <div class="col-12">
+              <label class="s-label" asp-for="@Model.FirstName">First Name</label>
+            </div>
+            <div class="col-12">
+              @(Html.Kendo().TextAreaFor(m => m.FirstName)
+                  .HtmlAttributes(new { @class = "s-customTextArea" })
+                  .Rows(1).Deferred(true)
+                  )
+            </div>
+            <div class="col-12">
+              <label class="s-label" asp-for="@Model.LastName">Last Name</label>
+            </div>
+            <div class="col-12">
+              @(Html.Kendo().TextAreaFor(m => m.LastName)
+                  .HtmlAttributes(new { @class = "s-customTextArea" })
+                  .Rows(1).Deferred(true)
+                  )
+            </div>
+            <div class="col-12">
+              <label class="s-label" asp-for="@Model.Department">Department</label>
+            </div>
+            <div class="col-12">
+              @(Html.Kendo().TextAreaFor(m => m.Department)
+                  .HtmlAttributes(new { @class = "s-customTextArea" })
+                  .Rows(1).Deferred(true)
+                  )
+            </div>
+            <div class="col-12">
+              <label class="s-label" asp-for="@Model.PersonalNumber">Personal Number</label>
+            </div>
+            <div class="col-12">
+              @(Html.Kendo().TextAreaFor(m => m.PersonalNumber)
+                  .HtmlAttributes(new { @class = "s-customTextArea" })
+                  .Rows(1).Deferred(true)
+                  )
+            </div>
+            <div class="col-12">
+              <label class="s-label" asp-for="@Model.CostCenter">Cost Center</label>
+            </div>
+            <div class="col-12">
+              @(Html.Kendo().TextAreaFor(m => m.CostCenter)
+                  .HtmlAttributes(new { @class = "s-customTextArea" })
+                  .Rows(1).Deferred(true)
+                  )
+            </div>
+            <div class="col-12">
+              <label class="s-label" asp-for="@Model.Email">Email</label>
+            </div>
+            <div class="col-12">
+              @(Html.Kendo().TextAreaFor(m => m.Email)
+                  .HtmlAttributes(new { @class = "s-customTextArea" })
+                  .Rows(1).Deferred(true)
+                  )
+            </div>
+            <div class="col-12">
+              <label class="s-label" asp-for="@Model.UserName">UserName</label>
+            </div>
+            <div class="col-12">
+              @(Html.Kendo().TextAreaFor(m => m.UserName)
+                  .HtmlAttributes(new { @class = "s-customTextArea" })
+                  .Rows(1).Deferred(true)
+                  )
+            </div>
+            <div class="col-12">
+              <label class="s-label" asp-for="@Model.Status">Status</label>
+            </div>
+            <div class="col-12">
+              @(Html.Kendo().TextAreaFor(m => m.Status)
+                  .HtmlAttributes(new { @class = "s-customTextArea" })
+                  .Rows(1).Deferred(true)
+                  )
+            </div>
+            <div class="col-12">
+              <label class="s-label" asp-for="@Model.Phone">Phone</label>
+            </div>
+            <div class="col-12">
+              @(Html.Kendo().TextAreaFor(m => m.Phone)
+                  .HtmlAttributes(new { @class = "s-customTextArea" })
+                  .Rows(1).Deferred(true)
+                  )
+            </div>
+            <div class="col-12">
+              <label class="s-label" asp-for="@Model.CompanyLocationId">Company Location</label>
+            </div>
+            <div class="col-12">
+              @(Html.Kendo().TextAreaFor(m => m.CompanyLocationId)
+                  .HtmlAttributes(new { @class = "s-customTextArea" })
+                  .Rows(1).Deferred(true)
+                  )
+            </div>
+            <div class="col-12">
+              <label class="s-label" asp-for="@Model.Title">Title</label>
+            </div>
+            <div class="col-12">
+              @(Html.Kendo().TextAreaFor(m => m.Title)
+                  .HtmlAttributes(new { @class = "s-customTextArea" })
+                  .Rows(1).Deferred(true)
+                  )
+            </div>
+            <div class="col-12">
+              <label class="s-label" asp-for="@Model.ManagerId">Manager</label>
+            </div>
+            <div class="col-12">
+              @(Html.Kendo().TextAreaFor(m => m.ManagerId)
+                  .HtmlAttributes(new { @class = "s-customTextArea" })
+                  .Rows(1).Deferred(true)
+                  )
+            </div>
+          </div>
+        </div>
+      }
+    </div>
   </div>
 </div>
-@using (Html.BeginForm("Edit", "User", FormMethod.Post, new { @class = "ControllForm"}))
-{
-  @Html.AntiForgeryToken()
-  <input type="hidden" asp-for="Id" />
-  <div class="s-formContent row justify-content-md-center">
-    <div class="form-row form-group">
-      <div class="form-row form-group">
-        <div class="col s-paddingBtn">
-          <button class="btn btn-primary s-button" type="submit"><i class='k-icon k-i-save'></i><span>Save</span></button>
-          <button class="btn btn-danger s-button s-CancelBtn" data-request-url="@Url.Action("Index", "User")"><i class='k-icon k-i-cancel'></i><span> Cancel</span></button>
-        </div>
-      </div>
-    </div>
-    <div class="form-row form-group">
-      <div class="col-12">
-        <label class="s-label" asp-for="@Model.FirstName">First Name</label>
-      </div>
-      <div class="col-12">
-        @(Html.Kendo().TextAreaFor(m => m.FirstName)
-            .HtmlAttributes(new { @class = "s-customTextArea" })
-            .Rows(1).Deferred(true)
-            )
-      </div>
-      <div class="col-12">
-        <label class="s-label" asp-for="@Model.LastName">Last Name</label>
-      </div>
-      <div class="col-12">
-        @(Html.Kendo().TextAreaFor(m => m.LastName)
-            .HtmlAttributes(new { @class = "s-customTextArea" })
-            .Rows(1).Deferred(true)
-            )
-      </div>
-      <div class="col-12">
-        <label class="s-label" asp-for="@Model.Department">Department</label>
-      </div>
-      <div class="col-12">
-        @(Html.Kendo().TextAreaFor(m => m.Department)
-            .HtmlAttributes(new { @class = "s-customTextArea" })
-            .Rows(1).Deferred(true)
-            )
-      </div>
-      <div class="col-12">
-        <label class="s-label" asp-for="@Model.PersonalNumber">Personal Number</label>
-      </div>
-      <div class="col-12">
-        @(Html.Kendo().TextAreaFor(m => m.PersonalNumber)
-            .HtmlAttributes(new { @class = "s-customTextArea" })
-            .Rows(1).Deferred(true)
-            )
-      </div>
-      <div class="col-12">
-        <label class="s-label" asp-for="@Model.CostCenter">Cost Center</label>
-      </div>
-      <div class="col-12">
-        @(Html.Kendo().TextAreaFor(m => m.CostCenter)
-            .HtmlAttributes(new { @class = "s-customTextArea" })
-            .Rows(1).Deferred(true)
-            )
-      </div>
-      <div class="col-12">
-        <label class="s-label" asp-for="@Model.Email">Email</label>
-      </div>
-      <div class="col-12">
-        @(Html.Kendo().TextAreaFor(m => m.Email)
-            .HtmlAttributes(new { @class = "s-customTextArea" })
-            .Rows(1).Deferred(true)
-            )
-      </div>
-      <div class="col-12">
-        <label class="s-label" asp-for="@Model.UserName">UserName</label>
-      </div>
-      <div class="col-12">
-        @(Html.Kendo().TextAreaFor(m => m.UserName)
-            .HtmlAttributes(new { @class = "s-customTextArea" })
-            .Rows(1).Deferred(true)
-            )
-      </div>
-      <div class="col-12">
-        <label class="s-label" asp-for="@Model.Status">Status</label>
-      </div>
-      <div class="col-12">
-        @(Html.Kendo().TextAreaFor(m => m.Status)
-            .HtmlAttributes(new { @class = "s-customTextArea" })
-            .Rows(1).Deferred(true)
-            )
-      </div>
-      <div class="col-12">
-        <label class="s-label" asp-for="@Model.Phone">Phone</label>
-      </div>
-      <div class="col-12">
-        @(Html.Kendo().TextAreaFor(m => m.Phone)
-            .HtmlAttributes(new { @class = "s-customTextArea" })
-            .Rows(1).Deferred(true)
-            )
-      </div>
-      <div class="col-12">
-        <label class="s-label" asp-for="@Model.CompanyLocationId">Company Location</label>
-      </div>
-      <div class="col-12">
-        @(Html.Kendo().TextAreaFor(m => m.CompanyLocationId)
-            .HtmlAttributes(new { @class = "s-customTextArea" })
-            .Rows(1).Deferred(true)
-            )
-      </div>
-      <div class="col-12">
-        <label class="s-label" asp-for="@Model.Title">Title</label>
-      </div>
-      <div class="col-12">
-        @(Html.Kendo().TextAreaFor(m => m.Title)
-            .HtmlAttributes(new { @class = "s-customTextArea" })
-            .Rows(1).Deferred(true)
-            )
-      </div>
-      <div class="col-12">
-        <label class="s-label" asp-for="@Model.ManagerId">Manager</label>
-      </div>
-      <div class="col-12">
-        @(Html.Kendo().TextAreaFor(m => m.ManagerId)
-            .HtmlAttributes(new { @class = "s-customTextArea" })
-            .Rows(1).Deferred(true)
-            )
-      </div>
-    </div>
-  </div>
-}

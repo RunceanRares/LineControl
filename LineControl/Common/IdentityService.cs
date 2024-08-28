@@ -1,12 +1,15 @@
 ﻿using LineControllerCore.Interface;
+using LineControllerInfrastructure.Entities;
 using System.Globalization;
 using System.Security.Claims;
+
 namespace LineControl.Common
 {
   public class IdentityService : IIdentityService
   {
     private readonly IUserGroupService userGroupService;
     private readonly IHttpContextAccessor httpContextAccessor;
+
 
     public IdentityService(IHttpContextAccessor httpContextAccessor, IUserGroupService userGroupService)
     {

@@ -3,7 +3,6 @@ using Kendo.Mvc.UI;
 using LineControl.Models;
 using LineControllerCore.Interface;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.TestPlatform.CoreUtilities;
 
 namespace LineControl.Controllers
 {

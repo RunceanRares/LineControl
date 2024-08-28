@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace LineControllerCore.Model
 {
@@ -13,8 +8,17 @@ namespace LineControllerCore.Model
     public const string DeviceMaster = "DeviceMaster";
     public const string User = "User";
     public const string API = "API";
+    public const string DeviceManager = "DeviceManager";
+    public const string CalibrationStaff = "CalibrationStaff";
+    public const string ChargeAdmin = "ChargeAdmin";
 
     [ScaffoldColumn(false)]
     public int Id { get; set; }
+
+    public string Name { get; set; }
+
+    [ScaffoldColumn(false)]
+    [Display(Name = "Deactivated")]
+    public bool Deactivated { get; set; }
   }
 }
