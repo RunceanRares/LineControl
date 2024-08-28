@@ -31,20 +31,20 @@ namespace LineControl.Controllers
       return View(service.GetDeviceClassModelById(id));
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public ActionResult EditDeviceClassMode(DeviceClassModeViewModel model)
-    {
-      if (ModelState.IsValid)
-      {
-        service.UpdateDeviceClassModel(model);
-        return RedirectToAction("Index");
-      }
-      else
-      {
-        return View(model);
-      }
-    }
+    //[HttpPost]
+    //[ValidateAntiForgeryToken]
+    //public ActionResult EditDeviceClassMode(DeviceClassModeViewModel model)
+    //{
+    //  if (ModelState.IsValid)
+    //  {
+    //    service.UpdateDeviceClassModel(model);
+    //    return RedirectToAction("Index");
+    //  }
+    //  else
+    //  {
+    //    return View(model);
+    //  }
+    //}
 
     public ActionResult GetDeviceMode([DataSourceRequest] DataSourceRequest request)
     {
