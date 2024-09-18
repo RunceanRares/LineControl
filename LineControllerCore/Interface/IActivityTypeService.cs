@@ -12,5 +12,9 @@ namespace LineControllerCore.Interface
     IQueryable<ActivityTypeViewModel> GetSelectViewModels();
 
     ActivityTypeViewModel GetActivityById(int id);
+
+    ActivityTypeViewModel Update(ActivityTypeViewModel model);
+
+    ActivityTypeViewModel AddActivityType(ActivityTypeViewModel model);
   }
 }

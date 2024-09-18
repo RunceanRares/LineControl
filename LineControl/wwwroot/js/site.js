@@ -10,19 +10,20 @@
     gridElement.data('kendoGrid').resize();
   }
 
-  $(document).ready(function () {
-
+  $(function () {
     $("form").kendoValidator();
-    gridElement.data('kendoGrid') != undefined
+    if (gridElement.length > 0 && gridElement.data('kendoGrid'))
     {
       GridResize();
-      $(window).resize(function () {
+      window.addEventListener('resize', function () {
         GridResize();
       });
     }
 
-    $('.s-CancelBtn').click(function () {
+    $('.s-CancelBtn').on(click, function () {
+      console.log("Cancel button clicked");
       var url = $(this).data('request-url');
+      console.log("Redirecting to: " + url);
       window.location.href = url;
       return false;
     });
@@ -71,5 +72,14 @@
     var deviceClassModeId = data.Id;
     var url = this.element.data('action-edit');
     window.location.href = url + "/" + deviceClassModeId;
+  }
+
+  window.openEditCalibration = function (e) {
+    e.preventDefault();
+    var tr = $(e.target).closest("tr");
+    var data = this.dataItem(tr);
+    var deviceCalibrationId = data.Id;
+    var url = this.element.data('action-edit');
+    window.location.href = url + "/" + deviceCalibrationId;
   }
 })(jQuery, window, document);

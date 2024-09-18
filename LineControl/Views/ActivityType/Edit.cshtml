@@ -1,6 +1,5 @@
-﻿@using LineControllerCore.Model
+﻿
 @model ActivityTypeViewModel
-
 @{
   ViewData["Title"] = "Edit ActivityType";
 }
@@ -24,9 +23,11 @@
             <div class="form-row form-group">
               <div class="col s-paddingBtn">
                 <button class="btn btn-primary s-button" type="submit"><i class='k-icon k-i-save'></i><span>Save</span></button>
-                <button class="btn btn-danger s-button s-CancelBtn" type="button" data-request-url="@Url.Action("Index", "ActivityType")"><i class='k-icon k-i-cancel'></i><span> Cancel</span></button>
+                <button type="button" class="btn btn-danger s-button s-CancelBtn" onclick="window.location.href='@Url.Action("Index", "ActivityType")'"><i class='k-icon k-i-cancel'></i><span> Cancel</span></button>
               </div>
             </div>
+           </div>
+        <div class="form-row form-group">
           <div class="col-12">
             <label class="s-label" asp-for="@Model.CostCenter">Cost Center</label>
           </div>
@@ -62,9 +63,29 @@
                 .Rows(1).Deferred(true)
                 )
           </div>
+          <div class="col-12">
+            <label class="s-label" asp-for="@Model.Rate">Rate</label>
+          </div>
+          <div class="col-12">
+            @(Html.Kendo().TextAreaFor(m => m.Rate)
+                .HtmlAttributes(new { @class = "s-customTextArea" })
+                .Rows(1).Deferred(true)
+                )
+          </div>
          </div>
         </div>
       }
+      <div>
+        @if (!ViewData.ModelState.IsValid)
+        {
+          <div class="alert alert-danger">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+              <p>@error.ErrorMessage</p>
+            }
+          </div>
+        }
+      </div>
     </div>
   </div>
 </div>

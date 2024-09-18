@@ -3,6 +3,8 @@ using LineControl.Models;
 using LineControllerCore.Model;
 using LineControllerInfrastructure.Entities;
 
+using System.Text.RegularExpressions;
+
 namespace LineControllerCore.Mapping
 {
   public class DeviceMapperProfiler : Profile
@@ -88,7 +90,11 @@ namespace LineControllerCore.Mapping
             .ForMember(dest => dest.MeasurementMin, opt => opt.MapFrom(src => src.MeasurementMin))
             .ForMember(dest => dest.MeasurementMax, opt => opt.MapFrom(src => src.MeasurementMax))
             .ForMember(dest => dest.MeasurementUnit, opt => opt.MapFrom(src => src.MeasurementUnit))
-            .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status.Name))
+            .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.StatusId == DeviceStatus.UsableId ? (src.CalibrationDate <= DateTime.Today ? DeviceStatus.UsableId : DeviceStatus.ReservedId)
+                                                                             : src.StatusId == DeviceStatus.LostId ? (src.StoragePlaceId == null ? DeviceStatus.LostId : DeviceStatus.LockedId)
+                                                                             : src.StatusId == DeviceStatus.LockedId ? (src.Reservation == true ? DeviceStatus.LockedId : DeviceStatus.NotUsableIssuedId)
+                                                                             : src.StatusId == DeviceStatus.LostId ? (src.StoragePlaceId == null ? DeviceStatus.LostId : DeviceStatus.LockedId)
+                                                                             : src.StatusId == DeviceStatus.LostId ? (src.StoragePlaceId == null ? DeviceStatus.LostId : DeviceStatus.LockedId) : DeviceStatus.UsableId))
             .ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.StatusId))
             .ForMember(dest => dest.InventoryLocation, opt => opt.MapFrom(src => src.StoragePlace.InventoryLocation))
             .ForMember(dest => dest.StoragePlace, opt => opt.MapFrom(src => src.StoragePlace.Place + " " + src.StoragePlace.RoomNumber + " " + src.StoragePlace.Building))
@@ -140,6 +146,9 @@ namespace LineControllerCore.Mapping
            .ForMember(dest => dest.CalibrationResult, opt => opt.MapFrom(src => src.CalibrationResult))
            .ForMember(dest => dest.MaterialNumber, opt => opt.MapFrom(src => src.MaterialNumber))
            .ForMember(dest => dest.CreationDate, opt => opt.MapFrom(src => src.CreationDate));
+
+      CreateMap<DeviceStatus, DeviceStatusViewModel>()
+           .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
     }
   }
 }

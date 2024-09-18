@@ -40,13 +40,28 @@ namespace LineControl.Controllers
     {
       return View(service.GetDeviceById(id));
     }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public ActionResult Edit(DeviceEditViewModel model)
     {
-      return View();
-    }
+      if (model.Id == 0)
+      {
+        ModelState.AddModelError("","Unable to save. Device does not exist.");
+        return View(model);
+      }
 
+      if (ModelState.IsValid)
+      {
+        service.Update(model);
+        return RedirectToAction("Index");
+      }
+      
+      else
+      {
+        return View(model);
+      }
+    }
 
     public async Task<ActionResult> History()
     {
@@ -62,6 +77,12 @@ namespace LineControl.Controllers
     {
       var result = await service.GetMeasurementRangesAsync(deviceClassId).ConfigureAwait(false);
       result = result.ToList();
+      return Json(result);
+    }
+
+    public async Task<JsonResult> GetAllDeviceStatuses()
+    {
+      var result = await service.GetStatusesAsync().ConfigureAwait(false);
       return Json(result);
     }
   }

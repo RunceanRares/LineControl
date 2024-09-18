@@ -93,6 +93,53 @@ namespace LineControllerCore.Service
       }
     }
 
+    public async Task<IEnumerable<DeviceStatusViewModel>> GetStatusesAsync()
+    {
+      var result = await Context.DeviceStatuses.OrderBy(s => s.Id)
+                                .ProjectTo<DeviceStatusViewModel>(Mapper.ConfigurationProvider, new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase))
+                                .ToListAsync().ConfigureAwait(false);
+
+      return result;
+    }
+
+    public async Task<DeviceEditViewModel> Update(DeviceEditViewModel model)
+    {
+      DateTime dateTime = DateTime.Now;
+      bool? isRoot = await Context.Devices.AsNoTracking().Where(d => d.Id == model.Id).Select(d => d.ParentId == null).FirstOrDefaultAsync().ConfigureAwait(false);
+      bool hasChangedStatus = false;
+
+      var deviceDescendant = Context.GetDeviceDescendantTree(model.Id);
+      
+      foreach (var device in deviceDescendant)
+      {
+        Entities.Attach(device);
+        if (device.Id == model.Id)
+        {
+          if (model.StatusId != device.StatusId)
+          {
+            hasChangedStatus = true;
+          }
+          Mapper.Map(model, device);
+          device.LastChangedUserId = IdentityService.UserId;
+          device.LastChangedDate = dateTime;
+        }
+        else if (isRoot == true)
+        {
+          device.StatusId = model.StatusId;
+          device.LastChangedUserId = IdentityService.UserId;
+          device.LastChangedDate = dateTime;
+        }
+
+        Entities.Update(device);
+      }
+
+      await Context.SaveChangesAsync().ConfigureAwait(false);
+
+      var updatedDevice = await Context.Devices.AsNoTracking().Where(d => d.Id == model.Id).FirstOrDefaultAsync().ConfigureAwait(false);
+
+      return Mapper.Map<DeviceEditViewModel>(updatedDevice);
+    }
+
     //public async Task<IEnumerable<DeviceViewModel>> GetAsync(Func<LinkViewModel, string> getDeviceDetailsUrl, Func<LinkViewModel, string> getCalibrationOrderUrl)
     //{
     //  var user = Context.Users.Where(s => !string.IsNullOrEmpty(s.UserName)).Select(s => s.UserName).SingleOrDefault();

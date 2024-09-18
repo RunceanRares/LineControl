@@ -29,6 +29,7 @@
     columns.Bound(s => s.Code).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").ShowOperators(false).SuggestionOperator(FilterType.Contains)));
     columns.Bound(s => s.Name).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").ShowOperators(false).SuggestionOperator(FilterType.Contains)));
     columns.Bound(s => s.CostCenter).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").ShowOperators(false).SuggestionOperator(FilterType.Contains)));
+    columns.Bound(s => s.Rate).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").ShowOperators(false).SuggestionOperator(FilterType.Contains)));
     columns.Bound(s => s.PassiveCostFactor).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").ShowOperators(false).SuggestionOperator(FilterType.Contains)));
   })
   .ToolBar(toolbar =>

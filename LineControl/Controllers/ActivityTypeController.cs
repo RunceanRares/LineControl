@@ -1,6 +1,10 @@
 ﻿using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using LineControl.Models;
+
 using LineControllerCore.Interface;
+using LineControllerCore.Model;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace LineControl.Controllers
@@ -29,10 +33,39 @@ namespace LineControl.Controllers
       return View(service.GetActivityById(id));
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Edit(ActivityTypeViewModel model)
+    {
+      if (ModelState.IsValid)
+      {
+        service.Update(model);
+        return RedirectToAction("Index");
+      }
+      else
+      {
+        return View(model);
+      }
+    }
 
     public async Task<ActionResult> Create()
     {
       return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Create(ActivityTypeViewModel activity)
+    {
+      if (ModelState.IsValid)
+      {
+        service.AddActivityType(activity);
+        return RedirectToAction("Index");
+      }
+      else
+      {
+        return View("Index");
+      }
     }
   }
 }

@@ -1,5 +1,5 @@
 ﻿@using LineControllerCore.Models
-@model DeviceCalibrationViewModel
+@model DeviceCalibrationOrderViewModel
 
 @{
   ViewData["Title"] = "DeviceCalibration";
@@ -10,3 +10,92 @@
     <h1>Device Calibration</h1>
   </div>
 </div>
+@(
+Html.Kendo().Grid<DeviceCalibrationOrderViewModel>().Name("Grid")
+  .Columns(columns =>
+  {
+    columns.Command(c =>
+    {
+      c.Custom("editCalibration").Text(" ").IconClass("k-icon k-i-edit").Click("openEditCalibration")
+       .HtmlAttributes(new
+       {
+          @class = "s-grid-deviceCalibrationEdit",
+          data_url = Url.Action("Edit", "DeviceCalibration", new { id = "__id__" })
+       });
+    });
+    columns.Bound(p => p.ItemNumber).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(p => p.CreatedBy).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(p => p.Status).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(p => p.AccountingNumber).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(p => p.Action).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+
+  })
+  .Editable(editable => editable.Mode(GridEditMode.InLine))
+     .Pageable()
+     .Sortable()
+     .Scrollable()
+     .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+     .DataSource(dataSource => dataSource
+       .Ajax()
+       .Model(m =>
+       {
+         m.Id(p => p.Id);
+       })
+     .Read(read => read.Action("GetDevicesCalibration", "DeviceCalibration"))
+     .PageSize(15))
+     .Resizable(r => r.Columns(true))
+     .HtmlAttributes(new { @class = "s-gridContent", data_action_edit = Url.Action("Edit", "DeviceCalibration") })
+     .Deferred(true)
+)
+
+@* @(
+Html.Kendo().Grid<DeviceCalibrationOrderViewModel>().Name("Grid")
+  .Columns(columns =>
+  {
+    columns.Command(c =>
+    {
+      c.Custom("editCalibration")
+                        .Text(" ")
+                        .IconClass("k-icon k-i-edit")
+                        .Click("openEditCalibration")
+                        .HtmlAttributes(new
+                        {
+                          @class = "s-grid-editCalibration",
+                          data_url = Url.Action("Edit", "DeviceCalibration", new { id = "__id__" })
+                        });
+    });
+    columns.Bound(c => c.Action).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(c => c.Status).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(c => c.CreatedByFirstName).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(c => c.CreatedByLastName).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(c => c.CreatedByDepartment).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(c => c.Comment).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(c => c.DeviceModel).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(c => c.CalibrationLocationId).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(c => c.ItemNumber).ClientTemplate("#=Status ? 'Yes' : 'No' #").Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.Bound(c => c.ReceivedDate).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+    columns.ForeignKey(p => p.DeviceId, ds => ds.Read(r => r.Action("GetDevices", "Device")), "Id", "ItemNumber")
+           .Title("Device").Filterable(f => f.Cell(cell => cell
+           .ShowOperators(false))).MinScreenWidth(450);
+  })
+   .ToolBar(toolbar =>
+    {
+      toolbar.ClientTemplate("<a class='k-button k-button-md k-rounded k-button-solid k-button-solid-base' href='" + Url.Action("Create", "DeviceCalibration") + "'><span class='k-icon k-i-add'></span>Add User</a>");
+    })
+    .Editable(editable => editable.Mode(GridEditMode.InLine))
+    .Pageable()
+    .Sortable()
+    .Scrollable()
+    .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+    .DataSource(dataSource => dataSource
+      .Ajax()
+      .Model(m =>
+      {
+        m.Id(p => p.Id);
+      })
+      .Read(read => read.Action("GetDevicesCalibration", "DeviceCalibration"))
+      .PageSize(15))
+      .Resizable(r => r.Columns(true))
+      .HtmlAttributes(new { @class = "s-gridContent", data_action_edit = Url.Action("Edit", "DeviceCalibration") })
+      .Deferred(true)
+ ) *@

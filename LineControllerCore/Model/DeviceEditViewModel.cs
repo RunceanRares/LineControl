@@ -45,6 +45,7 @@ namespace LineControllerCore.Model
 
     public decimal? ActivityTypeRate { get; set; }
 
+    [Display(Name = "Activity TP Cost Factor")]
     public decimal? ActivityTypePassiveCostFactor { get; set; }
 
     [Display(Name = "Status")]

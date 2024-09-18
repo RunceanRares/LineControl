@@ -1,4 +1,4 @@
-html {
+﻿html {
   font-size: 14px;
 }
 
@@ -76,6 +76,11 @@ span.k-icon:hover{
 .s-grid-deviceModeEdit {
   background-color: green;
 }
+
+.s-grid-deviceCalibrationEdit {
+  background-color: green;
+}
+
 .s-grid-deviceClassModeEdit {
   background-color: green;
 }
@@ -85,7 +90,22 @@ span.k-icon:hover{
   opacity: 1;
   width: 100%;
 }
+input[type="text"],
+textarea {
+  width: 100%; /* Lățime completă pe container */
+  height: 40px; /* Înălțime uniformă pentru toate inputurile */
+  box-sizing: border-box; /* Asigură că padding-ul este inclus în lățime și înălțime */
+}
 
+.s-customTextArea {
+  height: 40px; /* Înălțime uniformă pentru textarea */
+}
+
+.container-label {
+  display: flex; /* Aliniere orizontală */
+  align-items: center; /* Aliniere verticală la mijloc, dacă ai nevoie */
+  white-space: nowrap; /* Previne spargerea textului pe două linii */
+}
   .s-device-measurementrangelist .k-input-inner {
     -ms-flex-align: normal;
     align-items: normal;

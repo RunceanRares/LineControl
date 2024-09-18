@@ -32,12 +32,12 @@
         columns.Bound(p => p.InventoryNumber).Hidden();
         columns.Bound(p => p.EquipmentNumber).Hidden();
         columns.Bound(p => p.SerialNumber).Hidden();
-        columns.Bound(p => p.MaterialNumber).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+        columns.Bound(p => p.MaterialNumber).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450).Hidden();
         columns.Bound(p => p.IssueDate).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
         columns.Bound(p => p.IssueComment).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
         columns.Bound(p => p.AccountingNumber).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
         columns.Bound(p => p.Accessories).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
-        columns.Bound(p => p.CalibrationDueDate).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
+        columns.Bound(p => p.CalibrationDueDate).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450).Hidden();
         columns.Bound(p => p.CalibrationLocation).Hidden();
         columns.Bound(p => p.CalibrationInterval).Hidden();
         columns.Bound(p => p.CreatedBy).ClientTemplate("# if (CreatedBy) { # #=CreatedBy# # } else { # --- # }#").Hidden();

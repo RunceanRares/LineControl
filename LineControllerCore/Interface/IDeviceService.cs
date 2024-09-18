@@ -11,5 +11,8 @@ namespace LineControllerCore.Service
     DeviceEditViewModel GetDeviceById(int id);
 
     Task<IEnumerable<MeasurementRangeViewModel>> GetMeasurementRangesAsync(int deviceClassId);
+    Task<IEnumerable<DeviceStatusViewModel>> GetStatusesAsync();
+
+    Task<DeviceEditViewModel> Update(DeviceEditViewModel model);
   }
 }

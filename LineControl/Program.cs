@@ -11,6 +11,7 @@ using System.Globalization;
 using LineControllerCore.Mapping;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using LineControllerInfrastructure.Entities;
 
 var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 
@@ -37,6 +38,7 @@ try
   builder.Services.AddScoped<ILinkService, LinkService>();
   builder.Services.AddScoped<ICalibrationDevice, CalibrationDeviceService>();
   builder.Services.AddScoped<IDeviceClassMode, DeviceClassModeService>();
+  builder.Services.AddScoped<IDeviceCalibrationService, DeviceCalibrationService>();
 
   builder.Services.Configure<IdentityOptions>(options =>
   {
@@ -63,6 +65,7 @@ try
   builder.Services.AddAutoMapper(typeof(DeviceClassModeMapperProfile).Assembly);
   builder.Services.AddAutoMapper(typeof(DeviceClassMapperProfile).Assembly);
   builder.Services.AddAutoMapper(typeof(DeviceModelMapperProfile).Assembly);
+  builder.Services.AddAutoMapper(typeof(DeviceCalibrationOrderMapperProfile).Assembly);
   builder.Services.AddControllersWithViews().AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
   var app = builder.Build();
