@@ -38,7 +38,9 @@ try
   builder.Services.AddScoped<ILinkService, LinkService>();
   builder.Services.AddScoped<ICalibrationDevice, CalibrationDeviceService>();
   builder.Services.AddScoped<IDeviceClassMode, DeviceClassModeService>();
-  builder.Services.AddScoped<IDeviceCalibrationService, DeviceCalibrationService>();
+  builder.Services.AddScoped<IDeviceCalibrationService, CalibrationOrderService>();
+  builder.Services.AddScoped<IDeviceIntegrationService, DeviceIntegrationService>();
+  builder.Services.AddScoped<IInventoryLocationService, InventoryLocationService>();
 
   builder.Services.Configure<IdentityOptions>(options =>
   {
@@ -63,9 +65,9 @@ try
   builder.Services.AddAutoMapper(typeof(UserMapperProfile).Assembly);
   builder.Services.AddAutoMapper(typeof(DeviceMapperProfiler).Assembly);
   builder.Services.AddAutoMapper(typeof(DeviceClassModeMapperProfile).Assembly);
-  builder.Services.AddAutoMapper(typeof(DeviceClassMapperProfile).Assembly);
   builder.Services.AddAutoMapper(typeof(DeviceModelMapperProfile).Assembly);
   builder.Services.AddAutoMapper(typeof(DeviceCalibrationOrderMapperProfile).Assembly);
+  builder.Services.AddAutoMapper(typeof(InventoryLocationMapperProfile).Assembly);
   builder.Services.AddControllersWithViews().AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
   var app = builder.Build();

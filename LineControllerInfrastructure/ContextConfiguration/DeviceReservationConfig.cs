@@ -22,11 +22,6 @@ namespace LineControllerInfrastructure.ContextConfiguration
              .WithOne(i => i.Reservation)
              .HasForeignKey<DeviceReservation>(r => r.IssueId).OnDelete(DeleteBehavior.Restrict);
 
-      builder.HasOne<DeviceClass>()
-             .WithMany()
-             .HasForeignKey(r => r.DeviceClassId)
-             .OnDelete(DeleteBehavior.Restrict);
-
       builder.HasOne(r => r.Device)
              .WithMany(d => d.Reservations)
              .HasForeignKey(r => r.DeviceId)

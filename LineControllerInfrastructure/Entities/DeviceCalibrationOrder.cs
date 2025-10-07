@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
 namespace LineControllerInfrastructure.Entities
@@ -17,9 +18,9 @@ namespace LineControllerInfrastructure.Entities
 
     public int? PreviousDeviceStatusId { get; set; }
 
-    public string Inspector { get; set; }
+    public string? Inspector { get; set; }
 
-    public string TestLocation { get; set; }
+    public string? TestLocation { get; set; }
 
     [Column(TypeName = "DECIMAL(18, 3)")]
     public decimal? ProcessingTime { get; set; }
@@ -35,7 +36,7 @@ namespace LineControllerInfrastructure.Entities
     public DeviceCalibrationOrderRoot? Root { get; set; }
 
     [ForeignKey(nameof(Root))]
-    public int RootId { get; set; }
+    public int? RootId { get; set; }
 
     public bool Edited { get; set; }
 

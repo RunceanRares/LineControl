@@ -15,6 +15,6 @@ namespace LineControllerCore.Interface
 
     ActivityTypeViewModel Update(ActivityTypeViewModel model);
 
-    ActivityTypeViewModel AddActivityType(ActivityTypeViewModel model);
+    Task<ActivityTypeViewModel> AddActivityType(ActivityTypeViewModel model);
   }
 }

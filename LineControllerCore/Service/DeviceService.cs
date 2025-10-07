@@ -140,6 +140,111 @@ namespace LineControllerCore.Service
       return Mapper.Map<DeviceEditViewModel>(updatedDevice);
     }
 
+    public async Task<DeviceEditViewModel> AddDevice(DeviceEditViewModel model)
+    {
+      var existingDevice = await CheckDeviceExist(model).ConfigureAwait(false);
+      if(existingDevice != null) 
+      {
+        Logger.LogWarning("Unable to add device. Id already exist.");
+        return null;
+      }
+      else
+      {
+        var deviceModel = Mapper.Map<Device>(model);
+        Context.Devices.Add(deviceModel);
+        await Context.SaveChangesAsync().ConfigureAwait(false);
+
+        return model;
+      }
+    }     
+    
+    private async Task<DeviceEditViewModel> CheckDeviceExist(DeviceEditViewModel model)
+    {
+      if (model.Id == 0)
+      {
+        return model;
+      }
+
+      var device = Context.Devices.FirstOrDefault(d => d.Id == model.Id);
+      if (device != null)
+      {
+        Logger.LogInformation("Unable to add the activity type. Id already exists.");
+        return Mapper.Map<DeviceEditViewModel>(device);
+      }
+      else
+      {
+        return model;
+      }
+    }
+
+    public bool CheckUserInDB(int userId)
+    {
+      return Context.Users.Any(s => s.Id == userId);
+    }
+
+    public async Task<DeviceChildViewModel> IntegrateAsync(int parentId, DeviceChildViewModel model)
+    {
+      try
+      {
+        if (parentId == 0)
+        {
+          throw new ArgumentException("Unable to integrate the device.Parent Id does not exist.");
+        }
+
+        Device entity = await Context.Devices.SingleOrDefaultAsync(d => d.Id == parentId).ConfigureAwait(false);
+
+        if (entity != null)
+        {
+          throw new ArgumentException("Unable to integrate the device.Parent Id does not exist.");
+        }
+
+        Device integrated = await Entities.SingleOrDefaultAsync(d => d.ItemNumber == model.ItemNumber).ConfigureAwait(false);
+
+        if (integrated == null)
+        {
+          throw new ArgumentException("Unable to integrate the device. Item Number does not exist.");
+        }
+
+        DateTime dateTime = DateTime.Now;
+        int? userId = IdentityService.UserId;
+        var calibrationOrderRoot = await Context.ActiveCalibrationOrders.Where(c => c.DeviceId == entity.Id)
+                                                                    .SingleOrDefaultAsync().ConfigureAwait(false);
+        entity.Children.Add(integrated);
+        entity.LastChangedUserId = userId;
+        entity.LastChangedDate = dateTime;
+
+        Entities.Update(entity);
+
+        if (calibrationOrderRoot != null)
+        {
+          var status = new DeviceCalibrationOrderStatusHistory() { StatusId = DeviceCalibrationOrderStatus.Received };
+          var calibrationOrder = new DeviceCalibrationOrder
+          {
+            SendEmail = true,
+            IsRoot = false,
+          };
+
+          calibrationOrder.StatusHistory.Add(status);
+          calibrationOrder.LastChangedDate = status.LastChangedDate = calibrationOrderRoot.LastChangedDate = dateTime;
+          calibrationOrder.LastChangedUserId = status.LastChangedUserId = calibrationOrderRoot.LastChangedUserId = userId;
+
+          await Context.CalibrationOrders.AddAsync(calibrationOrder).ConfigureAwait(false);
+        }
+        await Context.SaveChangesAsync().ConfigureAwait(false);
+
+        var result = Mapper.Map<DeviceChildViewModel>(integrated);
+
+        return result;
+      }
+      catch (Exception ex)
+      {
+        Logger.LogError("The following exception occurred while trying to integrate the device");
+        return null;
+      }
+    }
+
+
+
     //public async Task<IEnumerable<DeviceViewModel>> GetAsync(Func<LinkViewModel, string> getDeviceDetailsUrl, Func<LinkViewModel, string> getCalibrationOrderUrl)
     //{
     //  var user = Context.Users.Where(s => !string.IsNullOrEmpty(s.UserName)).Select(s => s.UserName).SingleOrDefault();

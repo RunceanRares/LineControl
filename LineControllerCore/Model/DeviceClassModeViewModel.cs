@@ -4,7 +4,7 @@ namespace LineControllerCore.Model
 {
   public class DeviceClassModeViewModel
   {
-    public int ModeId { get; set; }
+    public int Id { get; set; }
 
     public string Measurement
     {

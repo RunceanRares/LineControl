@@ -12,15 +12,12 @@ namespace LineControllerCore.Model
     [Display(Name = "Item number")]
     public string ItemNumber { get; set; }
 
-    [Display(Name = "Device class")]
-    [Required(ErrorMessage = "The 'Device class' field is required.")]
-    public int? DeviceClassId { get; set; }
+    //[Display(Name = "Device class")]
+    //[Required(ErrorMessage = "The 'Device class' field is required.")]
+    //public int? DeviceClassId { get; set; }
 
     [Display(Name = "Integrated in")]
     public string ParentItemNumber { get; set; }
-
-    [Display(Name = "Model")]
-    public string DeviceModel { get; set; }
 
     public bool HasCalibrationOrderOpened { get; set; }
     public int? ParentId { get; set; }
@@ -84,6 +81,10 @@ namespace LineControllerCore.Model
       }
     }
 
+    public string CreateByUserName { get; set; }
+    
+    public int? CreatedById { get; set; }
+
     [Display(Name = "Inventory location")]
     [Required(ErrorMessage = "The 'Inventory location' field is required.")]
     public int? InventoryLocationId { get; set; }
@@ -111,7 +112,7 @@ namespace LineControllerCore.Model
     [Display(Name = "Accessories")]
     public string Accessories { get; set; }
 
-    [Display(Name = "Remark")]
+    [Display(Name = "Comment")]
     public string Comment { get; set; }
 
     [Display(Name = "Calibration tester")]

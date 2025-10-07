@@ -17,8 +17,7 @@ namespace LineControllerCore.Mapping
           .ForMember(dest => dest.OutputUnit, opt => opt.MapFrom(src => src.OutputUnit))
           .ForMember(dest => dest.MaterialNumber, opt => opt.MapFrom(src => src.MaterialNumber))
           .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
-          .ForMember(dest => dest.ModeId, opt => opt.MapFrom(src => src.Id));
-      // .ForMember(dest => dest.DeviceClassId, opt => opt.MapFrom(src => src.DeviceClassId));
+          .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
 
       CreateMap<DeviceClassModeViewModel, DeviceClassMode>()
           .ForMember(dest => dest.MeasurementMin, opt => opt.MapFrom(src => src.MeasurementMin))
@@ -29,8 +28,7 @@ namespace LineControllerCore.Mapping
           .ForMember(dest => dest.OutputUnit, opt => opt.MapFrom(src => src.OutputUnit))
           .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
           .ForMember(dest => dest.MaterialNumber, opt => opt.MapFrom(src => src.MaterialNumber))
-          .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ModeId));
-//.ForMember(dest => dest.DeviceClassId, opt => opt.MapFrom(src => src.DeviceClassId));
+          .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
       }
   }
 }

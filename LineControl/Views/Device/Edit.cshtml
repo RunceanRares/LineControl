@@ -1,21 +1,15 @@
 ﻿@using LineControllerCore.Model
 @model DeviceEditViewModel
+
 @{
-  ViewData["Title"] = "Edit Device";
+  ViewData["Title"] ="Edit Device";
 }
 
 <div class="row s-pageTitle">
   <div class="col">
-    <h1>Edit Device</h1>
+    <h2>Edit Device</h2>
   </div>
 </div>
-@* @if (Model.CanEdit)
-{
-  <form class="s-device-editor" asp-action="@(Model.IsDisplay ? "ShowDetails" : "ShowEdit")">
-    @Html.HiddenFor(m => m.Id)
-    <partial name="_DeviceSearch" view-data="ViewData" model="Model" />
-  </form>
-} *@
 @if (!ViewData.ModelState.IsValid)
 {
   <div class="alert alert-danger">
@@ -25,61 +19,83 @@
     }
   </div>
 }
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-body">
 <div class="container mt-5 container-label">
   @using (Html.BeginForm("Edit", "Device", FormMethod.Post, new { @class = "ControllForm"}))
   {
     @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="Id" />
     <div class="row">
       <div class="col-md-4 bg-light">
         <label class="col-md-4 col-form-label" for="edit_@Html.IdFor(m => m.ItemNumber)"> @Html.DisplayNameFor(m => m.ItemNumber)</label>
         <div class="col-md-8">
-          @(
-              Html.Kendo().TextBox()
-                    .Name("edit_" + Html.IdFor(m => m.ItemNumber))
+            @(Html.Kendo().TextBox()
+                    .Name("itemnumber")
                     .Readonly(true)
                     .HtmlAttributes(new { @class = "text-uppercase s-customTextArea", @name = Html.IdFor(m => m.ItemNumber) })
                     .Value(Model.ItemNumber)
-                    .Deferred()
-                    )
-        </div>
-        <div class="col-md-6">
-            <label class="col-md-4 col-form-label" for="edit_@Html.IdFor(m => m.DeviceModel)"> @Html.DisplayNameFor(m => m.DeviceModel)</label>
-            <div class="col-md-8">
-            @(Html.Kendo().TextAreaFor(m => m.DeviceModel)
-                .HtmlAttributes(new { @class = "s-customTextArea" })
-                .Rows(1).Deferred(true)
-                )
-          </div>
+                    .Deferred())
         </div>
         <div class="col-md-6">
           <label class="col-md-4 col-form-label" asp-for="StatusId">Status</label>
           <div class="col-md-8">
-            @(Html.Kendo().DropDownListFor(m => m.StatusId)
-                .HtmlAttributes(new { @class = "s-device-status" })
-                .DataTextField("Name")
-                .DataValueField("Id")
-                .Enable(Model.CanEditStatus)
-                .DataSource(dataSource => dataSource.Read(read =>
-                {
-                  read.Action("GetAllDeviceStatuses", "Device");
-                }))
-             @*    .Events(events => events.Error("device.dataSourceError")))
+              @(Html.Kendo().DropDownListFor(m => m.StatusId)
+                            .HtmlAttributes(new { @class = "s-device-status" })
+                            .DataTextField("Name")
+                            .DataValueField("Id")
+                            .Enable(Model.CanEditStatus)
+                            .DataSource(dataSource => dataSource.Read(read =>
+                            {
+                              read.Action("GetAllDeviceStatuses", "Device");
+                            }))
+                        @*    .Events(events => events.Error("device.dataSourceError")))
                 .Events(events => events.Select("device.statusSelect")) *@
-                .Deferred()
-                )
+                        .Deferred()
+                            )
+           
           </div>
         </div>
+            <div class="" col-md-6">
+            <label class="col-md-4 col-form-label" asp-for="StoragePlaceId">Storage Place</label>
+            <div class="col-md-8">
+              @(Html.Kendo().DropDownListFor(m => m.StoragePlaceId)
+                  .HtmlAttributes(new { @class = "s-device-storageplace" })
+                  .DataTextField("Name")
+                  .DataValueField("Id")
+                  .DataSource(dataSource => dataSource.Read(read =>
+                  {
+                        read.Action("GetInventoryLocation", "InventoryLocation");
+                  }))
+                 @*  .DataSource(dataSource => dataSource.Read(read => read.Action("GetInventoryLocation", "InventoryLocation", new { includeLocationId=Model.InventoryLocationId,includeStorageId = Model.StoragePlaceId, forResponsible = Model.CanMove })
+                  .Data("device.getInventoryLocation"))
+                  .ServerFiltering(true)
+                  .Events(events => events.Error("device.dataSourceError")))
+                  .CascadeFrom(Model.IsEditable ? "InventoryLocationId" : "") *@
+                 @*  .Events(events =>
+                  {
+                    events.DataBound("device.storagePlaceDataBound");
+                    if (Model.IsEditable)
+                    {
+                      events.Select("device.storagePlaceSelect");
+                    }
+                  })
+                  .AutoBind(!Model.IsEditable)
+                  .Enable(Model.IsEditable && Model.StoragePlaceId != null) *@
+                  .Deferred()
+                  )
+            </div>
+          </div>
         <div class="col-md-6">
           <label class="col-md-4 col-form-label" for="edit_@Html.IdFor(m => m.InventoryNumber)"> @Html.DisplayNameFor(m => m.InventoryNumber)</label>
             <div class="col-md-8">
-            @(Html.Kendo().TextBox()
-                .Name("edit_" + Html.IdFor(m => m.InventoryNumber))
-                .HtmlAttributes(new { @class = "text-uppercase", @name = Html.IdFor(m => m.InventoryNumber) })
-                .Value(Model.InventoryNumber)
-                .Deferred()
-                )
-            </div>
+              @( Html.Kendo().TextBox()
+                                .Name("edit_" + Html.IdFor(m => m.InventoryNumber))
+                                .HtmlAttributes(new { @class = "text-uppercase", @name = Html.IdFor(m => m.InventoryNumber) })
+                                .Value(Model.InventoryNumber)
+                                .Deferred()
+                                    )
+          </div>
         </div>  
         <div class="col-md-6">
           <label class="col-md-4 col-form-label" for="edit_@Html.IdFor(m => m.EquipmentNumber)"> @Html.DisplayNameFor(m => m.EquipmentNumber)</label>
@@ -88,15 +104,6 @@
                   .HtmlAttributes(new { @class = "s-customTextArea" })
                   .Rows(1).Deferred(true)
             )
-            </div>
-        </div>
-        <div class="col-md-6">
-          <label class="col-md-4 col-form-label" for="edit_@Html.IdFor(m => m.SerialNumber)"> @Html.DisplayNameFor(m => m.SerialNumber)</label>
-            <div class="col-md-8">
-              @(Html.Kendo().TextAreaFor(m => m.SerialNumber)
-                  .HtmlAttributes(new { @class = "s-customTextArea" })
-                  .Rows(1).Deferred(true)
-                  )
             </div>
         </div>
         <div class="col-md-6">
@@ -109,7 +116,7 @@
             </div>
         </div>
         <div class="col-md-6">
-          <label class="col-md-4 col-form-label" for="edit_@Html.IdFor(m => m.ActivityTypeRate)"> @Html.DisplayNameFor(m => m.ActivityTypeRate)</label>
+           <label class="s-label" asp-for="@Model.ActivityTypeRate">ActivityTypeRate</label>
             <div class="col-md-8">
               @(Html.Kendo().TextAreaFor(m => m.ActivityTypeRate)
                   .HtmlAttributes(new { @class = "s-customTextArea" })
@@ -126,15 +133,6 @@
                   )
             </div>
         </div>
-        <div class="col-md-6">
-          <label class="col-md-4 col-form-label" for="edit_@Html.IdFor(m => m.CostFactor)"> @Html.DisplayNameFor(m => m.CostFactor)</label>
-            <div class="col-md-8">
-              @(Html.Kendo().TextAreaFor(m => m.CostFactor)
-                  .HtmlAttributes(new { @class = "s-customTextArea" })
-                  .Rows(1).Deferred(true)
-              )
-            </div>
-        </div>
       </div>
 
 
@@ -142,14 +140,15 @@
         <label class="col-md-4 col-form-label" asp-for="ParentItemNumber">Parent ItemNumber</label>
         <div class="col-md-8">
           <span class="s-readonly k-input k-textbox k-input-solid k-input-md k-rounded-md s-device-parent">
-            @if (Model.Id == 0)
-            {
-              <a class="s-link-color" asp-action="Index" asp-controller="Device" asp-route-id="@Model.ParentId">@Model.ParentItemNumber</a>
-            }
-            else
-            {
-              <a class="s-link-color" asp-action="Edit" asp-controller="Device" asp-route-id="@Model.ParentId">@Model.ParentItemNumber</a>
-            }
+              @if (Model.Id == 0)
+              {
+                <a class="s-link-color" asp-action="Index" asp-controller="Device" asp-route-id="@Model.ParentId">@Model.ParentItemNumber</a>
+              }
+              else
+              {
+                <a class="s-link-color" asp-action="Edit" asp-controller="Device" asp-route-id="@Model.ParentId">@Model.ParentItemNumber</a>
+              }
+          
           </span>
         </div>
         <div class="col-md-6">
@@ -160,6 +159,7 @@
                 .Rows(1).Deferred(true)
                 )
             </div>
+         
         </div>
         <div class="col-md-6">
           <label class="col-md-4 col-form-label" for="edit_@Html.IdFor(m => m.Accessories)"> @Html.DisplayNameFor(m => m.Accessories)</label>
@@ -171,13 +171,13 @@
             </div>
         </div>
         <div class="col-md-6">
-          <label class="col-md-4 col-form-label" for="edit_@Html.IdFor(m => m.DeviceModel)"> @Html.DisplayNameFor(m => m.DeviceModel)</label>
-            <div class="col-md-8">
-            @(Html.Kendo().TextAreaFor(m => m.DeviceModel)
-                  .HtmlAttributes(new { @class = "s-customTextArea" })
-                  .Rows(1).Deferred(true)
-                  )
-            </div>
+          <label class="col-md-4 col-form-label" for="edit_@Html.IdFor(m => m.IssuedTo)"> @Html.DisplayNameFor(m => m.IssuedTo)</label>
+          <div class="col-md-8">
+            @(Html.Kendo().TextAreaFor(m => m.IssuedTo)
+                .HtmlAttributes(new { @class = "s-customTextArea" })
+                .Rows(1).Deferred(true)
+                )
+          </div>
         </div>
         <div class="col-md-12">
           <label class="col-md-4 col-form-label">Measurement Values</label>
@@ -203,36 +203,9 @@
           </div>
         </div>
         <div class="col-md-6">
-          <label class="col-md-4 col-form-label" asp-for="StatusId"></label>
+          <label class="col-md-4 col-form-label" for="edit_@Html.IdFor(m => m.CostFactor)"> @Html.DisplayNameFor(m => m.CostFactor)</label>
           <div class="col-md-8">
-            @(Html.Kendo().DropDownListFor(m => m.StatusId)
-                .HtmlAttributes(new { @class = "s-device-status" })
-                .DataTextField("Name")
-                .DataValueField("Id")
-                .Enable(Model.CanEditStatus)
-                .DataSource(dataSource => dataSource.Read(read =>
-                {
-                  read.Action("GetAllDeviceStatuses", "Device");
-                }))
-              @*   .Events(events => events.Error("device.dataSourceError")))
-                .Events(events => events.Select("device.statusSelect")) *@
-                .Deferred()
-                )
-          </div>
-        </div>
-        <div class="col-md-6">
-          <label class="col-md-4 col-form-label" for="edit_@Html.IdFor(m => m.InventoryNumber)"> @Html.DisplayNameFor(m => m.InventoryNumber)</label>
-          <div class="col-md-8">
-            @(Html.Kendo().TextAreaFor(m => m.InventoryNumber)
-                .HtmlAttributes(new { @class = "s-customTextArea" })
-                .Rows(1).Deferred(true)
-                )
-          </div>
-        </div>
-          <div class="col-md-6">
-          <label class="col-md-4 col-form-label" for="edit_@Html.IdFor(m => m.EquipmentNumber)"> @Html.DisplayNameFor(m => m.EquipmentNumber)</label>
-          <div class="col-md-8">
-            @(Html.Kendo().TextAreaFor(m => m.EquipmentNumber)
+            @(Html.Kendo().TextAreaFor(m => m.CostFactor)
                 .HtmlAttributes(new { @class = "s-customTextArea" })
                 .Rows(1).Deferred(true)
                 )
@@ -242,15 +215,6 @@
           <label class="col-md-4 col-form-label" for="edit_@Html.IdFor(m => m.SerialNumber)"> @Html.DisplayNameFor(m => m.SerialNumber)</label>
           <div class="col-md-8">
             @(Html.Kendo().TextAreaFor(m => m.SerialNumber)
-                .HtmlAttributes(new { @class = "s-customTextArea" })
-                .Rows(1).Deferred(true)
-                )
-          </div>
-        </div>
-        <div class="col-md-6">
-          <label class="col-md-4 col-form-label" for="edit_@Html.IdFor(m => m.MaterialNumber)"> @Html.DisplayNameFor(m => m.MaterialNumber)</label>
-          <div class="col-md-8">
-            @(Html.Kendo().TextAreaFor(m => m.MaterialNumber)
                 .HtmlAttributes(new { @class = "s-customTextArea" })
                 .Rows(1).Deferred(true)
                 )
@@ -268,38 +232,31 @@
             <label class="col-md-4 col-form-label" asp-for="CalibrationTester"></label>
             <div class="col-md-8">
               @Html.EditorFor(m => m.CalibrationTester, new { @readonly = !Model.IsEditable })
-            </div>
+          </div>
           </div>
           <div class="col-md-6">
             <label class="col-md-4 col-form-label" asp-for="CalibrationLocation"></label>
             <div class="col-md-8">
               @Html.EditorFor(m => m.CalibrationLocation, new { @readonly = !Model.IsEditable })
-            </div>
-          </div>
-          <div class="col-md-6">
-            <label class="col-md-4 col-form-label" for="edit_@Html.IdFor(m => m.CalibrationTester)"> @Html.DisplayNameFor(m => m.CalibrationTester)</label>
-            <div class="col-md-8">
-              @(Html.Kendo().TextAreaFor(m => m.CalibrationTester)
-                  .HtmlAttributes(new { @class = "s-customTextArea" })
-                  .Rows(1).Deferred(true)
-                  )
+           
             </div>
           </div>
           <div class="col-md-6">
             <label class="col-md-4 col-form-label" asp-for="CreatedBy"></label>
             <div class="col-md-8">
-              @Html.EditorFor(m => m.CreatedBy, new { disabled = "disabled" })
+              @Html.EditorFor(m => m.CreatedBy, new { @readonly = !Model.IsEditable })
+           
             </div>
           </div>
-          <div class="col-md-6">
-            <label class="col-md-4 col-form-label" for="edit_@Html.IdFor(m => m.CalibrationLocation)"> @Html.DisplayNameFor(m => m.CalibrationLocation)</label>
-            <div class="col-md-8">
-            @(Html.Kendo().TextAreaFor(m => m.CalibrationLocation)
-                  .HtmlAttributes(new { @class = "s-customTextArea" })
-                  .Rows(1).Deferred(true)
-                  )
-            </div>
+        <div class="col-md-6">
+          <label class="col-md-4 col-form-label" for="edit_@Html.IdFor(m => m.Comment)"> @Html.DisplayNameFor(m => m.Comment)</label>
+          <div class="col-md-8">
+            @(Html.Kendo().TextAreaFor(m => m.Comment)
+                .HtmlAttributes(new { @class = "s-customTextArea" })
+                .Rows(1).Deferred(true)
+                )
           </div>
+        </div>
           <div class="col-md-6">
             <label class="col-md-4 col-form-label" for="edit_@Html.IdFor(m => m.IssueComment)"> @Html.DisplayNameFor(m => m.IssueComment)</label>
             <div class="col-md-8">
@@ -315,35 +272,145 @@
               @Html.EditorFor(m => m.IssueDate)
             </div>
           </div>
-          <div class="col-md-6">
-            <label class="col-md-4 col-form-label" for="edit_@Html.IdFor(m => m.IssuedTo)"> @Html.DisplayNameFor(m => m.IssuedTo)</label>
-            <div class="col-md-8">
-              @(Html.Kendo().TextAreaFor(m => m.IssuedTo)
-                  .HtmlAttributes(new { @class = "s-customTextArea" })
-                  .Rows(1).Deferred(true)
-                  )
-            </div>
-          </div>
-          <div class="col-md-6">
-            <label class="col-md-4 col-form-label" for="edit_@Html.IdFor(m => m.Comment)"> @Html.DisplayNameFor(m => m.Comment)</label>
-            <div class="col-md-8">
-              @(Html.Kendo().TextAreaFor(m => m.Comment)
-                  .HtmlAttributes(new { @class = "s-customTextArea" })
-                  .Rows(1).Deferred(true)
-                  )
-            </div>
-          </div>
       </div>
     </div>
-    <div class="form-row form-group">
-      <div class="form-row form-group">
-        <div class="col s-paddingBtn">
-          <button class="btn btn-primary s-button" type="submit"><i class='k-icon k-i-save'></i><span>Save</span></button>
-          <button type="button" class="btn btn-danger s-button s-CancelBtn" onclick="window.location.href='@Url.Action("Index", "Device")'"><i class='k-icon k-i-cancel'></i><span> Cancel</span></button>
+     <div class="form-row form-group mt-4">
+       <div class="col s-paddingBtn ">
+         <button class="btn btn-primary s-button" type="submit"><i class="k-icon k-i-save"></i><span>Save</span></button>
+         <button class="btn btn-danger s-button s-CancelBtn" data-request-url="@Url.Action("Index", "Device")"><i class='k-icon k-i-cancel'></i><span> Cancel</span></button>
+       </div>
+     </div>
+    }
+    </div>
+   </div>
+  </div>
+  @if (Model.IsDisplay)
+  {
+    <div class="col-12 col-lg-5">
+      <div class="row">
+        <div class="col-12">
+          <h3>Integrated Devices</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col" id="childrenpanel">
+          @(Html.Kendo().Grid<DeviceChildListViewModel>()
+              .Name("childrenGrid")
+              .HtmlAttributes(new { @class = "s-grid-devicechildren" })
+              .Columns(columns =>
+              {
+                columns.Bound(c => c.ItemNumber)
+                .Filterable(f => f.Cell(cell =>
+                cell.ShowOperators(false)
+                .Operator("contains")
+                .SuggestionOperator(FilterType.Contains)))
+                .MinScreenWidth(450);
+                columns.Bound(c => c.DeviceModel)
+                .Filterable(f => f.Cell(cell =>
+                cell.ShowOperators(false)
+                .Operator("contains")
+                .SuggestionOperator(FilterType.Contains)))
+                .MinScreenWidth(450);
+              })
+              .DataSource(dataSource => dataSource.Ajax()
+              .Read("GetIntegratedDevices", "Device", new { parentId = Model.Id })
+              .Model(model => { model.Id(m => m.Id); }))
+              .Deferred()
+              )
         </div>
       </div>
     </div>
   }
+
+  <div class="col-12 col-lg-5">
+    <div class="row">
+      <div class="col" id="childrenpanel">
+
+       @*  @if (Model.IsDisplay || isEdit)
+        {
+          <!-- Grid pentru dispozitivele integrate existente -->
+          @(Html.Kendo().Grid<DeviceChildListViewModel>()
+              .Name("childrenGrid")
+              .HtmlAttributes(new { @class = "s-grid-devicechildren" })
+              .Columns(columns =>
+              {
+                columns.Bound(c => c.ItemNumber)
+                .Filterable(f => f.Cell(cell =>
+                cell.ShowOperators(false)
+                .Operator("contains")
+                .SuggestionOperator(FilterType.Contains)))
+                .MinScreenWidth(450);
+
+                columns.Bound(c => c.DeviceModel)
+                .Filterable(f => f.Cell(cell =>
+                cell.ShowOperators(false)
+                .Operator("contains")
+                .SuggestionOperator(FilterType.Contains)))
+                .MinScreenWidth(450);
+              })
+              .DataSource(dataSource => dataSource.Ajax()
+              .Read("GetIntegratedDevices", "Device", new { parentId = Model.Id }) // Citire dispozitive integrate
+              .Model(model => { model.Id(m => m.Id); })
+              )
+              .Deferred()
+              )
+        }
+
+        @if (isEdit)
+        {
+          <!-- Formular pentru integrarea unui nou dispozitiv -->
+          <script id="childrenTemplate" type="text/x-kendo-template">
+            <div class="container-fluid d-block">
+                <div class="row gap-1">
+                    <label for="IntegratedDevice" class="col-auto col-form-label">Item number</label>
+                    <span class="col k-input k-textbox k-input-solid k-input-md k-rounded-md">
+                        <input class="s-device-integrate k-input-inner validation-ignore"
+                            id="IntegratedDevice"
+                            type="text"
+                            data-required="The 'Item number' field is required.">
+                    </span>
+            @(Html.Kendo().Button()
+                    .Name("deviceIntegrate")
+                    .Content("Integrate")
+                    .HtmlAttributes(new { @class = "col-auto s-device-integrate-button" })
+                    .Events(events => events.Click("integrateDevice"))
+                    .ToClientTemplate()
+                )
+                </div>
+            </div>
+          </script>
+
+          <!-- Buton de integrare doar în modul editare -->
+          @(Html.Kendo().Grid<DeviceChildListViewModel>()
+              .Name("childrenGrid")
+              .ToolBar(toolbar => { toolbar.ClientTemplateId("childrenTemplate"); })
+              .HtmlAttributes(new { @class = "s-grid-devicechildren" })
+              .Columns(columns =>
+              {
+                columns.Bound(c => c.ItemNumber)
+                .Filterable(f => f.Cell(cell =>
+                cell.ShowOperators(false)
+                .Operator("contains")
+                .SuggestionOperator(FilterType.Contains)))
+                .MinScreenWidth(450);
+
+                columns.Bound(c => c.DeviceModel)
+                .Filterable(f => f.Cell(cell =>
+                cell.ShowOperators(false)
+                .Operator("contains")
+                .SuggestionOperator(FilterType.Contains)))
+                .MinScreenWidth(450);
+              })
+              .DataSource(dataSource => dataSource.Ajax()
+              .Create("Integrate", "Device", new { parentId = Model.Id }) // Adăugare dispozitiv
+              .Model(model => { model.Id(m => m.Id); })
+              )
+              .Deferred()
+              )
+        } *@
+      </div>
+    </div>
+  </div>
 </div>
 
 @* 

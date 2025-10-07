@@ -21,15 +21,10 @@ namespace LineControllerInfrastructure.ContextConfiguration
              .HasForeignKey(co => co.PreviousDeviceStatusId)
              .OnDelete(DeleteBehavior.Restrict);
 
-      builder.HasOne(d => d.Root)
-             .WithMany()
-             .HasForeignKey(co => co.RootId).OnDelete(DeleteBehavior.Restrict);
-
-      builder.HasOne(dco => dco.Device)
-             .WithMany()
-             .HasForeignKey(dco => dco.DeviceId)
-             .OnDelete(DeleteBehavior.Restrict);
-
+      builder.HasOne(o => o.Root)
+       .WithMany()
+       .HasForeignKey(o => o.RootId)
+       .OnDelete(DeleteBehavior.NoAction);
 
       base.Configure(builder);
     }

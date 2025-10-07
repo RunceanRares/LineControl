@@ -19,8 +19,8 @@ Html.Kendo().Grid<DeviceCalibrationOrderViewModel>().Name("Grid")
       c.Custom("editCalibration").Text(" ").IconClass("k-icon k-i-edit").Click("openEditCalibration")
        .HtmlAttributes(new
        {
-          @class = "s-grid-deviceCalibrationEdit",
-          data_url = Url.Action("Edit", "DeviceCalibration", new { id = "__id__" })
+         @class = "s-grid-deviceCalibrationEdit",
+         data_url = Url.Action("Edit", "CalibrationOrder", new { id = "__id__" })
        });
     });
     columns.Bound(p => p.ItemNumber).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
@@ -28,24 +28,25 @@ Html.Kendo().Grid<DeviceCalibrationOrderViewModel>().Name("Grid")
     columns.Bound(p => p.Status).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
     columns.Bound(p => p.AccountingNumber).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
     columns.Bound(p => p.Action).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
-
+    columns.Bound(p => p.Comment).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450);
   })
   .Editable(editable => editable.Mode(GridEditMode.InLine))
-     .Pageable()
-     .Sortable()
-     .Scrollable()
-     .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
-     .DataSource(dataSource => dataSource
-       .Ajax()
-       .Model(m =>
-       {
-         m.Id(p => p.Id);
-       })
+  .Pageable()
+  .Sortable()
+  .Scrollable()
+  .ColumnMenu()
+  .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+  .DataSource(dataSource => dataSource
+    .Ajax()
+    .Model(m =>
+    {
+      m.Id(p => p.Id);
+    })
   .Read(read => read.Action("GetDevicesCalibration", "CalibrationOrder"))
-     .PageSize(15))
-     .Resizable(r => r.Columns(true))
-     .HtmlAttributes(new { @class = "s-gridContent", data_action_edit = Url.Action("Edit", "DeviceCalibration") })
-     .Deferred(true)
+  .PageSize(15))
+  .Resizable(r => r.Columns(true))
+  .HtmlAttributes(new { @class = "s-gridContent", data_action_edit = Url.Action("Edit", "CalibrationOrder") })
+  .Deferred(true)
 )
 
 @* @(

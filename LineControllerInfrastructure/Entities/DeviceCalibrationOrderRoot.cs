@@ -11,19 +11,19 @@ namespace LineControllerInfrastructure.Entities
 
     public AccountingType? AccountingType { get; set; }
 
-    public string AccountingNumber { get; set; }
+    public string? AccountingNumber { get; set; }
 
-    public string Comment { get; set; }
+    public string? Comment { get; set; }
 
     [Required]
     public int NoChannels { get; set; }
 
-    public User Receiver { get; set; }
+    public User? Receiver { get; set; }
 
     [ForeignKey(nameof(ReceiverId))]
     public int? ReceiverId { get; set; }
 
-    public CalibrationAction Action { get; set; }
+    public CalibrationAction? Action { get; set; }
 
     [ForeignKey(nameof(Action))]
     public int ActionId { get; set; }

@@ -13,18 +13,17 @@ namespace LineControllerCore.Model
     public int DeviceId { get; set; }
 
     [Display(Name = "Item number")]
-    public string ItemNumber { get; set; }
+    public string? ItemNumber { get; set; }
 
     [Display(Name = "Model")]
-    public string DeviceModel { get; set; }
+    public string? DeviceModel { get; set; }
 
     [Display(Name = "Manufacturer")]
-    public string Manufacturer { get; set; }
+    public string? Manufacturer { get; set; }
+
+    public string? AccountingNumber { get; set; }
 
     public AccountingType? AccountingType { get; set; }
-
-    [Display(Name = "Accounting number")]                                                                   
-    public string AccountingNumber { get; set; }
 
     [Display(Name = "Action")]
     [Required(ErrorMessage = "The 'Action' field is required.")]
@@ -42,8 +41,8 @@ namespace LineControllerCore.Model
     public DateTime? TargetDate { get; set; }
 
     [Display(Name = "Comment")]
-    public string Comment { get; set; }
+    public string? Comment { get; set; }
 
-    public IEnumerable<CalibrationOrderActionViewModel> Actions { get; set; }
+    public IEnumerable<CalibrationOrderActionViewModel>? Actions { get; set; }
   }
 }

@@ -1,4 +1,6 @@
-﻿using LineControllerInfrastructure.ContextConfiguration;
+﻿using LineControllerCore.Model;
+
+using LineControllerInfrastructure.ContextConfiguration;
 using LineControllerInfrastructure.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -17,8 +19,6 @@ namespace LineControllerInfrastructure
     public DbSet<CompanyLocation> CompanyLocations { get; set; } 
 
     public DbSet<ActivityType> ActivityTypes { get; set; }
-
-    public DbSet<DeviceClass> DeviceClasses { get; set; }
 
     public DbSet<DeviceHistory> DeviceHistories { get; set; }
 
@@ -52,6 +52,10 @@ namespace LineControllerInfrastructure
 
     public DbSet<CalibrationAction> CalibrationActions { get; set; }
 
+    public DbSet<CalibrationLocation> CalibrationLocations { get; set; }
+
+    public DbSet<DeviceCalibrationOrderRoot> DeviceCalibrationOrderRoots { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -67,7 +71,6 @@ namespace LineControllerInfrastructure
       modelBuilder.ApplyConfiguration(new UserConfig());
       modelBuilder.ApplyConfiguration(new ReservationPeriodConfig());
       modelBuilder.ApplyConfiguration(new DeviceCalibrationOrderConfig());
-      modelBuilder.ApplyConfiguration(new DeviceClassConfig());
       modelBuilder.ApplyConfiguration(new CalibrationActionConfig());
       modelBuilder.ApplyConfiguration(new InventoryLocationConfig());
       modelBuilder.ApplyConfiguration(new DeviceClassModeConfig());
@@ -125,6 +128,27 @@ namespace LineControllerInfrastructure
     {
       return DeviceHierarchy.Where(m => m.ParentId == deviceId)
                             .Join(Devices, h => h.ChildId, d => d.Id, (_, d) => d);
+    }
+
+    public IQueryable<DeviceMeasurementChainHierarchy> GetDeviceChildrenTree(int deviceId)
+    {
+      // Selectăm doar dispozitivele și excludem lanțurile de măsurare
+#pragma warning disable CS8601 // Possible null reference assignment.
+      return GetDeviceTree(deviceId).Select(d => new DeviceMeasurementChainHierarchy
+      {
+        IsMeasurementChainChild = false, // Marcăm explicit că nu este un copil al unui lanț de măsurare
+        DeviceId = d.Id,
+        ParentId = d.ParentId,
+        ItemNumber = d.ItemNumber,
+        CalibrationDate = d.CalibrationDate,
+        CalibrationInterval = d.CalibrationInterval,
+        Position = 0,
+        HasActiveCalibrationOrder = d.CalibrationOrders.Any(co => co.StatusHistory
+            .OrderByDescending(sh => sh.LastChangedDate)
+            .Select(sh => sh.StatusId)
+            .FirstOrDefault() < DeviceCalibrationOrderStatus.Active)
+      });
+#pragma warning restore CS8601 // Possible null reference assignment.
     }
   }
 }

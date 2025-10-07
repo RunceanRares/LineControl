@@ -9,7 +9,9 @@ namespace LineControllerInfrastructure.ContextConfiguration
     public override void Configure(EntityTypeBuilder<DeviceClassMode> builder)
     {
       builder.ToTable("DeviceClassMode");
-      builder.Property(dcm => dcm.Description);
+
+      builder.HasKey(x => x.Id);
+
       base.Configure(builder);
     }
   }

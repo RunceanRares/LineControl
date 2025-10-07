@@ -4,13 +4,7 @@ namespace LineControllerInfrastructure.Entities
 {
   public class DeviceClassMode : BaseModel
   {
-    [Column("DeviceModeId")]
-    public override int Id { get => base.Id; set => base.Id = value; }
-
-    public DeviceClass DeviceClass { get; set; }
-
-    [ForeignKey(nameof(DeviceClass))]
-    public int DeviceClassId { get; set; }
+    public int Id {  get; set; }
 
     [Column(TypeName = "DECIMAL(18, 4)")]
     public decimal? MeasurementMin { get; set; }
@@ -35,7 +29,13 @@ namespace LineControllerInfrastructure.Entities
 
     public string Description {  get; set; }
 
-    [StringLength(450)]
     public string OutputUnit { get; set; }
+
+    public DateTime? LastChangedDate { get; set; }
+
+    [ForeignKey(nameof(LastChangedUser))]
+    public int? LastChangedUserId { get; set; }
+
+    public User? LastChangedUser { get; set; }
   }
 }

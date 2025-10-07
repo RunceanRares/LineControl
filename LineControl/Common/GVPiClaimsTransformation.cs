@@ -32,7 +32,7 @@ namespace LineControl.Common
 
         return principal;
       }
-      catch(Exception ex)
+      catch (Exception)
       {
         throw;
       }

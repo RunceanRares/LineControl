@@ -21,9 +21,9 @@ namespace LineControl.Controllers
       return View();
     }
 
-    public ActionResult GetCompanies([DataSourceRequest] DataSourceRequest dataSourceRequest)
+    public ActionResult GetCompaniesLocation([DataSourceRequest] DataSourceRequest dataSourceRequest)
     {
-      var company = service.GetCompanies();
+      var company = service.GetCompaniesLocation();
       return Json(company.ToList().ToDataSourceResult(dataSourceRequest));
     }
 
@@ -44,6 +44,26 @@ namespace LineControl.Controllers
       else
       {
         return View(company);
+      }
+    }
+    
+    public ActionResult Edit(int id)
+    {
+      var company = service.GetLocationCompanyById(id);
+      return View("Create", company);
+    }
+
+    [HttpPost]
+    public IActionResult Edit(CompanyLocationViewModel model)
+    {
+      if (ModelState.IsValid)
+      {
+        service.Update(model);
+        return RedirectToAction("Index");
+      }
+      else
+      {
+        return View(model);
       }
     }
   }

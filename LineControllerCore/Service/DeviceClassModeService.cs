@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+
 using LineControllerCore.Interface;
 using LineControllerCore.Model;
 using LineControllerInfrastructure;
 using LineControllerInfrastructure.Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Drawing;
 using System.Security.Claims;
@@ -24,8 +27,7 @@ namespace LineControllerCore.Service
     {
       return Context.DeviceClassModes.Select(x => new DeviceClassModeViewModel
       {
-        //DeviceClassId = x.DeviceClassId,
-        ModeId = x.Id,
+        Id = x.Id,
         MaterialNumber = x.MaterialNumber,
         MeasurementUnit = x.MeasurementUnit,
         MeasurementMax = x.MeasurementMax,
@@ -34,8 +36,7 @@ namespace LineControllerCore.Service
         OutputMin = x.OutputMin,
         Output = x.OutputMin + " / " + x.OutputMax + " / " + x.OutputUnit,
         OutputUnit = x.OutputUnit,
-        Description = x.Description,
-    });
+       });
     }
 
     public DeviceClassModeViewModel GetDeviceClassModelById(int id)
@@ -56,8 +57,7 @@ namespace LineControllerCore.Service
     {
       var device = new DeviceClassMode
       {
-       // DeviceClassId = model.DeviceClassId,
-        Id = model.ModeId,
+        Id = model.Id,
         MaterialNumber = model.MaterialNumber,
         MeasurementUnit = model.MeasurementUnit,
         MeasurementMax = model.MeasurementMax,
@@ -100,11 +100,6 @@ namespace LineControllerCore.Service
 
     public DeviceModelViewModel UpdateDeviceModel(DeviceModelViewModel model)
     {
-      //var device = new DeviceModel
-      //{
-      //  Id = model.Id,
-      //  Name = model.Name,
-      //};
       var device = Context.DeviceModels.FirstOrDefault(dm => dm.Id == model.Id);
       if (device != null)
       {

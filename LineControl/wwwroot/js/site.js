@@ -20,13 +20,20 @@
       });
     }
 
-    $('.s-CancelBtn').on(click, function () {
-      console.log("Cancel button clicked");
+    $('.s-CancelBtn').on('click', function () {
       var url = $(this).data('request-url');
-      console.log("Redirecting to: " + url);
       window.location.href = url;
       return false;
     });
+
+    function deviceEdit(e) {
+      e.preventDefault();
+
+      var dataItem = this.dataItem($(e.currentTarget).closest('tr')),
+        url = $(e.currentTarget).data('url');
+
+      window.location.href = url.replace('__id__', dataItem.id);
+    }
   });
 
   window.openEditUser = function (e) {
@@ -58,19 +65,21 @@
 
   window.openEditDeviceMode = function (e) {
     e.preventDefault();
+    var grid = $("#DeviceModeGrid").data("kendoGrid");
     var tr = $(e.target).closest("tr");
-    var data = this.dataItem(tr);
+    var data = grid.dataItem(tr);
     var deviceModeId = data.Id;
-    var url = this.element.data('action-edit');
+    var url = grid.element.data('action-edit');
     window.location.href = url + "/" + deviceModeId;
   }
 
   window.openEditDeviceClassMode = function (e) {
     e.preventDefault();
+    var grid = $("#DeviceClassModeGrid").data("kendoGrid");
     var tr = $(e.target).closest("tr");
-    var data = this.dataItem(tr);
+    var data = grid.dataItem(tr);
     var deviceClassModeId = data.Id;
-    var url = this.element.data('action-edit');
+    var url = grid.element.data('action-edit');
     window.location.href = url + "/" + deviceClassModeId;
   }
 
@@ -81,5 +90,56 @@
     var deviceCalibrationId = data.Id;
     var url = this.element.data('action-edit');
     window.location.href = url + "/" + deviceCalibrationId;
+  }
+
+  window.openEditCompanyLocation = function (e) {
+    e.preventDefault();
+    var tr = $(e.target).closest('tr');
+    var data = this.dataItem(tr);
+    var companyLocationId = data.Id;
+    var url = this.element.data('action-edit');
+    window.location.href = url + "/" + companyLocationId;
+  }
+
+  window.integrateDevice = function (e) {
+    e.preventDefault();
+    console.log("Butonul de integrare a fost apăsat.");
+    var $device = $('.s-device-integrate');
+    const itemNumber = $device.val().trim();//elimina spatiile goale
+    const dataSource = $("#childrenGrid").data("kendoGrid").dataSource;
+    const $button = $('.s-device-integrate-button');
+
+    if (!itemNumber) {
+      showErrorMessage($device.data('required') || "Item number is required!");
+      toggleInvalidClass($device, false);
+      return;
+    }
+
+    //dezactiveaza butonul
+    const total = dataSource.data().length;
+    const model = dataSource.insert(total, { ItemNumber: itemNumber });
+
+    const onSuccess = () => {
+      $device.val(''); // Golește câmpul de input
+      dataSource.unbind('sync', onSuccess);
+      dataSource.unbind('error', onError);
+    };
+
+    const onError = (args) => {
+      hideMessages();
+      if (args.errors) {
+        for (const error in args.errors) {
+          if (args.errors.hasOwnProperty(error)) {
+            showErrorMessage(args.errors[error].errors[0]);
+          }
+        }
+      }
+      dataSource.cancelChanges(model); // Revocă modificările în caz de eroare
+      dataSource.unbind('sync', onSuccess);
+      dataSource.unbind('error', onError);
+    };
+    dataSource.bind('sync', onSuccess);
+    dataSource.bind('error', onError);
+    dataSource.sync();
   }
 })(jQuery, window, document);

@@ -9,6 +9,7 @@ namespace LineControllerCore.Mapping
   {
     public UserMapperProfile()
     {
+      //Convert from entity in model
       CreateMap<User, UserViewModel>();
 
       CreateMap<UserViewModel, User>()

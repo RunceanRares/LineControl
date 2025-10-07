@@ -39,6 +39,7 @@
    .Pageable()
     .Sortable()
     .Scrollable()
+    .ColumnMenu()
     .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
     .DataSource(dataSource => dataSource
       .Ajax()

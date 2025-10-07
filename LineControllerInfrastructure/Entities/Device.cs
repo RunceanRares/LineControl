@@ -22,13 +22,9 @@ namespace LineControllerInfrastructure.Entities
     [ForeignKey(nameof(CreatedBy))]
     public int? CreatedById { get; set; }
 
+    public string? CreatedByName { get; set; }
+
     public User? CreatedBy { get; set; }
-
-    public DeviceClass? DeviceClass { get; set; }
-
-    [ForeignKey(nameof(DeviceClass))]
-    [Required]
-    public int DeviceClassId { get; set; }
 
     [Column(TypeName = "DECIMAL(18, 4)")]
     public decimal? MeasurementMin { get; set; }
@@ -43,7 +39,7 @@ namespace LineControllerInfrastructure.Entities
 
     public string? SerialNumber { get; set; }
 
-    public DeviceStatus Status { get; set; }
+    public DeviceStatus? Status { get; set; }
 
     [ForeignKey(nameof(Status))]
     [Required]
@@ -61,11 +57,11 @@ namespace LineControllerInfrastructure.Entities
 
     public string? Comment { get; set; }
 
-    public string EquipmentNumber { get; set; }
+    public string? EquipmentNumber { get; set; }
 
-    public string CalibrationTester { get; set; }
+    public string? CalibrationTester { get; set; }
 
-    public string CalibrationLocation { get; set; }
+    public string? CalibrationLocation { get; set; }
 
     public DateTime? CalibrationDate { get; set; }
 
@@ -78,7 +74,7 @@ namespace LineControllerInfrastructure.Entities
 
     [Column(TypeName = "DECIMAL(18, 3)")]
     public decimal MaterialNumber { get; set; }
-    public StoragePlace StoragePlace { get; set; }
+    public StoragePlace? StoragePlace { get; set; }
 
     [ForeignKey(nameof(StoragePlace))]
     [Required]
@@ -95,6 +91,5 @@ namespace LineControllerInfrastructure.Entities
 
     [ExcludeFromCodeCoverage]
     public virtual ICollection<DeviceCalibrationOrder> CalibrationOrders { get; } = new List<DeviceCalibrationOrder>();
-
   }
 }

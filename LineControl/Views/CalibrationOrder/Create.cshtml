@@ -1,5 +1,114 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using LineControllerCore.Models
+@model DeviceCalibrationOrderViewModel
+
 @{
+  ViewData["Title"] = "Add Device Calibration";
 }
+
+<div class="row s-pageTitle">
+  <div class="col">
+    <h2>Add Device Calibration</h2>
+  </div>
+</div>
+
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-body">
+      @using(Html.BeginForm("Create", "CalibrationOrder", FormMethod.Post, new { @class = "ControllForm" }))
+      {
+        @Html.AntiForgeryToken()
+        <div class="s-formContent row justify-content-md-center">
+          <div class="form-row form-group">
+            <div class="form-row form-group">
+              <div class="col s-paddingBtn">
+                <button class="btn btn-primary s-button" type="submit"><i class='k-icon k-i-add'></i> <span>Add</span></button>
+                <button class="btn btn-danger s-button s-CancelBtn" data-request-url="@Url.Action("Index", "CalibrationOrder")"><i class='k-icon k-i-cancel'></i> <span> Cancel</span></button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12 bg-light">
+            <div class="form-row form-group">
+              <div class="col-12">
+                <label class="s-label" asp-for="@Model.ItemNumber">Item Number</label>
+              </div>
+              <div class="col-12">
+                @(Html.Kendo().DropDownList()
+                              .Name("ItemNumberDropDown")
+                              .DataTextField("ItemNumber")
+                              .DataValueField("Id")
+                              .HtmlAttributes(new { @class = "s-customTextArea" })
+                              .DataSource(source => source.Read("GetItemNumber", "CalibrationOrder"))
+                              .Deferred()
+                 )
+              </div>
+            </div>
+            <div class="form-row form-group">
+              <div class="col-12">
+                <label class="s-label" asp-for="@Model.CreatedBy">CreatedBy</label>
+              </div>
+              <div class="col-12">
+                @(Html.Kendo().TextAreaFor(m => m.CreatedBy)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true)
+                    )
+              </div>
+            </div>
+            <div class="form-row form-group">
+              <div class="col-12">
+                <label class="s-label" asp-for="@Model.Status">Status</label>
+              </div>
+              <div class="col-12">
+                @(Html.Kendo().TextAreaFor(m => m.Status)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true)
+                    )
+              </div>
+            </div>
+            <div class="form-row form-group">
+              <div class="col-12">
+                <label class="s-label" asp-for="@Model.AccountingNumber">Accounting Number</label>
+              </div>
+              <div class="col-12">
+                @(Html.Kendo().TextAreaFor(m => m.AccountingNumber)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true)
+                    )
+              </div>
+            </div>
+            <div class="form-row form-group">
+              <div class="col-12">
+                <label class="s-label" asp-for="@Model.Action">Action</label>
+              </div>
+              <div class="col-12">
+                @(Html.Kendo().TextAreaFor(m => m.Action)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true)
+                    )
+              </div>
+            </div>
+            <div class="form-row form-group">
+              <div class="col-12">
+                <label class="s-label" asp-for="@Model.Inspector">Inspector</label>
+              </div>
+              <div class="col-12">
+                @(Html.Kendo().TextArea().Name("InspectorTextArea").Value(User.Identity.Name)
+                      .HtmlAttributes(new { @class = "s-customTextArea" }))
+              </div>
+            </div>
+            <div class="form-row form-group">
+              <div class="col-12">
+                <label class="s-label" asp-for="@Model.Comment">Comment</label>
+              </div>
+              <div class="col-12">
+                @(Html.Kendo().TextAreaFor(m => m.Comment)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true)
+                    )
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

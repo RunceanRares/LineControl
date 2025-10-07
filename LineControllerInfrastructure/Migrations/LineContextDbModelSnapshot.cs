@@ -96,6 +96,35 @@ namespace LineControllerInfrastructure.Migrations
                         });
                 });
 
+            modelBuilder.Entity("LineControllerInfrastructure.Entities.CalibrationLocation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CompanyLocationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CostCenter")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyLocationId");
+
+                    b.ToTable("CalibrationLocations");
+                });
+
             modelBuilder.Entity("LineControllerInfrastructure.Entities.CompanyLocation", b =>
                 {
                     b.Property<int>("Id")
@@ -154,14 +183,12 @@ namespace LineControllerInfrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("CalibrationLocation")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("CalibrationResult")
                         .HasColumnType("DECIMAL(18, 3)");
 
                     b.Property<string>("CalibrationTester")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Comment")
@@ -173,14 +200,13 @@ namespace LineControllerInfrastructure.Migrations
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
 
+                    b.Property<string>("CreatedByName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DeviceClassId")
-                        .HasColumnType("int");
-
                     b.Property<string>("EquipmentNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("InventoryNumber")
@@ -232,8 +258,6 @@ namespace LineControllerInfrastructure.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.HasIndex("DeviceClassId");
-
                     b.HasIndex("ItemNumber")
                         .IsUnique();
 
@@ -271,14 +295,10 @@ namespace LineControllerInfrastructure.Migrations
                     b.Property<int>("DeviceId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DeviceId1")
-                        .HasColumnType("int");
-
                     b.Property<bool>("Edited")
                         .HasColumnType("bit");
 
                     b.Property<string>("Inspector")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsRoot")
@@ -299,21 +319,18 @@ namespace LineControllerInfrastructure.Migrations
                     b.Property<decimal?>("ProcessingTime")
                         .HasColumnType("DECIMAL(18, 3)");
 
-                    b.Property<int>("RootId")
+                    b.Property<int?>("RootId")
                         .HasColumnType("int");
 
                     b.Property<bool>("SendEmail")
                         .HasColumnType("bit");
 
                     b.Property<string>("TestLocation")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DeviceId");
-
-                    b.HasIndex("DeviceId1");
 
                     b.HasIndex("LastChangedUserId");
 
@@ -334,7 +351,6 @@ namespace LineControllerInfrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AccountingNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("AccountingType")
@@ -344,7 +360,6 @@ namespace LineControllerInfrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Comment")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("LastChangedDate")
@@ -357,7 +372,6 @@ namespace LineControllerInfrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("ReceiverId")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -465,49 +479,17 @@ namespace LineControllerInfrastructure.Migrations
                     b.ToTable("DeviceCalibrationOrderStatusHistory", (string)null);
                 });
 
-            modelBuilder.Entity("LineControllerInfrastructure.Entities.DeviceClass", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("DeviceClassId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DeviceModelId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("LastChangedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("LastChangedUserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DeviceModelId")
-                        .IsUnique();
-
-                    b.HasIndex("LastChangedUserId");
-
-                    b.ToTable("DeviceClass", (string)null);
-                });
-
             modelBuilder.Entity("LineControllerInfrastructure.Entities.DeviceClassMode", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("DeviceModeId");
+                        .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("DeviceClassId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("LastChangedDate")
                         .HasColumnType("datetime2");
@@ -538,8 +520,7 @@ namespace LineControllerInfrastructure.Migrations
 
                     b.Property<string>("OutputUnit")
                         .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<float?>("TemperatureMax")
                         .HasColumnType("real");
@@ -548,8 +529,6 @@ namespace LineControllerInfrastructure.Migrations
                         .HasColumnType("real");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DeviceClassId");
 
                     b.HasIndex("LastChangedUserId");
 
@@ -759,8 +738,6 @@ namespace LineControllerInfrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
-
-                    b.HasIndex("DeviceClassId");
 
                     b.HasIndex("DeviceId");
 
@@ -1251,6 +1228,17 @@ namespace LineControllerInfrastructure.Migrations
                     b.Navigation("LastChangedUser");
                 });
 
+            modelBuilder.Entity("LineControllerInfrastructure.Entities.CalibrationLocation", b =>
+                {
+                    b.HasOne("LineControllerInfrastructure.Entities.CompanyLocation", "CompanyLocation")
+                        .WithMany()
+                        .HasForeignKey("CompanyLocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CompanyLocation");
+                });
+
             modelBuilder.Entity("LineControllerInfrastructure.Entities.CompanyLocation", b =>
                 {
                     b.HasOne("LineControllerInfrastructure.Entities.User", "LastChangedUser")
@@ -1270,12 +1258,6 @@ namespace LineControllerInfrastructure.Migrations
                     b.HasOne("LineControllerInfrastructure.Entities.User", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById");
-
-                    b.HasOne("LineControllerInfrastructure.Entities.DeviceClass", "DeviceClass")
-                        .WithMany()
-                        .HasForeignKey("DeviceClassId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
 
                     b.HasOne("LineControllerInfrastructure.Entities.User", "LastChangedUser")
                         .WithMany()
@@ -1302,8 +1284,6 @@ namespace LineControllerInfrastructure.Migrations
 
                     b.Navigation("CreatedBy");
 
-                    b.Navigation("DeviceClass");
-
                     b.Navigation("LastChangedUser");
 
                     b.Navigation("Parent");
@@ -1316,14 +1296,10 @@ namespace LineControllerInfrastructure.Migrations
             modelBuilder.Entity("LineControllerInfrastructure.Entities.DeviceCalibrationOrder", b =>
                 {
                     b.HasOne("LineControllerInfrastructure.Entities.Device", "Device")
-                        .WithMany()
-                        .HasForeignKey("DeviceId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("LineControllerInfrastructure.Entities.Device", null)
                         .WithMany("CalibrationOrders")
-                        .HasForeignKey("DeviceId1");
+                        .HasForeignKey("DeviceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("LineControllerInfrastructure.Entities.User", "LastChangedUser")
                         .WithMany()
@@ -1338,8 +1314,7 @@ namespace LineControllerInfrastructure.Migrations
                     b.HasOne("LineControllerInfrastructure.Entities.DeviceCalibrationOrderRoot", "Root")
                         .WithMany()
                         .HasForeignKey("RootId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Device");
 
@@ -1364,8 +1339,7 @@ namespace LineControllerInfrastructure.Migrations
                     b.HasOne("LineControllerInfrastructure.Entities.User", "Receiver")
                         .WithMany()
                         .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Action");
 
@@ -1400,38 +1374,12 @@ namespace LineControllerInfrastructure.Migrations
                     b.Navigation("Status");
                 });
 
-            modelBuilder.Entity("LineControllerInfrastructure.Entities.DeviceClass", b =>
-                {
-                    b.HasOne("LineControllerInfrastructure.Entities.DeviceModel", "DeviceModel")
-                        .WithMany()
-                        .HasForeignKey("DeviceModelId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("LineControllerInfrastructure.Entities.User", "LastChangedUser")
-                        .WithMany()
-                        .HasForeignKey("LastChangedUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("DeviceModel");
-
-                    b.Navigation("LastChangedUser");
-                });
-
             modelBuilder.Entity("LineControllerInfrastructure.Entities.DeviceClassMode", b =>
                 {
-                    b.HasOne("LineControllerInfrastructure.Entities.DeviceClass", "DeviceClass")
-                        .WithMany("Modes")
-                        .HasForeignKey("DeviceClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("LineControllerInfrastructure.Entities.User", "LastChangedUser")
                         .WithMany()
                         .HasForeignKey("LastChangedUserId")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("DeviceClass");
 
                     b.Navigation("LastChangedUser");
                 });
@@ -1510,11 +1458,6 @@ namespace LineControllerInfrastructure.Migrations
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("LineControllerInfrastructure.Entities.DeviceClass", null)
-                        .WithMany()
-                        .HasForeignKey("DeviceClassId")
-                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("LineControllerInfrastructure.Entities.Device", "Device")
                         .WithMany("Reservations")
@@ -1677,11 +1620,6 @@ namespace LineControllerInfrastructure.Migrations
             modelBuilder.Entity("LineControllerInfrastructure.Entities.DeviceCalibrationOrder", b =>
                 {
                     b.Navigation("StatusHistory");
-                });
-
-            modelBuilder.Entity("LineControllerInfrastructure.Entities.DeviceClass", b =>
-                {
-                    b.Navigation("Modes");
                 });
 
             modelBuilder.Entity("LineControllerInfrastructure.Entities.DeviceIssue", b =>

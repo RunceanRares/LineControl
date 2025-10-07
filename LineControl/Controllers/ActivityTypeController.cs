@@ -17,6 +17,7 @@ namespace LineControl.Controllers
     {
       this.service = service;
     }
+
     public IActionResult Index()
     {
       return View();
@@ -30,7 +31,8 @@ namespace LineControl.Controllers
 
     public ActionResult Edit(int id)
     {
-      return View(service.GetActivityById(id));
+      var activity = service.GetActivityById(id);
+      return View("Create", activity);
     }
 
     [HttpPost]
@@ -50,7 +52,8 @@ namespace LineControl.Controllers
 
     public async Task<ActionResult> Create()
     {
-      return View();
+      var model = new ActivityTypeViewModel();
+      return View(model);
     }
 
     [HttpPost]

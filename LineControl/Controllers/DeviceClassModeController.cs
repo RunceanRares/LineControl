@@ -4,6 +4,8 @@ using LineControllerCore.Interface;
 using LineControllerCore.Model;
 using Microsoft.AspNetCore.Mvc;
 
+using System.Diagnostics;
+
 namespace LineControl.Controllers
 {
   public class DeviceClassModeController : Controller
@@ -28,23 +30,24 @@ namespace LineControl.Controllers
 
     public ActionResult EditDeviceClassMode(int id)
     {
-      return View(service.GetDeviceClassModelById(id));
+      var model = service.GetDeviceClassModelById(id);
+      return View(model);
     }
 
-    //[HttpPost]
-    //[ValidateAntiForgeryToken]
-    //public ActionResult EditDeviceClassMode(DeviceClassModeViewModel model)
-    //{
-    //  if (ModelState.IsValid)
-    //  {
-    //    service.UpdateDeviceClassModel(model);
-    //    return RedirectToAction("Index");
-    //  }
-    //  else
-    //  {
-    //    return View(model);
-    //  }
-    //}
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult EditDeviceClassMode(DeviceClassModeViewModel model)
+    {
+      if (ModelState.IsValid)
+      {
+        service.UpdateDeviceClassModel(model);
+        return RedirectToAction("Index");
+      }
+      else
+      {
+        return View(model);
+      }
+    }
 
     public ActionResult GetDeviceMode([DataSourceRequest] DataSourceRequest request)
     {

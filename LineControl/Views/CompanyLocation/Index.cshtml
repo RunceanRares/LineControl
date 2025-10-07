@@ -12,6 +12,18 @@
 @(Html.Kendo().Grid<CompanyLocationViewModel>().Name("Company")
   .Columns(columns =>
   {
+    columns.Command(c =>
+          {
+            c.Custom("editCompant")
+                    .Text(" ")
+                    .IconClass("k-icon k-i-edit")
+                    .Click("openEditCompanyLocation")
+                    .HtmlAttributes(new
+                    {
+                      @class = "s-grid-CompanyLocation",
+                      data_url = Url.Action("Edit", "CompanyLocation", new { id = "__id__" })
+                    });
+          });
     columns.Bound(s => s.Code).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").ShowOperators(false).SuggestionOperator(FilterType.Contains)));
     columns.Bound(s => s.Name).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").ShowOperators(false).SuggestionOperator(FilterType.Contains)));
     columns.Bound(s => s.Country).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").ShowOperators(false).SuggestionOperator(FilterType.Contains)));
@@ -24,14 +36,15 @@
     .Sortable()
     .Scrollable()
     .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+    .ColumnMenu()
     .DataSource(dataSource => dataSource
       .Ajax()
       .Model(m => m.Id(p => p.Id))
-      .Read("GetCompanies", "CompanyLocation")
+      .Read("GetCompaniesLocation", "CompanyLocation")
       .ServerOperation(true)
       .PageSize(15)
     )
     .Resizable(r => r.Columns(true))
-    .HtmlAttributes(new { @class = "s-gridContent" })
+    .HtmlAttributes(new { @class = "s-gridContent", data_action_edit = Url.Action("Edit", "CompanyLocation") })
     .Deferred(true)
  )

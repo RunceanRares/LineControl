@@ -2,6 +2,8 @@
 using LineControllerCore.Model;
 using LineControllerInfrastructure;
 using LineControllerInfrastructure.Entities;
+
+using System.Diagnostics;
 namespace LineControllerCore.Service
 {
   public class CompanyLocationService : ICompanyLocationService
@@ -13,7 +15,7 @@ namespace LineControllerCore.Service
        this.context = contextDb;
     }
 
-    public List<CompanyLocationViewModel> GetCompanies()
+    public List<CompanyLocationViewModel> GetCompaniesLocation()
     {
       return context.CompanyLocations.Select(s => new CompanyLocationViewModel()
       {
@@ -31,6 +33,32 @@ namespace LineControllerCore.Service
       context.CompanyLocations.Add(companyLocationViewModel);
       context.SaveChanges();
       return company;
+    }
+
+    public CompanyLocationViewModel GetLocationCompanyById(int id)
+    {
+      var locationCompany = context.CompanyLocations.Where(s => s.Id == id).Select( s => 
+        new CompanyLocationViewModel 
+        { 
+          Id = s.Id,
+          Name = s.Name,
+          Code = s.Code,
+          Country = s.Country,
+        }).FirstOrDefault();
+
+      return locationCompany ?? new CompanyLocationViewModel();
+    }
+
+    public CompanyLocationViewModel Update(CompanyLocationViewModel model)
+    {
+      var company = context.CompanyLocations.FirstOrDefault(x => x.Id == model.Id);
+      if (company == null) return model;
+      company.Name = model.Name;
+
+      //context.CompanyLocations.Update(company);
+      context.SaveChanges();
+
+      return model;
     }
   }
 }

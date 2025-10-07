@@ -41,14 +41,15 @@ namespace LineControllerCore.Models
 
         return $"{CreatedByLastName}, {CreatedByFirstName} {CreatedByDepartment}";
       }
+     
     }
 
-    public string SerialNumber { get; set; }
+    public string? SerialNumber { get; set; }
 
     [Display(Name = "Received date")]
     [DisplayFormat(DataFormatString = "{0:d}")]
     [DataType(DataType.Date)]
-    public DateTime ReceivedDate { get; set; }
+    public DateTime? ReceivedDate { get; set; }
 
     [Display(Name = "Action")]
     public int ActionId { get; set; }
@@ -60,32 +61,35 @@ namespace LineControllerCore.Models
 
     public string? Status { get; set; }  
 
-    public string AccountingNumber { get; set; }
+    public string? AccountingNumber { get; set; }
 
-    public string ReceiverFirstName { get; set; }
+    public string? ReceiverFirstName { get; set; }
 
-    public string ReceiverLastName { get; set; }
+    public string? ReceiverLastName { get; set; }
 
-    public string ReceiverDepartment { get; set; }
+    public string? ReceiverDepartment { get; set; }
 
-    public string ReceiverLocationName { get; set; }
-    public string LastStatusModifierFirstName { get; set; }
+    public string? ReceiverLocationName { get; set; }
+    public string? LastStatusModifierFirstName { get; set; }
 
-    public string LastStatusModifierLastName { get; set; }
+    public string? LastStatusModifierLastName { get; set; }
 
-    public string LastStatusModifierDepartment { get; set; }
+    public string? LastStatusModifierDepartment { get; set; }
 
 
     [Display(Name = "Status modification date")]
     [DisplayFormat(DataFormatString = "{0:G}", ApplyFormatInEditMode = true)]
     [DataType(DataType.DateTime)]
     public DateTime? LastStatusModificationDate { get; set; }
+
+    [Display(Name = "Calibration Date")]
+    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
     public DateTime? CalibrationDate { get; set; }
 
     [Display(Name = "Inspector")]                                    
-    public string Inspector { get; set; }
+    public string? Inspector { get; set; }
     [Display(Name = "Test location")]
-    public string TestLocation { get; set; }
+    public string? TestLocation { get; set; }
 
     public bool HasMeasurementRange { get; set; }
 
@@ -104,11 +108,15 @@ namespace LineControllerCore.Models
     public bool SendEmail { get; set; }
 
     [Display(Name = "Comment")]
-    public string Comment { get; set; }
+    public string? Comment { get; set; }
     public int RootId { get; set; }
 
     public bool IsRoot { get; set; }
 
     public int? CalibrationInterval { get; set; }
+
+    public int? PreviousDeviceStatusId { get; set; }
+
+    public bool Edited { get; set; }
   }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using LineControl.Models;
 using LineControllerCore.Interface;
 using LineControllerCore.Model;
 using LineControllerInfrastructure;
@@ -37,18 +38,25 @@ namespace LineControllerCore.Service
 
     public ActivityTypeViewModel Update(ActivityTypeViewModel model)
     {
-      ActivityType entity = MapUpdateViewModel(model);
+      var dateTime = DateTime.Now;
+      //ActivityType entity = MapUpdateViewModel(model);
       try
       {
-        var dateTime = DateTime.Now;
-        var userId = IdentityService.UserId;
-        entity.LastChangedDate = dateTime;
-        entity.LastChangedUserId = userId;
+        var activity = new ActivityType
+        {
+          Id = model.Id,
+          Code = model.Code,
+          CostCenter = model.CostCenter,
+          LastChangedDate = dateTime,
+          Name = model.Name,
+          Rate = (decimal)model.Rate,
+          PassiveCostFactor = model.PassiveCostFactor,
+        };
 
-        Entities.Update(entity);
+        Context.ActivityTypes.Update(activity);
         Context.SaveChanges();
 
-        return Mapper.Map<ActivityTypeViewModel>(entity);
+        return model;
       }
       catch (Exception ex)
       {
@@ -57,10 +65,15 @@ namespace LineControllerCore.Service
       }
     }
 
-    public ActivityTypeViewModel AddActivityType(ActivityTypeViewModel model)
+    public async Task<ActivityTypeViewModel> AddActivityType(ActivityTypeViewModel model)
     {
-      var result = CheckValidActivity(model);
-      if (result == null) 
+      var existingActivity = await CheckValidActivity(model).ConfigureAwait(false);
+      if (existingActivity.Id != 0)
+      {
+        Logger.LogWarning("Unable to add the activity type. Id already exists.");
+        return null; 
+      }
+      else
       {
         var activityModel = new ActivityType
         {
@@ -77,17 +90,14 @@ namespace LineControllerCore.Service
 
         return model;
       }
-      else
-      {
-        Logger.LogWarning("Unable to add the activity type. Id already exists.");
-        return result.Result;
-      }
     }
 
     protected ActivityType MapUpdateViewModel(ActivityTypeViewModel model)
     {
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
       ActivityType entity = Context.ActivityTypes.FirstOrDefault(s => s.Id == model.Id);
+      var date = DateTime.Now;
+      entity.LastChangedDate = date;
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
       if (entity is null)
       {
@@ -106,26 +116,21 @@ namespace LineControllerCore.Service
 
     private async Task<ActivityTypeViewModel> CheckValidActivity(ActivityTypeViewModel model)
     {
+      if (model.Id == 0)
+      {
+        return model;
+      }
+
       var result = Context.ActivityTypes.FirstOrDefault(s => s.Id == model.Id);
-      if (model.Id != 0)
+      if (result != null)
       {
         Logger.LogInformation("Unable to add the activity type. Id already exists.");
         return Mapper.Map<ActivityTypeViewModel>(result);
       }
       else
       {
-        return await CheckName(model).ConfigureAwait(false);
+        return model;
       } 
-    }
-
-    private async Task<ActivityTypeViewModel> CheckName(ActivityTypeViewModel model)
-    {
-      if (await Context.ActivityTypes.AnyAsync(s => s.Name == model.Name && s.Id != model.Id))
-      {
-        Logger.LogInformation("The activity type '{0}' already exists.", model.Name);
-      }
-
-      return model;
     }
   }
 }

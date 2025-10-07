@@ -13,7 +13,7 @@
                     .HtmlAttributes(new
                     {
                       @class = "s-grid-deviceClassModeEdit",
-                      data_url = Url.Action("EditDeviceClassMode", "DeviceClassMode", new { id = "__id__" })
+                      data_url = Url.Action("EditDeviceClassMode",  "DeviceClassMode", new { id = "__id__" })
                     });
           });
           column.Bound(c => c.MeasurementMin).Filterable(f => f.Cell(cell => cell.ShowOperators(false).Operator("contains").SuggestionOperator(FilterType.Contains))).MinScreenWidth(450).Hidden();
@@ -29,15 +29,16 @@
         .Pageable()
         .Sortable()
         .Scrollable()
-        .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+        .Filterable() 
+        .ColumnMenu()
         .DataSource(dataSource => dataSource
-        .Ajax()
-        .Model(m =>
-        {
-          m.Id(p => p.ModeId);
-        })
-        .Read(read => read.Action("GetDeviceClassMode", "DeviceClassMode"))
-        .PageSize(15))
+          .Ajax()
+          .Model(m =>
+          {
+            m.Id(p => p.Id);
+          })
+          .Read(read => read.Action("GetDeviceClassMode", "DeviceClassMode"))
+          .PageSize(15))
         .Resizable(r => r.Columns(true))
         .HtmlAttributes(new { @class = "s-gridContent", data_action_edit = Url.Action("EditDeviceClassMode", "DeviceClassMode") })
         .Deferred(true)
@@ -81,3 +82,13 @@
         )
   </div>
 </div>
+@* <script type="text/javascript">
+  function onDataBound(e) {
+    e.preventDefault();
+    var grid = this;
+    grid.table.find('tr').each(function () {
+      var dataItem = grid.dataItem(this)
+
+    });
+  }
+</script> *@

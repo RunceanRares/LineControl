@@ -34,11 +34,6 @@ namespace LineControllerInfrastructure.ContextConfiguration
              .HasForeignKey(d => d.StoragePlaceId)
              .OnDelete(DeleteBehavior.NoAction);
 
-      builder.HasOne(d => d.DeviceClass)
-             .WithMany()
-             .HasForeignKey(d => d.DeviceClassId)
-             .OnDelete(DeleteBehavior.Restrict);
-
       builder.HasOne(d => d.Status)
              .WithMany()
              .HasForeignKey(d => d.StatusId).OnDelete(DeleteBehavior.Restrict);

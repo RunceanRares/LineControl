@@ -8,6 +8,7 @@ namespace LineControllerCore.Interface
     List<UserViewModel> Get();
 
     UserViewModel Add(UserViewModel userViewModel);
+
     IQueryable<UserSelectViewModel> GetManager();
 
     UserViewModel AddUser(UserViewModel user);

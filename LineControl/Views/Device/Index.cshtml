@@ -47,6 +47,7 @@
      .Pageable()
      .Sortable()
      .Scrollable()
+      .ColumnMenu()
      .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
      .DataSource(dataSource => dataSource
        .Ajax()
@@ -57,6 +58,73 @@
      .Read(read => read.Action("GetDevices", "Device"))
      .PageSize(15))
      .Resizable(r => r.Columns(true))
-     .HtmlAttributes(new { @class = "s-gridContent", data_action_edit = Url.Action("Edit", "Device") })
+     .HtmlAttributes(new { @class = "s-gridContent expandable-grid", data_action_edit = Url.Action("Edit", "Device") })
      .Deferred(true)
 )
+@* <div id="treeListContainer" style="display: none;">
+    @(Html.Kendo().TreeList<DeviceHierarchyListViewModel>()
+        .Name("childrenTree_#=DeviceId#")
+        .Columns(columns =>
+        {
+            columns.Add()
+                .Field(m => m.ItemNumber)
+                .Template("<a href='" + Url.Action("Details", "Device", new { id = "" }) + "/#= DeviceId #'>#= ItemNumber #</a>")
+                .Width(200);
+        })
+        .DataSource(dataSource => dataSource
+            .Read(read => read.Action("GetHierarchy", "Device").Data("getDeviceId"))
+        )
+        .Sortable()
+        .Scrollable(false)
+    )
+</div> *@
+<script>
+  $(document).ready(function () {
+    $(".expandable-grid").on("click", ".expand-row", function () {
+      var $icon = $(this);
+      var deviceId = $icon.data("id");
+      var $row = $icon.closest("tr");
+      if ($icon.hasClass("k-i-expand")) {
+        $row.after(`
+                      <tr class="detail-row">
+                          <td colspan="${$row.find("td").length}">
+                              <div id="treelist_${deviceId}"></div>
+                          </td>
+                      </tr>
+                  `);
+
+        $("#treelist_" + deviceId).kendoTreeList({
+          dataSource: {
+            transport: {
+              read: {
+                url: "/Device/GetHierarchy",
+                data: { parentId: deviceId}
+                }
+              },
+              schema: {
+                model:{
+                  id: "Id",
+                  parentId: "ParentId",
+                  fields: {
+                    Id: { type: "number" },
+                    ParentId: { type: "number" },
+                    ItemNumber: { type: "string" }
+                  }
+                }
+              }
+          },
+            columns: [
+              { field: "ItemNumber", title: "Item Number", width: "200px" },
+            ],
+            sortable: true,
+            filterable: true,
+            pageable: true
+        });
+        $icon.removeClass("k-i-expand").addClass("k-i-collapse");
+      } else {
+        $row.next(".detail-row").remove();
+        $icon.removeClass("k-i-collapse").addClass("k-i-expand");
+      }
+    })
+  })
+</script>
