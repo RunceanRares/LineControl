@@ -41,7 +41,7 @@ Html.Kendo().Grid<DeviceCalibrationOrderViewModel>().Name("Grid")
        {
          m.Id(p => p.Id);
        })
-     .Read(read => read.Action("GetDevicesCalibration", "DeviceCalibration"))
+  .Read(read => read.Action("GetDevicesCalibration", "CalibrationOrder"))
      .PageSize(15))
      .Resizable(r => r.Columns(true))
      .HtmlAttributes(new { @class = "s-gridContent", data_action_edit = Url.Action("Edit", "DeviceCalibration") })
