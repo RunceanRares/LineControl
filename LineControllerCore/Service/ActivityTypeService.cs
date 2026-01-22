@@ -13,8 +13,8 @@ namespace LineControllerCore.Service
 {
   public class ActivityTypeService : BaseService<ActivityType>, IActivityTypeService
   {
-    public ActivityTypeService(LineContextDb context, IMapper mapper, ILogger<ActivityTypeService> logger)
-         : base(context, mapper, logger)
+    public ActivityTypeService(LineContextDb context, IMapper mapper, ILogger<ActivityTypeService> logger, IIdentityService identityService)
+         : base(context, mapper, logger, identityService)
     {
     }
 

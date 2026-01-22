@@ -25,11 +25,11 @@ namespace LineControllerInfrastructure.Entities
     [Column(TypeName = "DECIMAL(18, 4)")]
     public decimal? OutputMax { get; set; }
 
-    public string MaterialNumber { get; set; }
+    public string? MaterialNumber { get; set; }
 
-    public string Description {  get; set; }
+    public string? Description {  get; set; }
 
-    public string OutputUnit { get; set; }
+    public string? OutputUnit { get; set; }
 
     public DateTime? LastChangedDate { get; set; }
 

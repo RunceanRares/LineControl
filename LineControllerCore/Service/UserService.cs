@@ -16,7 +16,7 @@ namespace LineControllerCore.Service
   {
     private readonly IUserRoleService userRoleService;
 
-    public UserService(LineContextDb context, IMapper mapper, ILogger<UserService> logger, IUserRoleService userRoleService) : base(context, mapper, logger)
+    public UserService(LineContextDb context, IMapper mapper, ILogger<UserService> logger, IUserRoleService userRoleService, IIdentityService identityService) : base(context, mapper, logger, identityService)
     {
       this.userRoleService = userRoleService;
     }

@@ -20,16 +20,21 @@ namespace LineControllerCore.Service
 {
   public class InventoryLocationService : BaseService<InventoryLocation>, IInventoryLocationService
   {
-    public InventoryLocationService(LineContextDb context, IMapper mapper, ILogger<DeviceService> logger)
-           : base(context, mapper, logger)
+    public InventoryLocationService(LineContextDb context, IMapper mapper, ILogger<DeviceService> logger, IIdentityService identityService)
+           : base(context, mapper, logger, identityService)
     {
     }
 
-    public async Task<IEnumerable<InventoryLocationViewModel>> GetInventoryLocationAsync()
+    public async Task<IEnumerable<StoragePlaceSelectViewModel>> GetInventoryLocationAsync()
     {
-      var result = await Context.InventoryLocations.OrderBy(s => s.Id)
-                                .ProjectTo<InventoryLocationViewModel>(Mapper.ConfigurationProvider)
-                                .ToListAsync().ConfigureAwait(false);
+      var result = await Context.StoragePlaces.AsNoTracking().Select(s => new StoragePlaceSelectViewModel
+      {
+        Id = s.Id,
+        Name = s.CompanyLocation.Name + " " + s.Building + " " + s.RoomNumber,
+      })
+      .OrderBy(s => s.Name)
+      .ToListAsync().ConfigureAwait(false);
+
       return result;
     }
 

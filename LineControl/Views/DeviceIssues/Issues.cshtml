@@ -1,0 +1,191 @@
+﻿@model DeviceIssueEditViewModel
+@{
+  ViewData["Title"] = "Issue Device";
+  }
+<div class="row">
+  <div class="col">
+    <h2>Issue Device</h2>
+  </div>
+</div>
+
+<div class="container-fluid mt-4">
+  <div class="row">
+    <div class="col-12 col-lg-5">
+      <div class="card h-100">
+        <div class="card-body">
+          <form method="post" class="s-device-issue-editor s-device-issue-form">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.IssueId, new { @class = "s-device-issueid" })
+            @Html.HiddenFor(m => m.DeviceId, new { @class = "s-device-id" })
+            @Html.HiddenFor(m => m.ParentId)
+            @Html.HiddenFor(m => m.HasReservations, new { @class = "s-device-issue-reservation" })
+            @Html.HiddenFor(m => m.IsAccountingMandatory, new { @class = "s-device-issue-isaccountingmandatory" })
+            <input type="hidden" name="IsRetrieve" value="@(Model.IsRetrieve == true)" />
+            @Html.HiddenFor(m => m.CanIssue)
+            @Html.HiddenFor(m => m.CanRetrieve)
+            <div class="row mb-3">
+              <label class="col-md-4 col-form-label" asp-for="ItemNumber"></label>
+              <div class="col-md-8">
+                @(Html.Kendo().ComboBoxFor(m => m.ItemNumber)
+                    .Placeholder("Type item number...")
+                    .DataTextField("ItemNumber")
+                    .DataValueField("ItemNumber")
+                    .Filter("contains")
+                    .MinLength(2)
+                    .AutoBind(false)
+                    .Suggest(true)
+                    .Events(e => e.Select("onItemNumberChange"))
+                    .DataSource(source =>
+                    {
+                      source.Read(read =>
+                      {
+                        read.Action("SearchItemNumbers", "DeviceIssues").Data("sendItemNumberData");
+                      })
+                      .ServerFiltering(true);
+                    })
+                    .HtmlAttributes(new { @class = "s-device-itemnumber" })
+                    )
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label class="col-md-4 col-form-label" asp-for="RecipientId"></label>
+              <div class="col-md-8">
+
+                @(Html.Kendo().DropDownListFor(m => m.RecipientId)
+                    .HtmlAttributes(new { @class = "s-device-recipient" })
+                    .OptionLabel("Select a recipient...")
+                    .DataTextField("DisplayName")
+                    .DataValueField("Id")        
+                    .DataSource(dataSource => dataSource.Read(read =>
+                    {
+                      read.Action("GetActiveUsers", "DeviceIssues");
+                    }))
+                    .Deferred()
+                    ) 
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <label class="col-md-4 col-form-label" asp-for="ReturnDate"></label>
+              <div class="col-md-8">
+                @Html.EditorFor(m => m.ReturnDate, new
+                  {
+                    @class = "s-device-issue-returndate",
+                    @readonly = !(Model?.CanIssue ?? false),
+                    min = Model?.MinimReturnDate.ToString("yyyy-MM-dd"),
+                    max = Model?.MaximReturnDate.ToString("yyyy-MM-dd"),
+                    data_val = "true"
+                  })
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label class="col-md-4 col-form-label" asp-for="AccountingNumber"></label>
+              <div class="col-md-8">
+                  @Html.EditorFor(m => m.AccountingNumber, new { @class = "s-device-issue-accounting", @readonly = !Model.CanIssue || (Model.IsRetrieve ?? false) })
+              </div>
+            </div>
+              <div class="row mb-3">
+                <label class="col-md-4 col-form-label" asp-for="Comment"></label>
+                <div class="col-md-8">
+                  @Html.EditorFor(m => m.Comment, new { @class = "s-device-issue-comment"})
+                </div>
+              </div>
+            <div class="row mb-3">
+                <label class="col-md-4 s-label" asp-for="AccountingType">Accounting Type</label>
+              <div class="col-md-8">
+                  @(Html.Kendo().DropDownListFor(m => m.AccountingType)
+                      .BindTo(Enum.GetValues(typeof(LineControllerInfrastructure.Entities.Enums.AccountingType))
+                      .Cast<LineControllerInfrastructure.Entities.Enums.AccountingType>()
+                          .Select(e => new SelectListItem
+                      {
+                        Text = e.ToString(),
+                        Value = ((int)e).ToString()
+                      }))
+                      .OptionLabel("Select accounting type...")
+                      .HtmlAttributes(new { @class = "s-customTextArea" })
+                      .Deferred(true)
+                      )
+              </div>
+            </div>
+              @if (Model.CanIssue && !(Model.IsRetrieve ?? false))
+            {
+              <div class="row mb-3 s-device-issue-recipientreservations">
+                @if (Model.Reservations.Count > 0)
+                {
+                  await Html.RenderPartialAsync("_IssueUserReservations", Model.UserReservations).ConfigureAwait(false);
+                }
+              </div>
+            }
+            <div class="mb-3 d-flex gap-2">
+              @{
+                var buttonContent = "Issue";
+              }
+              @(Html.Kendo().Button()
+                  .Name("saveIssue")
+                  .ThemeColor(ThemeColor.Primary)
+                  .Content(buttonContent)
+                  .HtmlAttributes(new { type = "submit", formaction = Url.Action("Issues", "DeviceIssues") })
+                  .Deferred()
+                  )
+              @(Html.Kendo().Button()
+                  .Name("deviceBack")
+                  .Tag("a")
+                  .Content("Back")
+                  .HtmlAttributes(new { href = Url.Action("Index", "Device") })
+                  .Deferred()
+                  )
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+<div class="col-12 col-lg-7">
+ <div class="card h-100">
+   <div class="card-body">
+     <div class="row mb-3">
+       <div class="col-12">
+         <h2 class="mb-0">Device Structure</h2>
+       </div>
+     </div>
+       <div class="row">
+         <div class="col">
+          @(Html.Kendo().TreeList<DeviceIssueHierarchyListViewModel>()
+              .Name("childrenTree")
+              .Columns(columns =>
+              {
+                columns.Add().Field(m => m.ItemNumber);
+                columns.Add().Field(m => m.Manufacturer);
+                columns.Add().Field(m => m.DeviceModel);
+                columns.Add().Field(m => m.CalibrationDue)
+                .HtmlAttributes(new { @class = "s-device-column-calibrationdue" });
+                columns.Add().Field(m => m.InventoryLocation);
+              })
+              .Sortable()
+              .HtmlAttributes(new
+              {
+                @class = "s-device-issue-children", 
+              })
+              .DataSource(dataSource => dataSource.Read("GetIssueHierarchy", "DeviceIssues", new { deviceId = Model.DeviceId })
+              .ServerOperation(false)
+              .Model(model =>
+              {
+                model.Id(f => f.Id);
+                model.ParentId(f => f.ParentId);
+                model.Expanded(true);
+                model.Field(f => f.ItemNumber);
+                model.Field(f => f.Manufacturer);
+                model.Field(f => f.DeviceModel);
+                model.Field(f => f.InventoryLocation);
+                model.Field(f => f.IsCalibrationDue);
+                model.Field(f => f.HasActiveCalibrationOrder);
+              })
+              )
+              .Deferred()
+              )
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>

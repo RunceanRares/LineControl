@@ -10,7 +10,7 @@ namespace LineControllerCore.Interface
 {
   public interface IInventoryLocationService
   {
-    Task<IEnumerable<InventoryLocationViewModel>> GetInventoryLocationAsync();
+    Task<IEnumerable<StoragePlaceSelectViewModel>> GetInventoryLocationAsync();
 
     Task<IEnumerable<InventoryLocationViewModel>> GetAuthorizedInventoryLocationsAsync(int userId, string text, int? includeId, bool forResponsible, string culture);
 

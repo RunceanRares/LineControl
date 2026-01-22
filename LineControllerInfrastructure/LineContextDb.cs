@@ -1,17 +1,24 @@
-﻿using LineControllerCore.Model;
+﻿using LineControllerCore.Interface;
+using LineControllerCore.Model;
 
 using LineControllerInfrastructure.ContextConfiguration;
 using LineControllerInfrastructure.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+
+using System;
 using System.Reflection;
+using System.Text.Json;
 
 namespace LineControllerInfrastructure
 {
   public class LineContextDb : DbContext
   {
-    public LineContextDb(DbContextOptions<LineContextDb> options) : base(options)
-    { 
+    private readonly IServiceProvider _serviceProvider;
+    public LineContextDb(DbContextOptions<LineContextDb> options, IServiceProvider serviceProvider) : base(options)
+    {
+      _serviceProvider = serviceProvider;
     }
 
     public DbSet<User> Users { get; set; }
@@ -38,8 +45,6 @@ namespace LineControllerInfrastructure
 
     public DbSet<ReservationStatus> ReservationStatuses { get; set; }
 
-    public DbSet<DeviceHierarchy> DeviceHierarchy { get; set; }
-
     public DbSet<Device> Devices { get; set; }
 
     public DbSet<Role> Roles { get; set; }
@@ -55,6 +60,10 @@ namespace LineControllerInfrastructure
     public DbSet<CalibrationLocation> CalibrationLocations { get; set; }
 
     public DbSet<DeviceCalibrationOrderRoot> DeviceCalibrationOrderRoots { get; set; }
+
+    public DbSet<Manufacturer> Manufacturers { get; set; }
+
+    public DbSet<DeviceClass> DeviceClass { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -80,13 +89,39 @@ namespace LineControllerInfrastructure
       modelBuilder.ApplyConfiguration(new ReservationStatusConfig());
       modelBuilder.ApplyConfiguration(new DeviceModelConfig());
       modelBuilder.ApplyConfiguration(new RoleConfig());
-
-      modelBuilder.Entity<DeviceHierarchy>().ToView("DeviceHierarchy").HasKey(h => new { h.ParentId, h.ChildId });
     }
 
     public override int SaveChanges()
     {
       return base.SaveChanges();
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+      var auditEntries = OnBeforeSaveChanges();
+
+      // 2. Salvăm modificările normale (Device, Reservation, etc.)
+      var result = await base.SaveChangesAsync(cancellationToken);
+
+      // 3. Dacă avem istoric de salvat, îl salvăm acum
+      // Facem asta după pasul 2 pentru a avea ID-ul generat în caz de "Add" (Create)
+      if (auditEntries.Any())
+      {
+        foreach (var history in auditEntries)
+        {
+          if (history.Action == "Create" || history.DeviceId == 0)
+          {
+            if (history.Device != null)
+            {
+              history.DeviceId = history.Device.Id;
+            }
+          }
+        }
+        await DeviceHistories.AddRangeAsync(auditEntries, cancellationToken);
+        await base.SaveChangesAsync(cancellationToken); // Salvăm istoricul
+      }
+
+      return result;
     }
 
     public IQueryable<DeviceCalibrationOrder> ActiveCalibrationOrders
@@ -99,56 +134,90 @@ namespace LineControllerInfrastructure
       }
     }
 
-    private IQueryable<DeviceHierarchy> StructureRoot
-    {
-      get
-      {
-        return DeviceHierarchy.GroupBy(h => h.ChildId)
-                              .Select(h => new { Id = h.Key, Depth = h.Max(d => d.Depth) })
-                              .Join(DeviceHierarchy, h => new { Key1 = h.Id, Key2 = h.Depth }, h => new { Key1 = h.ChildId, Key2 = h.Depth }, (_, h) => h);
-      }
-    }
 
-    public IQueryable<Device> GetDeviceTree(int deviceId)
+    public IQueryable<Device> GetDeviceTree(int? deviceId)
     {
-      return StructureRoot.Where(m => m.ChildId == deviceId)
-                          .Join(DeviceHierarchy, h => h.ParentId, h => h.ParentId, (_, h2) => h2)
-                          .Join(Devices, h => h.ChildId, d => d.Id, (_, d) => d);
-    }
-
-    public IQueryable<Device> GetDeviceTree(IEnumerable<int> deviceIds)
-    {
-      return StructureRoot.Where(m => deviceIds.Contains(m.ChildId))
-                           .Join(DeviceHierarchy, h => h.ParentId, h => h.ParentId, (_, h2) => h2)
-                           .Join(Devices, h => h.ChildId, d => d.Id, (_, d) => d)
-                           .Distinct();
+      return Devices.Where(m => m.Id == deviceId || m.ParentId == deviceId);
     }
 
     public IQueryable<Device> GetDeviceDescendantTree(int? deviceId)
     {
-      return DeviceHierarchy.Where(m => m.ParentId == deviceId)
-                            .Join(Devices, h => h.ChildId, d => d.Id, (_, d) => d);
+      return Devices.Where(d => d.Id == deviceId || d.ParentId == deviceId);
     }
 
-    public IQueryable<DeviceMeasurementChainHierarchy> GetDeviceChildrenTree(int deviceId)
+    private List<DeviceHistory> OnBeforeSaveChanges()
     {
-      // Selectăm doar dispozitivele și excludem lanțurile de măsurare
-#pragma warning disable CS8601 // Possible null reference assignment.
-      return GetDeviceTree(deviceId).Select(d => new DeviceMeasurementChainHierarchy
+      var identityService = _serviceProvider.GetService<IIdentityService>();
+      ChangeTracker.DetectChanges();
+      var historyEntries = new List<DeviceHistory>();
+      var userId = identityService.UserId.Value;
+
+      // Căutăm doar entitățile de tip DEVICE care sunt modificate/adăugate/șterse
+      var entries = ChangeTracker.Entries<Device>()
+                                 .Where(e => e.State == EntityState.Added ||
+                                             e.State == EntityState.Modified ||
+                                             e.State == EntityState.Deleted);
+
+      foreach (var entry in entries)
       {
-        IsMeasurementChainChild = false, // Marcăm explicit că nu este un copil al unui lanț de măsurare
-        DeviceId = d.Id,
-        ParentId = d.ParentId,
-        ItemNumber = d.ItemNumber,
-        CalibrationDate = d.CalibrationDate,
-        CalibrationInterval = d.CalibrationInterval,
-        Position = 0,
-        HasActiveCalibrationOrder = d.CalibrationOrders.Any(co => co.StatusHistory
-            .OrderByDescending(sh => sh.LastChangedDate)
-            .Select(sh => sh.StatusId)
-            .FirstOrDefault() < DeviceCalibrationOrderStatus.Active)
-      });
-#pragma warning restore CS8601 // Possible null reference assignment.
+        var history = new DeviceHistory
+        {
+          ModificationDate = DateTime.Now,
+          ModificationUserId = userId,
+          // Dacă e sters, nu mai are DeviceId valid uneori, dar la Update/Add are
+          Device = (Device)entry.Entity,
+
+          DeviceId = entry.State == EntityState.Deleted ? (int)entry.Property("Id").OriginalValue : (int)entry.Property("Id").CurrentValue
+        };
+
+        // Serializăm stările pentru a le pune în OldValue/NewValue
+        // Folosim un Dictionary pentru a stoca doar proprietățile, nu tot obiectul greoi
+        var oldValues = new Dictionary<string, object>();
+        var newValues = new Dictionary<string, object>();
+
+        foreach (var property in entry.Properties)
+        {
+          string propertyName = property.Metadata.Name;
+
+          // Ignorăm colecțiile sau proprietățile care nu ne interesează
+          if (property.Metadata.IsPrimaryKey()) continue;
+
+          switch (entry.State)
+          {
+            case EntityState.Added:
+              history.Action = "Create";
+              newValues[propertyName] = property.CurrentValue;
+              break;
+
+            case EntityState.Deleted:
+              history.Action = "Delete";
+              oldValues[propertyName] = property.OriginalValue;
+              break;
+
+            case EntityState.Modified:
+              history.Action = "Update";
+              if (property.IsModified)
+              {
+                oldValues[propertyName] = property.OriginalValue;
+                newValues[propertyName] = property.CurrentValue;
+              }
+              break;
+          }
+        }
+
+        // Convertim dicționarele în JSON string
+        history.OldValue = oldValues.Count > 0 ? JsonSerializer.Serialize(oldValues) : null;
+        history.NewValue = newValues.Count > 0 ? JsonSerializer.Serialize(newValues) : null;
+
+        // Pentru CREATE, DeviceId-ul este temporar 0 până după save, 
+        // dar logica de mai sus îl va captura la pasul următor dacă e nevoie, 
+        // sau putem accepta că la create nu avem id imediat disponibil în logica simplă.
+        // Pentru simplitate, la UPDATE/DELETE merge perfect.
+
+        historyEntries.Add(history);
+      }
+
+      return historyEntries;
     }
   }
 }

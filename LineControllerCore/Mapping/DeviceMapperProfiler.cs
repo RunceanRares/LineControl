@@ -11,39 +11,35 @@ namespace LineControllerCore.Mapping
   {
     public DeviceMapperProfiler()
     {
-      //CreateMap<DeviceEditViewModel, Device>()
-      //        .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-      //        .ForMember(dest => dest.ItemNumber, opt => opt.MapFrom(src => src.ItemNumber))
-      //        .ForMember(dest => dest.ParentId, opt => opt.MapFrom(src => src.ParentId))
-      //        .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy))
-      //        .ForMember(dest => dest.CreationDate, opt => opt.MapFrom(src => src.CreationDate.Value))
-      //        .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreateByUserName))
-      //        .ForMember(dest => dest.MeasurementMin, opt => opt.MapFrom(src => src.MeasurementMin))
-      //        .ForMember(dest => dest.MeasurementMax, opt => opt.MapFrom(src => src.MeasurementMax))
-      //        .ForMember(dest => dest.MeasurementUnit, opt => opt.MapFrom(src => src.MeasurementUnit))
-      //        .ForMember(dest => dest.StoragePlaceId, opt => opt.MapFrom(src => src.StoragePlaceId))
-      //        .ForMember(dest => dest.InventoryNumber, opt => opt.MapFrom(src => src.InventoryNumber))
-      //        .ForMember(dest => dest.EquipmentNumber, opt => opt.MapFrom(src => src.EquipmentNumber))
-      //        .ForMember(dest => dest.SerialNumber, opt => opt.MapFrom(src => src.SerialNumber))
-      //        .ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.StatusId))
-      //        .ForMember(dest => dest.ActivityTypeId, opt => opt.MapFrom(src => src.ActivityTypeId))
-      //        .ForMember(dest => dest.CostFactor, opt => opt.MapFrom(src => src.CostFactor))
-      //        .ForMember(dest => dest.Accessories, opt => opt.MapFrom(src => src.Accessories))
-      //        .ForMember(dest => dest.Comment, opt => opt.MapFrom(src => src.Comment))
-      //        .ForMember(dest => dest.CalibrationTester, opt => opt.MapFrom(src => src.CalibrationTester))
-      //        .ForMember(dest => dest.CalibrationLocation, opt => opt.MapFrom(src => src.CalibrationLocation))
-      //        .ForMember(dest => dest.CalibrationDate, opt => opt.MapFrom(src => src.CalibrationDate))
-      //        .ForMember(dest => dest.CalibrationInterval, opt => opt.MapFrom(src => src.CalibrationInterval))
-      //        .ForMember(dest => dest.CalibrationResult, opt => opt.MapFrom(src => src.CalibrationResult))
-      //        .ForMember(dest => dest.MaterialNumber, opt => opt.MapFrom(src => src.MaterialNumber))
-      //        .AfterMap((src, dest) =>
-      //        {
-      //          if (dest.ActivityType == null)
-      //          {
-      //            dest.ActivityType = new ActivityType();
-      //          }
-      //          dest.ActivityType.Rate = (decimal)src.ActivityTypeRate;
-      //        });
+      DateTime? now = null;
+      CreateMap<DeviceEditViewModel, Device>()
+              .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+              .ForMember(dest => dest.ItemNumber, opt => opt.MapFrom(src => src.ItemNumber))
+              .ForMember(dest => dest.ParentId, opt => opt.MapFrom(src => src.ParentId))
+              .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
+              .ForMember(dest => dest.DeviceClassId, opt => opt.MapFrom(src => src.DeviceClassId))
+              .ForMember(dest => dest.CreationDate, opt => opt.MapFrom(src => src.CreationDate.Value))
+              .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreateByUserName))
+              .ForMember(dest => dest.MeasurementMin, opt => opt.MapFrom(src => src.MeasurementMin))
+              .ForMember(dest => dest.MeasurementMax, opt => opt.MapFrom(src => src.MeasurementMax))
+              .ForMember(dest => dest.MeasurementUnit, opt => opt.MapFrom(src => src.MeasurementUnit))
+              .ForMember(dest => dest.StoragePlaceId, opt => opt.MapFrom(src => src.StoragePlaceId))
+              .ForMember(dest => dest.StoragePlace, opt => opt.Ignore())
+              .ForMember(dest => dest.InventoryNumber, opt => opt.MapFrom(src => src.InventoryNumber))
+              .ForMember(dest => dest.EquipmentNumber, opt => opt.MapFrom(src => src.EquipmentNumber))
+              .ForMember(dest => dest.SerialNumber, opt => opt.MapFrom(src => src.SerialNumber))
+              .ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.StatusId))
+              .ForMember(dest => dest.ActivityTypeId, opt => opt.MapFrom(src => src.ActivityTypeId))
+              .ForMember(dest => dest.CostFactor, opt => opt.MapFrom(src => src.CostFactor))
+              .ForMember(dest => dest.Accessories, opt => opt.MapFrom(src => src.Accessories))
+              .ForMember(dest => dest.Comment, opt => opt.MapFrom(src => src.Comment))
+              .ForMember(dest => dest.CalibrationTester, opt => opt.MapFrom(src => src.CalibrationTester))
+              .ForMember(dest => dest.CalibrationLocation, opt => opt.MapFrom(src => src.CalibrationLocation))
+              .ForMember(dest => dest.CalibrationDate, opt => opt.MapFrom(src => src.CalibrationDate))
+              .ForMember(dest => dest.CalibrationInterval, opt => opt.MapFrom(src => src.CalibrationInterval))
+              .ForMember(dest => dest.CalibrationResult, opt => opt.MapFrom(src => src.CalibrationResult))
+              .ForMember(dest => dest.MaterialNumber, opt => opt.MapFrom(src => src.MaterialNumber))
+              .ForMember(dest => dest.ActivityTypeId, opt => opt.MapFrom(src => src.ActivityTypeId));
 
       CreateMap<Device, DeviceEditViewModel>()
               .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -52,13 +48,13 @@ namespace LineControllerCore.Mapping
               .ForMember(dest => dest.MeasurementMax, opt => opt.MapFrom(src => src.MeasurementMax))
               .ForMember(dest => dest.MeasurementUnit, opt => opt.MapFrom(src => src.MeasurementUnit))
               .ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.StatusId))
-              .ForMember(dest => dest.InventoryLocationId, opt => opt.MapFrom(src => src.StoragePlace.InventoryLocationId))
+              .ForMember(dest => dest.InventoryLocationId, opt => opt.MapFrom(src => src.StoragePlace!.InventoryLocationId))
               .ForMember(dest => dest.StoragePlaceId, opt => opt.MapFrom(src => src.StoragePlaceId))
               .ForMember(dest => dest.ParentId, opt => opt.MapFrom(src => src.ParentId))
-              .ForMember(dest => dest.ParentItemNumber, opt => opt.MapFrom(src => src.Parent.ItemNumber))
+              .ForMember(dest => dest.ParentItemNumber, opt => opt.MapFrom(src => src.Parent.ItemNumber != null ? src.Parent.ItemNumber : null))
               .ForMember(dest => dest.ActivityTypeId, opt => opt.MapFrom(src => src.ActivityTypeId))
               .ForMember(dest => dest.ActivityTypeRate, opt => opt.MapFrom(src => src.ActivityType != null ? src.ActivityType.Rate : (decimal?)null))
-              .ForMember(dest => dest.ActivityTypePassiveCostFactor, opt => opt.MapFrom(src => src.ActivityType.PassiveCostFactor))
+              .ForMember(dest => dest.ActivityTypePassiveCostFactor, opt => opt.MapFrom(src => src.ActivityType!.PassiveCostFactor))
               .ForMember(dest => dest.InventoryNumber, opt => opt.MapFrom(src => src.InventoryNumber))
               .ForMember(dest => dest.EquipmentNumber, opt => opt.MapFrom(src => src.EquipmentNumber))
               .ForMember(dest => dest.SerialNumber, opt => opt.MapFrom(src => src.SerialNumber))
@@ -78,9 +74,9 @@ namespace LineControllerCore.Mapping
               .ForMember(dest => dest.IssuedToFirstName, opt => opt.MapFrom(src => src.Issues.FirstOrDefault(i => i.ReturnDateActual == null).Recipient.FirstName))
               .ForMember(dest => dest.IssuedToLastName, opt => opt.MapFrom(src => src.Issues.FirstOrDefault(i => i.ReturnDateActual == null).Recipient.LastName))
               .ForMember(dest => dest.IssuedToDepartment, opt => opt.MapFrom(src => src.Issues.FirstOrDefault(i => i.ReturnDateActual == null).Recipient.Department))
-              .ForMember(dest => dest.CreatedByFirstName, opt => opt.MapFrom(src => src.CreatedBy.FirstName))
-              .ForMember(dest => dest.CreatedByLastName, opt => opt.MapFrom(src => src.CreatedBy.LastName))
-              .ForMember(dest => dest.CreatedByDepartment, opt => opt.MapFrom(src => src.CreatedBy.Department))
+              .ForMember(dest => dest.CreatedByFirstName, opt => opt.MapFrom(src => src.CreatedBy!.FirstName))
+              .ForMember(dest => dest.CreatedByLastName, opt => opt.MapFrom(src => src.CreatedBy!.LastName))
+              .ForMember(dest => dest.CreatedByDepartment, opt => opt.MapFrom(src => src.CreatedBy!.Department))
               .ForMember(dest => dest.IssueId, opt => opt.MapFrom(src => src.Issues.FirstOrDefault(i => i.ReturnDateActual == null).Id))
               .ForMember(dest => dest.IsCalibrationDue, opt => opt.MapFrom((src, dest, _, resContext) => dest.IsCalibrationDue = src.CalibrationDate != null &&
                                                                                                                                  src.CalibrationInterval != null &&
@@ -94,35 +90,44 @@ namespace LineControllerCore.Mapping
             .ForMember(dest => dest.MeasurementMin, opt => opt.MapFrom(src => src.MeasurementMin))
             .ForMember(dest => dest.MeasurementMax, opt => opt.MapFrom(src => src.MeasurementMax))
             .ForMember(dest => dest.MeasurementUnit, opt => opt.MapFrom(src => src.MeasurementUnit))
-            .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.StatusId == DeviceStatus.UsableId ? (src.CalibrationDate <= DateTime.Today ? DeviceStatus.UsableId : DeviceStatus.ReservedId)
-                                                                             : src.StatusId == DeviceStatus.LostId ? (src.StoragePlaceId != null ? DeviceStatus.LockedId : DeviceStatus.LostId)
-                                                                             : src.StatusId == DeviceStatus.LockedId ? (src.Reservation == true ? DeviceStatus.LockedId : DeviceStatus.NotUsableIssuedId)
-                                                                             : src.StatusId == DeviceStatus.LostId ? (src.StoragePlaceId == null ? DeviceStatus.LostId : DeviceStatus.LockedId)
-                                                                             : src.StatusId == DeviceStatus.LostId ? (src.StoragePlaceId == null ? DeviceStatus.LostId : DeviceStatus.LockedId) : DeviceStatus.UsableId))
+            //.ForMember(dest => dest.StatusName, opt => opt.MapFrom(src =>
+            //    src.StatusId == DeviceStatus.UsableId
+            //        ? (src.CalibrationDate <= DateTime.Today ? DeviceStatus.UsableId : DeviceStatus.ReservedId)
+            //        : src.StatusId == DeviceStatus.LostId
+            //            ? (src.StoragePlaceId != null ? DeviceStatus.LockedId : DeviceStatus.LostId)
+            //            : src.StatusId == DeviceStatus.LockedId
+            //                ? (src.Reservation == true ? DeviceStatus.LockedId : DeviceStatus.NotUsableIssuedId)
+            //                : DeviceStatus.UsableId))
+            .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status != null ? src.Status.Name : ""))
             .ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.StatusId))
-            .ForMember(dest => dest.InventoryLocation, opt => opt.MapFrom(src => src.StoragePlace.InventoryLocation))
-            .ForMember(dest => dest.StoragePlace, opt => opt.MapFrom(src => src.StoragePlace.Place + " " + src.StoragePlace.RoomNumber + " " + src.StoragePlace.Building))
-            .ForMember(dest => dest.ParentItemNumber, opt => opt.MapFrom(src => src.Parent.ItemNumber))
+            .ForMember(dest => dest.InventoryLocation, opt => opt.MapFrom(src => (src.StoragePlace != null && src.StoragePlace.InventoryLocation != null) ?                         src.StoragePlace.InventoryLocation.Name : string.Empty))
+            .ForMember(dest => dest.StoragePlace, opt => opt.MapFrom(src => src.StoragePlace != null
+                      ? (src.StoragePlace.Place ?? "") + " " + (src.StoragePlace.RoomNumber ?? "") + " " + (src.StoragePlace.Building ?? "") : string.Empty))
+            .ForMember(dest => dest.ParentItemNumber, opt => opt.MapFrom(src => src.Parent != null ? src.Parent.ItemNumber : string.Empty))
             .ForMember(dest => dest.ActivityTypeId, opt => opt.MapFrom(src => src.ActivityTypeId))
-            .ForMember(dest => dest.ActivityType, opt => opt.MapFrom(src => src.ActivityType.Rate))
-            .ForMember(dest => dest.PassiveCostFactor, opt => opt.MapFrom(src => src.ActivityType.PassiveCostFactor))
+            .ForMember(dest => dest.ActivityType, opt => opt.MapFrom(src => src.ActivityType != null ? src.ActivityType.Rate.ToString() : string.Empty))
+            .ForMember(dest => dest.PassiveCostFactor, opt => opt.MapFrom(src =>
+                src.ActivityType != null ? src.ActivityType.PassiveCostFactor : null))
             .ForMember(dest => dest.InventoryNumber, opt => opt.MapFrom(src => src.InventoryNumber))
             .ForMember(dest => dest.EquipmentNumber, opt => opt.MapFrom(src => src.EquipmentNumber))
             .ForMember(dest => dest.Comment, opt => opt.MapFrom(src => src.Comment))
             .ForMember(dest => dest.CreationDate, opt => opt.MapFrom(src => src.CreationDate))
             .ForMember(dest => dest.MaterialNumber, opt => opt.MapFrom(src => src.MaterialNumber))
-            .ForMember(dest => dest.Accessories, opt => opt.MapFrom(src => src.Accessories))
             .ForMember(dest => dest.CostFactor, opt => opt.MapFrom(src => src.CostFactor))
-            .ForMember(dest => dest.CreatedByFirstName, opt => opt.MapFrom(src => src.CreatedBy.FirstName))
-            .ForMember(dest => dest.CreatedByLastName, opt => opt.MapFrom(src => src.CreatedBy.LastName))
+            .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy != null ? src.CreatedBy.FirstName + " " + src.CreatedBy.LastName : string.Empty))
+            .ForMember(dest => dest.CreatedByFirstName, opt => opt.MapFrom(src => src.CreatedBy != null ? src.CreatedBy.FirstName : string.Empty))
+            .ForMember(dest => dest.CreatedByLastName, opt => opt.MapFrom(src => src.CreatedBy != null ? src.CreatedBy.LastName : string.Empty))
+            .ForMember(dest => dest.CreatedByDepartment, opt => opt.MapFrom(src => src.CreatedBy != null ? src.CreatedBy.Department : string.Empty))
             .ForMember(dest => dest.CalibrationTester, opt => opt.MapFrom(src => src.CalibrationTester))
             .ForMember(dest => dest.CalibrationLocation, opt => opt.MapFrom(src => src.CalibrationLocation))
             .ForMember(dest => dest.CalibrationDate, opt => opt.MapFrom(src => src.CalibrationDate))
-            .ForMember(dest => dest.CreatedByDepartment, opt => opt.MapFrom(src => src.CreatedBy.Department))
-            .ForMember(dest => dest.AccountingNumber, opt => opt.MapFrom(src => src.Issues.FirstOrDefault(i => i.ReturnDateActual == null).AccountingNumber))
-            .ForMember(dest => dest.IssueId, opt => opt.MapFrom(src => src.Issues.SingleOrDefault().Id))
-            .ForMember(dest => dest.IssueDate, opt => opt.MapFrom(src => src.Issues.SingleOrDefault().IssueDate))
-            .ForMember(dest => dest.IssueComment, opt => opt.MapFrom(src => src.Issues.SingleOrDefault().Description))
+            .ForMember(dest => dest.AccountingNumber, opt => opt.MapFrom(src => src.Issues
+                                   .Where(i => i.ReturnDateActual == null)
+                                   .Select(i => i.AccountingNumber)
+                                   .FirstOrDefault() ?? string.Empty))
+            .ForMember(dest => dest.Designation, opt => opt.Ignore())
+            .ForMember(dest => dest.DeviceModel, opt => opt.Ignore())
+            .ForMember(dest => dest.IssueComment, opt => opt.Ignore())
             .ForMember(dest => dest.CalibrationResult, opt => opt.MapFrom(src => src.CalibrationResult))
             .ForMember(dest => dest.SerialNumber, opt => opt.MapFrom(src => src.SerialNumber));
 
@@ -152,6 +157,17 @@ namespace LineControllerCore.Mapping
 
       CreateMap<DeviceStatus, DeviceStatusViewModel>()
            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
+
+      CreateMap<Device, DeviceIssueHierarchyListViewModel>()
+        .ForMember(dest => dest.Manufacturer, opt => opt.MapFrom(src => src.DeviceClass.Manufacturer.Name))
+        .ForMember(dest => dest.DeviceModel, opt => opt.MapFrom(src => src.DeviceClass.DeviceModel.Name))
+        .ForMember(dest => dest.CalibrationDue, opt => opt.MapFrom(src => src.CalibrationDate != null && src.CalibrationInterval != null ? src.CalibrationDate.Value.AddMonths(src.CalibrationInterval.Value) : (DateTime?)null))
+        .ForMember(dest => dest.IsCalibrationDue, opt => opt.MapFrom(src => src.CalibrationDate != null && src.CalibrationInterval != null && src.CalibrationDate.Value.AddMonths(src.CalibrationInterval.Value) <= now))
+        .ForMember(dest => dest.InventoryLocationName, opt => opt.MapFrom(src => src.StoragePlace.InventoryLocation.Name))
+        .ForMember(dest => dest.ResponsibleFirstName, opt => opt.MapFrom(src => src.StoragePlace.InventoryLocation.Responsible.FirstName))
+        .ForMember(dest => dest.ResponsibleLastName, opt => opt.MapFrom(src => src.StoragePlace.InventoryLocation.Responsible.LastName))
+        .ForMember(dest => dest.ResponsibleDepartment, opt => opt.MapFrom(src => src.StoragePlace.InventoryLocation.Responsible.Department));
+
     }
   }
 }

@@ -1,12 +1,19 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using LineControl.Models;
+
+using LineControllerCore.Interface;
 using LineControllerCore.Model;
 using LineControllerInfrastructure;
 using LineControllerInfrastructure.Entities;
+using LineControllerInfrastructure.Entities.Enums;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+
+using System;
+using System.Text.Json;
 
 namespace LineControllerCore.Service
 {
@@ -15,8 +22,8 @@ namespace LineControllerCore.Service
     //private readonly ILinkService linkService;
     //private readonly IUserRoleService userRoleService;
 
-    public DeviceService(LineContextDb context, IMapper mapper, ILogger<DeviceService> logger)//, ILinkService linkService, IUserRoleService userRoleService) 
-           : base(context, mapper, logger)
+    public DeviceService(LineContextDb context, IMapper mapper, ILogger<DeviceService> logger, IIdentityService identityService)//, ILinkService linkService, IUserRoleService userRoleService) 
+           : base(context, mapper, logger, identityService)
     {
       //this.linkService = linkService;
       //this.userRoleService = userRoleService;
@@ -24,23 +31,16 @@ namespace LineControllerCore.Service
 
     public IQueryable<DeviceViewModel> GetDevices() 
     {
-      var devices = Context.Devices.Where(s => s.ItemNumber != null);
-      if (devices == null || !devices.Any())
-      {
-        Logger.LogWarning("Unable to save. Device does not exist.");
-      }
-      else
-      {
-        var deviceCount = devices.Count();
-        Logger.LogInformation($"Found {deviceCount} devices.");
-      }
-      var deviceViewModel = devices.ProjectTo<DeviceViewModel>(Mapper.ConfigurationProvider);
-      return deviceViewModel;
+      return Context.Devices
+       .AsNoTracking()
+       .Where(d => d.ItemNumber != null)
+       .ProjectTo<DeviceViewModel>(Mapper.ConfigurationProvider);
     }
 
     public DeviceEditViewModel GetDeviceById(int id) 
     {
       var device = Context.Devices.Where(s => s.Id == id).FirstOrDefault();
+      
       if(device is not null)
       {
         var mapDevice = Mapper.Map<DeviceEditViewModel>(device);
@@ -105,14 +105,17 @@ namespace LineControllerCore.Service
     public async Task<DeviceEditViewModel> Update(DeviceEditViewModel model)
     {
       DateTime dateTime = DateTime.Now;
-      bool? isRoot = await Context.Devices.AsNoTracking().Where(d => d.Id == model.Id).Select(d => d.ParentId == null).FirstOrDefaultAsync().ConfigureAwait(false);
+      bool? isRoot = await Context.Devices.AsNoTracking()
+                                .Where(d => d.Id == model.Id)
+                                .Select(d => d.ParentId == null)
+                                .FirstOrDefaultAsync();
       bool hasChangedStatus = false;
 
-      var deviceDescendant = Context.GetDeviceDescendantTree(model.Id);
-      
+      var deviceDescendant = await Context.GetDeviceDescendantTree(model.Id).ToListAsync();
+
       foreach (var device in deviceDescendant)
       {
-        Entities.Attach(device);
+        //Entities.Attach(device);
         if (device.Id == model.Id)
         {
           if (model.StatusId != device.StatusId)
@@ -129,8 +132,14 @@ namespace LineControllerCore.Service
           device.LastChangedUserId = IdentityService.UserId;
           device.LastChangedDate = dateTime;
         }
+        if (device.StoragePlaceId == 0)
+        {
+          device.StoragePlaceId = null;
+        }
 
-        Entities.Update(device);
+        device.StoragePlace = null;
+
+        Context.Devices.Update(device);
       }
 
       await Context.SaveChangesAsync().ConfigureAwait(false);
@@ -151,10 +160,23 @@ namespace LineControllerCore.Service
       else
       {
         var deviceModel = Mapper.Map<Device>(model);
-        Context.Devices.Add(deviceModel);
-        await Context.SaveChangesAsync().ConfigureAwait(false);
 
-        return model;
+        deviceModel.Id = 0;
+
+        Context.Devices.Add(deviceModel);
+        var rowsAffected = await Context.SaveChangesAsync().ConfigureAwait(false);
+
+        if (rowsAffected == 0)
+        {
+          Logger.LogWarning("SaveChangesAsync s-a executat, dar a returnat 0 (nimic salvat).");
+        }
+        else
+        {
+          Logger.LogInformation($"Succes! Au fost salvate {rowsAffected} randuri. Noul ID: {deviceModel.Id}");
+        }
+
+        // Remapează pentru a returna ID-ul nou generat
+        return Mapper.Map<DeviceEditViewModel>(deviceModel);
       }
     }     
     
@@ -162,7 +184,7 @@ namespace LineControllerCore.Service
     {
       if (model.Id == 0)
       {
-        return model;
+        return null;
       }
 
       var device = Context.Devices.FirstOrDefault(d => d.Id == model.Id);
@@ -182,59 +204,96 @@ namespace LineControllerCore.Service
       return Context.Users.Any(s => s.Id == userId);
     }
 
+    public List<DeviceClassViewModel> GettAllDeviceClass()
+    {
+      var result = Context.DeviceClass.Select(c => new DeviceClassViewModel
+      {
+        Id = c.Id,
+        ManufacturerName = c.Manufacturer.Name,
+        DeviceModelName = c.DeviceModel.Name,
+      }).ToList();
+
+      return result;
+    }
+
+
+    public List<InventoryLocationViewModel> GetAllInventotyLocation()
+    {
+      var result = Context.InventoryLocations.Select(c => new InventoryLocationViewModel
+      {
+        Id = c.Id,
+        Name = c.Name
+      }).ToList();
+
+      return result;
+    }
+
     public async Task<DeviceChildViewModel> IntegrateAsync(int parentId, DeviceChildViewModel model)
     {
       try
       {
-        if (parentId == 0)
-        {
-          throw new ArgumentException("Unable to integrate the device.Parent Id does not exist.");
-        }
+        var parent = await Context.Devices.SingleOrDefaultAsync(d => d.Id == parentId);
 
-        Device entity = await Context.Devices.SingleOrDefaultAsync(d => d.Id == parentId).ConfigureAwait(false);
+        if (parent == null)
+          throw new ArgumentException("Parent device does not exist.");
 
-        if (entity != null)
-        {
-          throw new ArgumentException("Unable to integrate the device.Parent Id does not exist.");
-        }
+        var child = await Context.Devices
+            .Include(d => d.DeviceClass)
+                .ThenInclude(dc => dc.Manufacturer)
+            .Include(d => d.DeviceClass)
+                .ThenInclude(dc => dc.DeviceModel)
+            .Include(d => d.CalibrationOrders)
+            .SingleOrDefaultAsync(d => d.ItemNumber == model.ItemNumber);
 
-        Device integrated = await Entities.SingleOrDefaultAsync(d => d.ItemNumber == model.ItemNumber).ConfigureAwait(false);
+        if (child == null)
+          throw new ArgumentException("Device with the given item number does not exist.");
 
-        if (integrated == null)
-        {
-          throw new ArgumentException("Unable to integrate the device. Item Number does not exist.");
-        }
+        //if (child.ParentId == parentId)
+        //  throw new ArgumentException("Device is already integrated.");
 
-        DateTime dateTime = DateTime.Now;
-        int? userId = IdentityService.UserId;
-        var calibrationOrderRoot = await Context.ActiveCalibrationOrders.Where(c => c.DeviceId == entity.Id)
-                                                                    .SingleOrDefaultAsync().ConfigureAwait(false);
-        entity.Children.Add(integrated);
-        entity.LastChangedUserId = userId;
-        entity.LastChangedDate = dateTime;
+        // 2. Integrarea propriuzisă
+        child.ParentId = parentId;
+        child.LastChangedDate = DateTime.Now;
+        child.LastChangedUserId = IdentityService.UserId;
 
-        Entities.Update(entity);
+        await Context.SaveChangesAsync();
+
+        // 3. Logica pentru calibration order (logica ta reparată)
+        var calibrationOrderRoot = await Context.ActiveCalibrationOrders.SingleOrDefaultAsync(c => c.DeviceId == parentId);
 
         if (calibrationOrderRoot != null)
         {
-          var status = new DeviceCalibrationOrderStatusHistory() { StatusId = DeviceCalibrationOrderStatus.Received };
+          var status = new DeviceCalibrationOrderStatusHistory()
+          {
+            StatusId = DeviceCalibrationOrderStatus.Received,
+            LastChangedDate = DateTime.Now,
+            LastChangedUserId = IdentityService.UserId
+          };
+
           var calibrationOrder = new DeviceCalibrationOrder
           {
+            DeviceId = child.Id,
             SendEmail = true,
             IsRoot = false,
+            LastChangedDate = status.LastChangedDate,
+            LastChangedUserId = status.LastChangedUserId
           };
 
           calibrationOrder.StatusHistory.Add(status);
-          calibrationOrder.LastChangedDate = status.LastChangedDate = calibrationOrderRoot.LastChangedDate = dateTime;
-          calibrationOrder.LastChangedUserId = status.LastChangedUserId = calibrationOrderRoot.LastChangedUserId = userId;
-
-          await Context.CalibrationOrders.AddAsync(calibrationOrder).ConfigureAwait(false);
+          await Context.CalibrationOrders.AddAsync(calibrationOrder);
+          await Context.SaveChangesAsync();
         }
-        await Context.SaveChangesAsync().ConfigureAwait(false);
 
-        var result = Mapper.Map<DeviceChildViewModel>(integrated);
-
-        return result;
+        // 4. Returnăm modelul pentru Kendo TreeList
+        return new DeviceChildViewModel
+        {
+          Id = child.Id,
+          ParentId = parentId,
+          ItemNumber = child.ItemNumber,
+          Manufacturer = child.DeviceClass.Manufacturer.Name,
+          DeviceModel = child.DeviceClass.DeviceModel.Name,
+          HasActiveCalibrationOrder = child.CalibrationOrders.Any(o => o.IsRoot == false),
+        };
       }
       catch (Exception ex)
       {
@@ -243,97 +302,173 @@ namespace LineControllerCore.Service
       }
     }
 
+    public async Task<DeviceInformationViewModel> GetDeviceInformationAsync(string itemNumber)
+    {
+      var model = new DeviceInformationViewModel();
 
+      model.ItemNumber = itemNumber;
+      model.Id = await Context.Devices.Where(m => m.ItemNumber == itemNumber)
+                                      .Select(m => m.Id)
+                                      .SingleOrDefaultAsync().ConfigureAwait(false);
+      return model;
+    }
 
-    //public async Task<IEnumerable<DeviceViewModel>> GetAsync(Func<LinkViewModel, string> getDeviceDetailsUrl, Func<LinkViewModel, string> getCalibrationOrderUrl)
-    //{
-    //  var user = Context.Users.Where(s => !string.IsNullOrEmpty(s.UserName)).Select(s => s.UserName).SingleOrDefault();
-    //  var userId = Context.Users.Select(s => s.Id).SingleOrDefault();
-    //  int? userIds = IdentityService.UserId;
+    public async Task<DeviceReservationEditViewModel> GetDeviceReservationEditViewModelAsync(string? itemNumber)
+    {
+      // 1. Pagina deschisă prima dată -> VM gol
+      if (string.IsNullOrWhiteSpace(itemNumber))
+      {
+        return new DeviceReservationEditViewModel();
+      }
 
-    //  var device = await Entities.AsNoTracking()
-    //                             .Include(s => s.ActivityType)
-    //                             .Include(s => s.DeviceClass.DeviceModel)
-    //                             .Include(s => s.Parent)
-    //                             .Include(s => s.Issues).ThenInclude(s => s.Recipient)
-    //                             .Include(s => s.Reservation)
-    //                             .Where(d => d.Id != null)
-    //                             .AsSplitQuery()
-    //                             .SingleOrDefaultAsync().ConfigureAwait(false);
+      // 2. Căutăm device-ul după item number
+      var device = await Context.Devices
+          .FirstOrDefaultAsync(d => d.ItemNumber == itemNumber);
 
-    //  DateTime now = DateTime.Now;
-    //  var model = Mapper.Map<DeviceEditViewModel>(device, opts =>
-    //  {
-    //    opts.Items["now"] = now;
-    //  });
+      // 2.a Device INEXISTENT -> returnăm VM cu ItemNumber și restul gol
+      if (device == null)
+      {
+        return new DeviceReservationEditViewModel
+        {
+          ItemNumber = itemNumber
+        };
+      }
 
-    //  if (model == null)
-    //  {
-    //    model = new DeviceEditViewModel() { IsEmpty = true };
-    //  }
-    //  else
-    //  {
-    //    string? measureRange;
+      // 3. Căutăm rezervarea activă
+      var activeReservation = await Context.DeviceReservations
+          .Include(r => r.InventoryLocation)
+          .Include(r => r.Issue)
+          .FirstOrDefaultAsync(r =>
+              r.DeviceId == device.Id &&
+              r.StatusId == (int)ReservationStatusEnum.Open
+          );
 
-    //    if (model.StatusId == DeviceStatus.UsableId)
-    //    {
-    //      measureRange = await Context.DeviceClassModes.Where(m => m.DeviceClassId == model.DeviceClassId && !string.IsNullOrEmpty(m.MaterialNumber))
-    //                                                         .OrderBy(m => m.Id)
-    //                                                         .Select(m => m.MaterialNumber)
-    //                                                         .FirstOrDefaultAsync().ConfigureAwait(false);
-    //    }
-    //    else
-    //    {
-    //      measureRange = null;
-    //    }
-    //    if (string.IsNullOrEmpty(model.MaterialNumber))
-    //    {
-    //      model.MaterialNumber = measureRange;
-    //    }
-    //    else if (!string.IsNullOrEmpty(measureRange))
-    //    {
-    //      Logger.LogWarning("The device {ItemNumber} has the material number {MaterialNumber} and the measurement range has the material number {MeasurementRangeMaterialNumber}", model.ItemNumber, model.MaterialNumber, measureRange);
-    //    }
-    //  }
+      // 4. Dacă există rezervare activă → ViewMode EDIT
+      if (activeReservation != null)
+      {
+        return new DeviceReservationEditViewModel
+        {
+          ReservationId = activeReservation.Id,
+          DeviceId = device.Id,
+          ItemNumber = device.ItemNumber,
 
-    //  model.IsManagerOrSysAdmin = userRoleService.IsMember(new[] { RoleViewModel.DeviceMaster, RoleViewModel.SysAdmin });
-    //  var fullStructureIds = Context.GetDeviceTree(model.Id)
-    //                                    .Select(d => d.Id);
-    //  model.HasCalibrationOrderOpened = await Context.ActiveCalibrationOrders
-    //                                                 .AnyAsync(co => fullStructureIds.Contains(co.DeviceId)).ConfigureAwait(false);
+          MeasurementMin = activeReservation.MeasurementMin,
+          MeasurementMax = activeReservation.MeasurementMax,
+          MeasurementUnit = activeReservation.MeasurementUnit,
 
-    //  if (!model.IsEmpty && !model.IsManagerOrSysAdmin)
-    //  {
-    //    Logger.LogWarning("You are not authorized to make changes to devices in this storage location.");
-    //  }
-    //  else if (model.ParentId == null && !model.IsEmpty)
-    //  {
-    //    var deviceIds = await Context.GetDeviceTree(model.Id)
-    //                                     .Select(d => d.Id)
-    //                                     .ToListAsync().ConfigureAwait(false);
-    //    var calibrationOrders = await Context.ActiveCalibrationOrders
-    //                                         .Where(co => deviceIds.Contains(co.DeviceId))
-    //                                         .Select(co => new
-    //                                         {
-    //                                           co.Id,
-    //                                           co.DeviceId,
-    //                                           co.Device.ItemNumber,
-    //                                           co.IsRoot,
-    //                                           co.RootId,
-    //                                         })
-    //                                         .ToListAsync().ConfigureAwait(false);
+          StartDate = activeReservation.StartDate,
+          InventoryLocationId = activeReservation.InventoryLocationId,
+          AccountingNumber = activeReservation.AccountingNumber,
 
-    //    foreach (var calibrationOrder in calibrationOrders)
-    //    {
-    //      int rootId = calibrationOrder.IsRoot ? calibrationOrder.Id : calibrationOrders.Where(co => co.IsRoot && co.RootId == calibrationOrder.RootId).Select(co => co.Id).Single();
-    //      string calibrationOrderLink = getCalibrationOrderUrl(new LinkViewModel() { Id = rootId, Text = rootId.ToString(CultureInfo.CurrentCulture) });
-    //      string deviceLink = getDeviceDetailsUrl(new LinkViewModel() { Id = calibrationOrder.DeviceId, Text = calibrationOrder.ItemNumber });
-    //      Logger.LogWarning("The device {0} has the active calibration order {1}.", deviceLink, calibrationOrderLink);
+          PeriodId = null,
+          Designation = device.Comment,
 
-    //    }
-    //  }
+          // flaguri
+          IsUniversal = false,
+          HasMultipleMeasurementRanges = false
+        };
+      }
 
-    //  return new List<DeviceViewModel> { Mapper.Map<DeviceViewModel>(model) };
-    //}
+      // 5. Device EXISTĂ dar NU are rezervare activă → ViewMode CREATE
+      return new DeviceReservationEditViewModel
+      {
+        DeviceId = device.Id,
+        ItemNumber = device.ItemNumber,
+
+        // date din device
+        MeasurementMin = device.MeasurementMin,
+        MeasurementMax = device.MeasurementMax,
+        MeasurementUnit = device.MeasurementUnit,
+
+        Designation = device.Comment,
+
+        // pregătit pentru creare rezervare
+        InventoryLocationId = device.StoragePlaceId,
+        StartDate = DateTime.Today
+      };
+    }
+
+    public async Task<DeviceHistoryViewModel?> GetDeviceHistoryAsync(string itemNumber)
+    {
+      if (string.IsNullOrWhiteSpace(itemNumber)) return null;
+
+      var device = await Context.Devices
+          .AsNoTracking()
+        .Include(d => d.DeviceClass)               
+            .ThenInclude(dc => dc.DeviceModel)    
+        .Include(d => d.DeviceClass)
+            .ThenInclude(dc => dc.Manufacturer)
+        .FirstOrDefaultAsync(d => d.ItemNumber == itemNumber);
+
+      if (device == null) return null;
+
+      var model = new DeviceHistoryViewModel
+      {
+        Id = device.Id,
+        ItemNumber = device.ItemNumber,
+        DeviceModel = device.DeviceClass?.DeviceModel.Name ?? "-",
+        Manufacturer = device.DeviceClass?.Manufacturer.Name ?? "-"
+      };
+
+      // 3. Căutăm istoricul asociat acestui DeviceId
+      var historyEntities = await Context.DeviceHistories
+          .AsNoTracking()
+          .Include(h => h.ModificationUser)
+          .Where(h => h.DeviceId == device.Id)
+          .OrderByDescending(h => h.ModificationDate) 
+          .ToListAsync();
+
+      foreach (var h in historyEntities)
+      {
+        model.HistoryEntries.Add(new DeviceHistoryDetailViewModel
+        {
+          Date = h.ModificationDate,
+          User = h.ModificationUser != null ? $"{h.ModificationUser.FirstName} {h.ModificationUser.LastName}" : "System/Unknown",
+          Action = h.Action,
+          Details = FormatHistoryDetails(h.Action, h.OldValue, h.NewValue)
+        });
+      }
+
+      return model;
+    }
+
+    // Helper privat pentru a face textul frumos din JSON
+    private string FormatHistoryDetails(string action, string? oldJson, string? newJson)
+    {
+      if (action == "Create") return "Device created.";
+      if (action == "Delete") return "Device deleted.";
+
+      if (action == "Update" && !string.IsNullOrEmpty(newJson))
+      {
+        try
+        {
+          var newVals = JsonSerializer.Deserialize<Dictionary<string, object>>(newJson);
+          var oldVals = !string.IsNullOrEmpty(oldJson)
+              ? JsonSerializer.Deserialize<Dictionary<string, object>>(oldJson)
+              : new Dictionary<string, object>();
+
+          var changes = new List<string>();
+
+          if (newVals != null)
+          {
+            foreach (var key in newVals.Keys)
+            {
+              var oVal = oldVals != null && oldVals.ContainsKey(key) ? oldVals[key]?.ToString() : "null";
+              var nVal = newVals[key]?.ToString();
+              changes.Add($"{key}: {oVal} -> {nVal}");
+            }
+          }
+
+          return string.Join(", ", changes);
+        }
+        catch
+        {
+          // Dacă eșuează parsarea, returnăm raw data
+          return "Data updated.";
+        }
+      }
+
+      return string.Empty;
+    }
   }
 }

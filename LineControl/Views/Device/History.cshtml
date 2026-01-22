@@ -1,5 +1,96 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model LineControllerCore.Model.DeviceHistoryViewModel
+
 @{
+  ViewData["Title"] = "Device History";
 }
+
+<div class="container mt-4">
+  <h2>Device History Search</h2>
+
+  <div class="card p-3 mb-4 bg-light">
+    <form method="get" asp-action="History">
+      <div class="row align-items-end">
+        <div class="col-md-4">
+          <label class="form-label">Item Number</label>
+          <input type="text" name="itemNumber" class="form-control"
+                 placeholder="Enter Item Number (e.g. DIN004)"
+                 value="@Model.ItemNumber" />
+        </div>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="fa fa-search"></i> Search
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  @if (!ViewData.ModelState.IsValid)
+  {
+    <div class="alert alert-danger">
+      @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    </div>
+  }
+
+  @if (Model.Id > 0)
+  {
+    <div class="card mb-4 shadow-sm">
+      <div class="card-header bg-secondary text-white">
+        <h5 class="mb-0">Device Details: @Model.ItemNumber</h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-4"><strong>Model:</strong> @Model.DeviceModel</div>
+          <div class="col-md-4"><strong>Manufacturer:</strong> @Model.Manufacturer</div>
+          <div class="col-md-4"><strong>Total Entries:</strong> @Model.HistoryEntries.Count</div>
+        </div>
+      </div>
+    </div>
+
+    <h4 class="mb-3">Change Log</h4>
+
+    @if (Model.HistoryEntries.Any())
+    {
+      <div class="table-responsive">
+        <table class="table table-striped table-hover border">
+          <thead class="table-dark">
+            <tr>
+              <th>Date</th>
+              <th>User</th>
+              <th>Action</th>
+              <th>Changes / Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach (var entry in Model.HistoryEntries)
+            {
+              <tr>
+                <td>@entry.Date.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@entry.User</td>
+                <td>
+                  @if (entry.Action == "Create")
+                  {
+                    <span class="badge bg-success">Create</span>
+                  }
+                  else if (entry.Action == "Delete")
+                  {
+                    <span class="badge bg-danger">Delete</span>
+                  }
+                  else
+                  {
+                    <span class="badge bg-warning text-dark">Update</span>
+                  }
+                </td>
+                <td style="font-family: monospace; font-size: 0.9em;">@entry.Details</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+    else
+    {
+      <div class="alert alert-info">No history records found for this device.</div>
+    }
+  }
+</div>

@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using LineControllerInfrastructure.Entities.Enums;
+
+using System.ComponentModel.DataAnnotations;
 
 namespace LineControllerCore.Models
 {
@@ -11,6 +13,8 @@ namespace LineControllerCore.Models
 
     [Display(Name = "Calibration location")]
     public int CalibrationLocationId { get; set; }
+
+    public string? CalibrationLocation { get; set; }
 
     [Display(Name = "Device ClassId")]
     public int DeviceClassId { get; set; }
@@ -30,6 +34,8 @@ namespace LineControllerCore.Models
 
     public string? CreatedByDepartment { get; set; }
 
+
+    [Display(Name = "Create By Person")]
     public string CreatedBy
     {
       get
@@ -50,9 +56,6 @@ namespace LineControllerCore.Models
     [DisplayFormat(DataFormatString = "{0:d}")]
     [DataType(DataType.Date)]
     public DateTime? ReceivedDate { get; set; }
-
-    [Display(Name = "Action")]
-    public int ActionId { get; set; }
 
     public string? Action { get; set; }
 
@@ -118,5 +121,30 @@ namespace LineControllerCore.Models
     public int? PreviousDeviceStatusId { get; set; }
 
     public bool Edited { get; set; }
+
+    public AccountingType? AccountingType { get; set; }
+
+    [Display(Name = "Action")]
+    [Required(ErrorMessage = "The 'Action' field is required.")]
+    public int? ActionId { get; set; }
+
+    [Display(Name = "after completion forward to")]
+    public int? ReceiverId { get; set; }
+
+    public string ReceiverBy
+    {
+      get
+      {
+        if (string.IsNullOrEmpty(ReceiverFirstName))
+        {
+          return string.Empty;
+        }
+
+        return $"{ReceiverFirstName}, {ReceiverFirstName} {ReceiverDepartment}";
+      }
+
+    }
+
+    public int? NoChannels { get; internal set; }
   }
 }

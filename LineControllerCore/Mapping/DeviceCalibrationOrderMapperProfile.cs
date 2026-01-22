@@ -35,15 +35,17 @@ namespace LineControllerCore.Mapping
        .ForMember(dest => dest.ItemNumber, opt => opt.MapFrom(src => src.Device.ItemNumber))
        .ForMember(dest => dest.SerialNumber, opt => opt.MapFrom(src => src.Device.SerialNumber))
        .ForMember(dest => dest.AccountingNumber, opt => opt.MapFrom(src => src.Root.AccountingNumber))
-       .ForMember(dest => dest.ReceiverFirstName, opt => opt.MapFrom(src => src.Root.ReceiverId != null ? src.Root.Receiver.FirstName : null))
-       .ForMember(dest => dest.ReceiverLastName, opt => opt.MapFrom(src => src.Root.ReceiverId != null ? src.Root.Receiver.LastName : null))
-       .ForMember(dest => dest.ReceiverDepartment, opt => opt.MapFrom(src => src.Root.ReceiverId != null ? src.Root.Receiver.Department : null))
        .ForMember(dest => dest.CreatedByFirstName, opt => opt.MapFrom(src => src.Device.CreatedBy != null ? src.Device.CreatedBy.FirstName : null))
        .ForMember(dest => dest.CreatedByLastName, opt => opt.MapFrom(src => src.Device.CreatedBy != null ? src.Device.CreatedBy.LastName : null))
        .ForMember(dest => dest.CreatedByDepartment, opt => opt.MapFrom(src => src.Device.CreatedBy != null ? src.Device.CreatedBy.Department : null))
        .ForMember(dest => dest.Action, opt => opt.MapFrom(src => src.Root.Action.Name))
-       .ForMember(dest => dest.ActionId, opt => opt.MapFrom(src => src.Root.Action.Id))
+       .ForMember(dest => dest.ActionId, opt => opt.MapFrom(src => src.Root.ActionId))
        .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Device.Status.Name))
+       .ForMember(dest => dest.ReceiverId, opt => opt.MapFrom(src => src.Root.ReceiverId))
+      .ForMember(dest => dest.ReceiverFirstName, opt => opt.MapFrom(src => src.Root.Receiver.FirstName))
+      .ForMember(dest => dest.ReceiverLastName, opt => opt.MapFrom(src => src.Root.Receiver.LastName))
+      .ForMember(dest => dest.ReceiverDepartment, opt => opt.MapFrom(src => src.Root.Receiver.Department))
+       .ForMember(dest => dest.ReceiverBy, opt => opt.MapFrom(src => src.Root.Receiver.FirstName + ' ' + src.Root.Receiver.LastName))
        .ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.Device.StatusId))
        // .ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.StatusHistory.OrderByDescending(sh => sh.LastChangedDate).Select(sh => sh.StatusId).FirstOrDefault()))
        .ForMember(dest => dest.CalibrationDate, opt => opt.MapFrom(src => src.CalibrationDate))
@@ -55,6 +57,8 @@ namespace LineControllerCore.Mapping
        .ForMember(dest => dest.Comment, opt => opt.MapFrom(src => src.Root.Comment))
        .ForMember(dest => dest.IsRoot, opt => opt.MapFrom(src => src.IsRoot))
        .ForMember(dest => dest.CreatedById, opt => opt.MapFrom(src => src.Device.CreatedById))
+       .ForMember(dest => dest.CalibrationLocation, opt => opt.MapFrom(src => src.Device.CalibrationLocation))
+       .ForMember(dest => dest.CalibrationLocationId, opt => opt.MapFrom(src => src.Device.StoragePlaceId))
        .ForMember(dest => dest.CalibrationInterval, opt => opt.MapFrom(src => src.Device.CalibrationInterval));
 
       CreateMap<DeviceCalibrationOrderViewModel, DeviceCalibrationOrder>()
@@ -73,49 +77,21 @@ namespace LineControllerCore.Mapping
 
       CreateMap<DeviceCalibrationOrderViewModel, DeviceCalibrationOrderRoot>()
           .ForMember(dest => dest.Id, opt => opt.Ignore())
+          .ForMember(dest => dest.ReceiverId, opt => opt.MapFrom(src => src.ReceiverId))
+          .ForMember(dest => dest.Receiver, opt => opt.MapFrom(src => src.ReceiverBy))
           .ForMember(dest => dest.AccountingNumber, opt => opt.MapFrom(src => src.AccountingNumber))
           .ForMember(dest => dest.ActionId, opt => opt.MapFrom(src => src.ActionId))
           .ForMember(dest => dest.Action, opt => opt.MapFrom(src => new CalibrationAction
           {
-            Id = src.ActionId,
+            Id = (int)src.ActionId,
             Name = src.Action
           }))
           .ForMember(dest => dest.Comment, opt => opt.MapFrom(src => src.Comment));
-
-      CreateMap<Device, DeviceCalibrationOrderCreateViewModel>()
-       .ForMember(dest => dest.DeviceId, opt => opt.MapFrom(src => src.Id))
-       .ForMember(dest => dest.ItemNumber, opt => opt.MapFrom(src => src.ItemNumber))
-       .ForMember(dest => dest.AccountingType, opt => opt.Ignore())
-       .ForMember(dest => dest.AccountingNumber, opt => opt.Ignore())
-       .ForMember(dest => dest.ActionId, opt => opt.Ignore())
-       .ForMember(dest => dest.ReceiverId, opt => opt.Ignore())
-       .ForMember(dest => dest.NoChannels, opt => opt.Ignore())
-       .ForMember(dest => dest.TargetDate, opt => opt.Ignore())
-       .ForMember(dest => dest.Comment, opt => opt.Ignore())
-       .ForMember(dest => dest.Actions, opt => opt.Ignore());
-
-      CreateMap<DeviceCalibrationOrderCreateViewModel, DeviceCalibrationOrderRoot>()
-       .ForMember(dest => dest.Id, opt => opt.Ignore())
-       .ForMember(dest => dest.AccountingType, opt => opt.MapFrom(src => src.AccountingType))
-       .ForMember(dest => dest.AccountingNumber, opt => opt.MapFrom(src => src.AccountingNumber))
-       .ForMember(dest => dest.ActionId, opt => opt.MapFrom(src => src.ActionId))
-       .ForMember(dest => dest.Comment, opt => opt.MapFrom(src => src.Comment))
-       .ForMember(dest => dest.NoChannels, opt => opt.MapFrom(src => src.NoChannels))
-       .ForMember(dest => dest.ReceiverId, opt => opt.MapFrom(src => src.ReceiverId));
 
       CreateMap<DeviceCalibrationOrderStatusHistory, CalibrationViewModel>()
        .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.CalibrationOrderId))
        .ForMember(dest => dest.DeviceId, opt => opt.MapFrom(src => src.CalibrationOrder.DeviceId))
        .ForMember(dest => dest.LastStatus, opt => opt.MapFrom(src => src.StatusId));
-
-      CreateMap<DeviceCalibrationOrderCreateViewModel, DeviceCalibrationOrderRoot>()
-        .ForMember(dest => dest.Id, opt => opt.Ignore())
-        .ForMember(dest => dest.AccountingType, opt => opt.MapFrom(src => src.AccountingType))
-        .ForMember(dest => dest.AccountingNumber, opt => opt.MapFrom(src => src.AccountingNumber))
-        .ForMember(dest => dest.ActionId, opt => opt.MapFrom(src => src.ActionId))
-        .ForMember(dest => dest.Comment, opt => opt.MapFrom(src => src.Comment))
-        .ForMember(dest => dest.NoChannels, opt => opt.MapFrom(src => src.NoChannels))
-        .ForMember(dest => dest.ReceiverId, opt => opt.MapFrom(src => src.ReceiverId));
      }
   }
 }

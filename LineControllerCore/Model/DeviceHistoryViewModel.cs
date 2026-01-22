@@ -15,18 +15,12 @@ namespace LineControllerCore.Model
     [Display(Name = "Item number")]
     public string? ItemNumber { get; set; }
 
-    [Display(Name = "Designation")]
-    public string? Designation { get; set; }
-
     [Display(Name = "Model")]
     public string? DeviceModel { get; set; }
 
     [Display(Name = "Manufacturer")]
     public string? Manufacturer { get; set; }
 
-    [Display(Name = "Serial number")]
-    public string? SerialNumber { get; set; }
-
-    public IList<UserViewModel> Users { get; set; } = new List<UserViewModel>();
+    public List<DeviceHistoryDetailViewModel> HistoryEntries { get; set; } = new List<DeviceHistoryDetailViewModel>();
   }
 }

@@ -1,0 +1,148 @@
+﻿@model DeviceIssueEditViewModel
+@{
+  ViewData["Title"] = "Retrieve Issue Device";
+}
+<div class="row">
+  <div class="col">
+    <h2> Retrieve Issue Device</h2>
+  </div>
+</div>
+
+<div class="container-fluid mt-4">
+  <div class="row">
+    <div class="col-12 col-lg-5">
+      <div class="card h-100">
+        <div class="card-body">
+          <form method="post" class="s-device-issue-editor s-device-issue-form">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.IssueId, new { @class = "s-device-issueid" })
+            @Html.HiddenFor(m => m.DeviceId, new { @class = "s-device-id" })
+            @Html.HiddenFor(m => m.ParentId)
+            @Html.HiddenFor(m => m.HasReservations, new { @class = "s-device-issue-reservation" })
+            @Html.HiddenFor(m => m.IsAccountingMandatory, new { @class = "s-device-issue-isaccountingmandatory" })
+            <input type="hidden" name="IsRetrieve" value="@(Model.IsRetrieve == true)" />
+            @Html.HiddenFor(m => m.CanIssue)
+            @Html.HiddenFor(m => m.CanRetrieve)
+            <div class="row mb-3">
+              <label class="col-md-4 col-form-label" asp-for="@Model.ItemNumber">ItemNumber</label>
+              <div class="col-md-8">
+                  @(Html.Kendo().TextAreaFor(m => m.ItemNumber)
+                      .HtmlAttributes(new { @class = "s-customTextArea" })
+                      .Rows(1).Deferred(true))
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label class="col-md-4 col-form-label">Recipient</label>
+              <div class="col-md-8">
+                @Html.HiddenFor(m => m.RecipientId)
+                @(Html.Kendo().TextAreaFor(m => m.DisplayName)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true))
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <label class="col-md-4 col-form-label" asp-for="@Model.ReturnDate">ReturnDate</label>
+              <div class="col-md-8">
+                @(Html.Kendo().TextAreaFor(m => m.ReturnDate)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true))
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label class="col-md-4 col-form-label" asp-for="@Model.AccountingNumber">Accounting Number</label>
+              <div class="col-md-8">
+                @(Html.Kendo().TextAreaFor(m => m.AccountingNumber)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true))
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label class="col-md-4 col-form-label" asp-for="@Model.Comment">Comment</label>
+              <div class="col-md-8">
+                @(Html.Kendo().TextAreaFor(m => m.Comment)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true))
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label class="col-md-4 col-form-label" asp-for="@Model.AccountingType">Accounting Type</label>
+              <div class="col-md-8">
+                @(Html.Kendo().TextAreaFor(m => m.AccountingType)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true))
+              </div>
+            </div>
+            <div class="mb-3 d-flex gap-2">
+              @{
+                var buttonContent = "Retrieve";                              
+              }
+              @(Html.Kendo().Button()
+                  .Name("retrieveIssue")
+                  .ThemeColor(ThemeColor.Primary)
+                  .Content(buttonContent)
+                  .HtmlAttributes(new { type = "submit", formaction = Url.Action("Issues", "DeviceIssues") })
+                  .Deferred()
+                  )
+              @(Html.Kendo().Button()
+                  .Name("deviceBack")
+                  .Tag("a")
+                  .Content("Back")
+                  .HtmlAttributes(new { href = Url.Action("Index", "Device") })
+                  .Deferred()
+                  )
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-7">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-12">
+              <h2 class="mb-0">Device Structure</h2>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              @(Html.Kendo().TreeList<DeviceIssueHierarchyListViewModel>()
+                  .Name("childrenTree")
+                  .Columns(columns =>
+                  {
+                    columns.Add().Field(m => m.ItemNumber);
+                    columns.Add().Field(m => m.Manufacturer);
+                    columns.Add().Field(m => m.DeviceModel);
+                    columns.Add().Field(m => m.CalibrationDue)
+                    .HtmlAttributes(new { @class = "s-device-column-calibrationdue" });
+                    columns.Add().Field(m => m.InventoryLocation);
+                  })
+                  .Sortable()
+                  .HtmlAttributes(new
+                  {
+                    @class = "s-device-issue-children",
+                  })
+                  .DataSource(dataSource => dataSource.Read("GetIssueHierarchy", "DeviceIssues", new { deviceId = Model.DeviceId })
+                  .ServerOperation(false)
+                  .Model(model =>
+                  {
+                    model.Id(f => f.Id);
+                    model.ParentId(f => f.ParentId);
+                    model.Expanded(true);
+                    model.Field(f => f.ItemNumber);
+                    model.Field(f => f.Manufacturer);
+                    model.Field(f => f.DeviceModel);
+                    model.Field(f => f.InventoryLocation);
+                    model.Field(f => f.IsCalibrationDue);
+                    model.Field(f => f.HasActiveCalibrationOrder);
+                  })
+                  )
+                  .Deferred()
+                  )
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

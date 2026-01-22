@@ -12,6 +12,8 @@ using LineControllerCore.Mapping;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using LineControllerInfrastructure.Entities;
+using System.IdentityModel.Tokens.Jwt;
+using LineControllerCore.Model;
 
 var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 
@@ -24,6 +26,7 @@ try
   builder.Services.AddDbContext<LineContextDb>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
     x => x.MigrationsAssembly("LineControllerInfrastructure")));
 
+  //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
   builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Negotiate.NegotiateDefaults.AuthenticationScheme)
     .AddNegotiate();
 
@@ -41,6 +44,9 @@ try
   builder.Services.AddScoped<IDeviceCalibrationService, CalibrationOrderService>();
   builder.Services.AddScoped<IDeviceIntegrationService, DeviceIntegrationService>();
   builder.Services.AddScoped<IInventoryLocationService, InventoryLocationService>();
+  builder.Services.AddScoped<IDeviceIssuesService, DeviceIssuesService>();
+  builder.Services.AddScoped<IDeviceReservationService, DeviceReservationService>();
+  builder.Services.AddHostedService<ReservationNotifierWorker>();
 
   builder.Services.Configure<IdentityOptions>(options =>
   {
@@ -68,6 +74,10 @@ try
   builder.Services.AddAutoMapper(typeof(DeviceModelMapperProfile).Assembly);
   builder.Services.AddAutoMapper(typeof(DeviceCalibrationOrderMapperProfile).Assembly);
   builder.Services.AddAutoMapper(typeof(InventoryLocationMapperProfile).Assembly);
+  builder.Services.AddAutoMapper(typeof(CompanyLocationMapperProfiler).Assembly);
+  builder.Services.AddAutoMapper(typeof(DeviceHierarchyMapperProfiler).Assembly);
+  builder.Services.AddAutoMapper(typeof(DeviceIssuesMapperProfile).Assembly);
+  builder.Services.AddAutoMapper(typeof(DeviceReservationMapperProfile).Assembly);
   builder.Services.AddControllersWithViews().AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
   var app = builder.Build();

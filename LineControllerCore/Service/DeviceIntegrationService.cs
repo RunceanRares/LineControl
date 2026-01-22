@@ -4,6 +4,8 @@ using LineControllerCore.Interface;
 using LineControllerCore.Model;
 using LineControllerInfrastructure;
 using LineControllerInfrastructure.Entities;
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -16,7 +18,7 @@ namespace LineControllerCore.Service
 {
   public class DeviceIntegrationService : BaseService<Device>, IDeviceIntegrationService
   {
-    public DeviceIntegrationService(LineContextDb context, IMapper mapper, ILogger<DeviceIntegrationService> logger) : base(context, mapper, logger)
+    public DeviceIntegrationService(LineContextDb context, IMapper mapper, ILogger<DeviceIntegrationService> logger, IIdentityService identityService) : base(context, mapper, logger, identityService)
     {
     }
 
@@ -27,7 +29,10 @@ namespace LineControllerCore.Service
       {
          { "now", now },
       };
-      return Context.GetDeviceChildrenTree(id).ProjectTo<DeviceHierarchyListViewModel>(Mapper.ConfigurationProvider, parameters);
+      return Context.Devices
+         .Where(d => d.ParentId == id || d.Id == id).Include(d => d.CalibrationOrders).Include(d => d.DeviceClass).ThenInclude(d => d.DeviceModel)
+                                                    .Include(d => d.DeviceClass).ThenInclude(d => d.Manufacturer)
+         .ProjectTo<DeviceHierarchyListViewModel>(Mapper.ConfigurationProvider, parameters);
     }
   }
 }

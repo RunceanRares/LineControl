@@ -17,8 +17,8 @@ namespace LineControllerCore.Service
   {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public DeviceClassModeService(LineContextDb context, IMapper mapper, ILogger<DeviceClassModeService> logger, IHttpContextAccessor httpContextAccessor) 
-          : base(context, mapper, logger)
+    public DeviceClassModeService(LineContextDb context, IMapper mapper, ILogger<DeviceClassModeService> logger, IHttpContextAccessor httpContextAccessor, IIdentityService identityService) 
+          : base(context, mapper, logger, identityService)
     {
       this._httpContextAccessor = httpContextAccessor;
     }
@@ -109,6 +109,39 @@ namespace LineControllerCore.Service
         Context.DeviceModels.Update(device);
         Context.SaveChanges();
       }
+      return model;
+    }
+
+    public async Task<DeviceModelViewModel> AddDeviceMode(DeviceModelViewModel model)
+    {
+      var deviceMode = new DeviceModel
+      {
+        Id = model.Id,
+        Name = model.Name
+      };
+
+      Context.DeviceModels.Add(deviceMode);
+      Context.SaveChanges();
+      return model;
+    }
+
+    public async Task<DeviceClassModeViewModel> AddDeviceClassMode(DeviceClassModeViewModel model)
+    {
+      var deviceMode = new DeviceClassMode
+      {
+        Id = model.Id,
+        MeasurementUnit = model.MeasurementUnit,
+        MeasurementMin = model.MeasurementMin,
+        MeasurementMax = model.MeasurementMax,
+        MaterialNumber = model.MaterialNumber,
+        Description  = model.Description,
+        OutputUnit = model.OutputUnit,
+        OutputMax = model.OutputMax,
+        OutputMin = model.OutputMin,
+      };
+
+      Context.DeviceClassModes.Add(deviceMode);
+      Context.SaveChanges();
       return model;
     }
   }

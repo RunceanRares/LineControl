@@ -10,14 +10,14 @@ namespace LineControllerCore.Model
     public int Id { get; set; }
 
     [Display(Name = "Item number")]
-    public string ItemNumber { get; set; }
+    public string? ItemNumber { get; set; }
 
-    //[Display(Name = "Device class")]
-    //[Required(ErrorMessage = "The 'Device class' field is required.")]
-    //public int? DeviceClassId { get; set; }
+    [Display(Name = "Device class")]
+    [Required(ErrorMessage = "The 'Device class' field is required.")]
+    public int? DeviceClassId { get; set; }
 
     [Display(Name = "Integrated in")]
-    public string ParentItemNumber { get; set; }
+    public string? ParentItemNumber { get; set; }
 
     public bool HasCalibrationOrderOpened { get; set; }
     public int? ParentId { get; set; }
@@ -35,7 +35,7 @@ namespace LineControllerCore.Model
 
     public decimal? MeasurementMax { get; set; }
 
-    public string MeasurementUnit { get; set; }
+    public string? MeasurementUnit { get; set; }
 
     [Display(Name = "Activity type")]
     public int? ActivityTypeId { get; set; }
@@ -81,42 +81,40 @@ namespace LineControllerCore.Model
       }
     }
 
-    public string CreateByUserName { get; set; }
+    public string? CreateByUserName { get; set; }
     
     public int? CreatedById { get; set; }
 
     [Display(Name = "Inventory location")]
-    [Required(ErrorMessage = "The 'Inventory location' field is required.")]
     public int? InventoryLocationId { get; set; }
 
     [Display(Name = "Storage place")]
-    [Required(ErrorMessage = "The 'Storage place' field is required.")]
     public int? StoragePlaceId { get; set; }
 
     [Display(Name = "Inventory number")]
-    public string InventoryNumber { get; set; }
+    public string? InventoryNumber { get; set; }
 
     [Display(Name = "Equipment number")]
-    public string EquipmentNumber { get; set; }
+    public string? EquipmentNumber { get; set; }
 
 
     [Display(Name = "Serial number")]
-    public string SerialNumber { get; set; }
+    public string? SerialNumber { get; set; }
 
     [Display(Name = "Issue comment")]
-    public string IssueComment { get; set; }
+    public string? IssueComment { get; set; }
 
     [Display(Name = "Cost factor")]
     public decimal? CostFactor { get; set; }
 
     [Display(Name = "Accessories")]
-    public string Accessories { get; set; }
+    public string? Accessories { get; set; }
 
     [Display(Name = "Comment")]
-    public string Comment { get; set; }
+    public string? Comment { get; set; }
 
     [Display(Name = "Calibration tester")]
-    public string CalibrationTester { get; set; }
+    public string? CalibrationTester { get; set; }
 
     [Display(Name = "Calibration date")]
     [DisplayFormat(DataFormatString = "{0:d}", ApplyFormatInEditMode = true)]
@@ -149,7 +147,7 @@ namespace LineControllerCore.Model
     public decimal? CalibrationResult { get; set; }
 
     [Display(Name = "SAP Material Number")]
-    public string MaterialNumber { get; set; }
+    public string? MaterialNumber { get; set; }
     public bool ParentReservationLock
     {
       get { return ParentId != null; }
@@ -161,11 +159,11 @@ namespace LineControllerCore.Model
     [UIHint("DateDisabled")]
     public DateTime? CreationDate { get; set; }
 
-    public string CreatedByFirstName { get; set; }
+    public string? CreatedByFirstName { get; set; }
 
-    public string CreatedByLastName { get; set; }
+    public string? CreatedByLastName { get; set; }
 
-    public string CreatedByDepartment { get; set; }
+    public string? CreatedByDepartment { get; set; }
 
 
     [Display(Name = "Created by")]
@@ -196,7 +194,7 @@ namespace LineControllerCore.Model
     }
 
     [Display(Name = "Calibration location")]
-    public string CalibrationLocation { get; set; }
+    public string? CalibrationLocation { get; set; }
 
     public bool IsDisplay { get; set; }
 
@@ -210,14 +208,14 @@ namespace LineControllerCore.Model
     [UIHint("DateDisabled")]
     public DateTime? IssueDate { get; set; }
 
-    public string IssuedToFirstName { get; set; }
+    public string? IssuedToFirstName { get; set; }
 
-    public string IssuedToLastName { get; set; }
+    public string? IssuedToLastName { get; set; }
 
-    public string IssuedToDepartment { get; set; }
+    public string? IssuedToDepartment { get; set; }
 
     [Display(Name = "Currently issued to")]
-    public string IssuedTo
+    public string? IssuedTo
     {
       get
       {
@@ -231,7 +229,7 @@ namespace LineControllerCore.Model
     }
 
     [Display(Name = "Accounting number")]
-    public string AccountingNumber { get; set; }
+    public string? AccountingNumber { get; set; }
 
     public int? IssueId { get; set; }
 
@@ -263,7 +261,7 @@ namespace LineControllerCore.Model
     {
       get
       {
-        return !IsDisplay && !IsEmpty;
+        return !IsDisplay || !IsEmpty;
       }
     }
 
@@ -305,7 +303,7 @@ namespace LineControllerCore.Model
     /// <summary>
     /// Gets or sets the universal material number or the no measurement range material number.
     /// </summary>
-    public string MeasurementRangeMaterialNumber { get; set; }
+    public string? MeasurementRangeMaterialNumber { get; set; }
 
     public bool HasMeasurementRangeMaterialNumber { get; set; }
 

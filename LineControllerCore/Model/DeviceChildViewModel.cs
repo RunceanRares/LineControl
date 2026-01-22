@@ -11,6 +11,8 @@ namespace LineControllerCore.Model
   {
     public int Id { get; set; }
 
+    public int ParentId { get; init; }
+
     [Display(Name = "Item number")]
     public string ItemNumber { get; set; }
 

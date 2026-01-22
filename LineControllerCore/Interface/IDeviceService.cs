@@ -21,5 +21,15 @@ namespace LineControllerCore.Service
     Task<DeviceChildViewModel> IntegrateAsync(int parentId, DeviceChildViewModel model);
 
     public bool CheckUserInDB(int userId);
+
+    List<DeviceClassViewModel> GettAllDeviceClass();
+
+    List<InventoryLocationViewModel> GetAllInventotyLocation();
+
+    Task<DeviceInformationViewModel> GetDeviceInformationAsync(string itemNumber);
+
+    Task<DeviceReservationEditViewModel> GetDeviceReservationEditViewModelAsync(string? itemNumber);
+
+    Task<DeviceHistoryViewModel?> GetDeviceHistoryAsync(string itemNumber);
   }
 }

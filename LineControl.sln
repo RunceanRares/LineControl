@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LineControl", "LineControl\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LineControllerCore", "LineControllerCore\LineControllerCore.csproj", "{7A5673FD-2434-478B-A6C0-6CB3A22CADCC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LineControllerInfrastructure", "LineControllerInfrastructure\LineControllerInfrastructure.csproj", "{6C9CAFBD-6D7C-4998-B2E6-DC225107C851}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LineControllerInfrastructure", "LineControllerInfrastructure\LineControllerInfrastructure.csproj", "{6C9CAFBD-6D7C-4998-B2E6-DC225107C851}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DE1C98BC-4096-4470-9962-574524E9C3D4}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

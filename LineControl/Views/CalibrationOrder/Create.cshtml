@@ -27,85 +27,192 @@
             </div>
           </div>
           <div class="col-md-12 bg-light">
-            <div class="form-row form-group">
-              <div class="col-12">
-                <label class="s-label" asp-for="@Model.ItemNumber">Item Number</label>
-              </div>
-              <div class="col-12">
-                @(Html.Kendo().DropDownList()
-                              .Name("ItemNumberDropDown")
-                              .DataTextField("ItemNumber")
-                              .DataValueField("Id")
+            <div class="row">
+              <!-- Coloana 1 -->
+                <div class="col-md-6">
+                  <div class="form-row form-group">
+                    <div class="col-12">
+                      <label class="s-label" asp-for="@Model.ItemNumber">Item Number</label>
+                    </div>
+                    <div class="col-12">
+                    @(Html.Kendo().DropDownListFor(m => m.DeviceId)
+                        .DataTextField("ItemNumber")
+                        .DataValueField("Id")
+                        .HtmlAttributes(new { @class = "s-customTextArea" })
+                        .DataSource(source => source.Read(read =>
+                        {
+                          read.Action("GetItemNumber", "CalibrationOrder");
+                        }))
+                        .OptionLabel("Select a device...")
+                        .AutoBind(true)
+                        .Events(e => e
+                          .Change("onDeviceChange")    
+                          )
+                        .Deferred()
+                        )
+                    </div>
+                  </div>
+                  <div class="form-row form-group">
+                    <div class="col-12">
+                      <label class="s-label" asp-for="@Model.CreatedBy">CreatedBy</label>
+                    </div>
+                    <div class="col-12">
+                      @(Html.Kendo().TextAreaFor(m => m.CreatedBy)
+                          .HtmlAttributes(new { @class = "s-customTextArea" })
+                          .Rows(1).Deferred(true)
+                          )
+                    </div>
+                  </div>
+                  <div class="form-row form-group">
+                    <div class="col-12">
+                      <label class="s-label" asp-for="@Model.Status">Status</label>
+                    </div>
+                    <div class="col-12">
+                      @(Html.Kendo().DropDownListFor(m => m.StatusId)
+                          .HtmlAttributes(new { @class = "s-device-status" })
+                          .DataTextField("Name")
+                          .DataValueField("Id")
+                          .DataSource(dataSource => dataSource.Read(read =>
+                          {
+                            read.Action("GetAllDeviceStatuses", "Device");
+                          }))
+                          .AutoBind(true)
+                          .Deferred()
+                          )
+                    </div>
+                  </div>
+                  <div class="form-row form-group">
+                    <div class="col-12">
+                      <label class="s-label" asp-for="@Model.AccountingNumber">Accounting Number</label>
+                    </div>
+                    <div class="col-12">
+                      @(Html.Kendo().TextAreaFor(m => m.AccountingNumber)
+                          .HtmlAttributes(new { @class = "s-customTextArea" })
+                          .Rows(1).Deferred(true)
+                          )
+                    </div>
+                  </div>
+                    <div class="form-row form-group">
+                      <div class="col-12">
+                    <label class="s-label" asp-for="TestLocation">TestLocation</label>
+                      </div>                        
+                      <div class="col-12">
+                    @(Html.Kendo().TextAreaFor(m => m.TestLocation)
                               .HtmlAttributes(new { @class = "s-customTextArea" })
-                              .DataSource(source => source.Read("GetItemNumber", "CalibrationOrder"))
-                              .Deferred()
-                 )
-              </div>
-            </div>
-            <div class="form-row form-group">
-              <div class="col-12">
-                <label class="s-label" asp-for="@Model.CreatedBy">CreatedBy</label>
-              </div>
-              <div class="col-12">
-                @(Html.Kendo().TextAreaFor(m => m.CreatedBy)
-                    .HtmlAttributes(new { @class = "s-customTextArea" })
-                    .Rows(1).Deferred(true)
+                              .Deferred(true)
+                            )
+                      </div>
+                    </div>
+                <div class="form-row form-group">
+                  <div class="col-12">
+                    <label class="s-label" asp-for="AccountingType">Accounting Type</label>
+                  </div>
+                  <div class="col-12">
+                    @(Html.Kendo().DropDownListFor(m => m.AccountingType)
+                        .BindTo(Enum.GetValues(typeof(LineControllerInfrastructure.Entities.Enums.AccountingType))
+                        .Cast<LineControllerInfrastructure.Entities.Enums.AccountingType>()
+                        .Select(e => new SelectListItem
+                        {
+                          Text = e.ToString(),
+                          Value = ((int)e).ToString()
+                        }))
+                        .OptionLabel("Select accounting type...")
+                        .HtmlAttributes(new { @class = "s-customTextArea" })
+                        .Deferred(true)
                     )
+                  </div>
+                </div>
+                </div>
+              <!-- Coloana 2 -->
+            <div class="col-md-6">
+              <div class="form-row form-group">
+                <div class="col-12">
+                    <label class="s-label" asp-for="@Model.ActionId">Action</label>
+                </div>
+                <div class="col-12">
+                    @(Html.Kendo().DropDownListFor(m => m.ActionId)
+                        .HtmlAttributes(new { @class = "s-device-action" })
+                        .DataTextField("Name")
+                        .DataValueField("Id")
+                        .OptionLabel("Select a action...")
+                        .DataSource(dataSource => dataSource.Read(read =>
+                        {
+                          read.Action("GetCalibrationAction", "CalibrationOrder");
+                        }))
+                        .AutoBind(true)
+                        .Deferred()
+                        )
+                </div>
               </div>
-            </div>
-            <div class="form-row form-group">
-              <div class="col-12">
-                <label class="s-label" asp-for="@Model.Status">Status</label>
+              <div class="form-row form-group">
+                <div class="col-12">
+                  <label class="s-label" asp-for="@Model.Inspector">Inspector</label>
+                </div>
+                <div class="col-12">
+                  @(Html.Kendo().TextArea().Name("InspectorTextArea").Value(User.Identity.Name)
+                        .HtmlAttributes(new { @class = "s-customTextArea" }))
+                </div>
               </div>
-              <div class="col-12">
-                @(Html.Kendo().TextAreaFor(m => m.Status)
-                    .HtmlAttributes(new { @class = "s-customTextArea" })
-                    .Rows(1).Deferred(true)
-                    )
+              <div class="form-row form-group">
+                <div class="col-12">
+                  <label class="s-label" asp-for="@Model.Comment">Comment</label>
+                </div>
+                <div class="col-12">
+                  @(Html.Kendo().TextAreaFor(m => m.Comment)
+                      .HtmlAttributes(new { @class = "s-customTextArea" })
+                      .Rows(1).Deferred(true)
+                      )
+                </div>
               </div>
-            </div>
-            <div class="form-row form-group">
-              <div class="col-12">
-                <label class="s-label" asp-for="@Model.AccountingNumber">Accounting Number</label>
+              <div class="form-row form-group">
+                <div class="col-12">
+                  <label class="s-label" asp-for="@Model.CalibrationLocation">Calibration Location</label>
+                </div>
+                <div class="col-12">
+                  @(Html.Kendo().DropDownListFor(m => m.CalibrationLocationId)
+                      .HtmlAttributes(new { @class = "s-device-location" })
+                      .DataTextField("Name")
+                      .DataValueField("Id")
+                      .DataSource(dataSource => dataSource.Read(read =>
+                      {
+                        read.Action("GetAllDeviceLocation", "CalibrationOrder");
+                      }))
+                      .AutoBind(true)
+                      .Deferred()
+                      )
+                </div>
               </div>
-              <div class="col-12">
-                @(Html.Kendo().TextAreaFor(m => m.AccountingNumber)
-                    .HtmlAttributes(new { @class = "s-customTextArea" })
-                    .Rows(1).Deferred(true)
-                    )
-              </div>
-            </div>
-            <div class="form-row form-group">
-              <div class="col-12">
-                <label class="s-label" asp-for="@Model.Action">Action</label>
-              </div>
-              <div class="col-12">
-                @(Html.Kendo().TextAreaFor(m => m.Action)
-                    .HtmlAttributes(new { @class = "s-customTextArea" })
-                    .Rows(1).Deferred(true)
-                    )
-              </div>
-            </div>
-            <div class="form-row form-group">
-              <div class="col-12">
-                <label class="s-label" asp-for="@Model.Inspector">Inspector</label>
-              </div>
-              <div class="col-12">
-                @(Html.Kendo().TextArea().Name("InspectorTextArea").Value(User.Identity.Name)
-                      .HtmlAttributes(new { @class = "s-customTextArea" }))
-              </div>
-            </div>
-            <div class="form-row form-group">
-              <div class="col-12">
-                <label class="s-label" asp-for="@Model.Comment">Comment</label>
-              </div>
-              <div class="col-12">
-                @(Html.Kendo().TextAreaFor(m => m.Comment)
-                    .HtmlAttributes(new { @class = "s-customTextArea" })
-                    .Rows(1).Deferred(true)
-                    )
-              </div>
-            </div>
+                <div class="form-row form-group">
+                  <div class="col-12">
+                    <label class="s-label" asp-for="@Model.ReceiverId">Receiver</label>
+                  </div>
+                  <div class="col-12">
+                    @(Html.Kendo().DropDownListFor(m => m.ReceiverId)
+                        .HtmlAttributes(new { @class = "s-device-user" })
+                        .DataTextField("Display")
+                        .DataValueField("Id")
+                        .DataSource(dataSource => dataSource.Read(read =>
+                        {
+                          read.Action("GetUserCalibration", "CalibrationOrder");
+                        }))
+                        .AutoBind(true)
+                        .Deferred()
+                        )
+                  </div>
+                </div>
+                <div class="form-row form-group">
+                  <div class="col-12">
+                    <label class="s-label" asp-for="@Model.NoChannels">NoChannels</label>
+                  </div>
+                  <div class="col-12">
+                    @(Html.Kendo().TextAreaFor(m => m.NoChannels)
+                        .HtmlAttributes(new { @class = "s-customTextArea" })
+                        .Rows(1).Deferred(true)
+                        )
+                  </div>
+                </div>
+             </div>
+          </div>
           </div>
         </div>
       }

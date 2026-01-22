@@ -83,5 +83,64 @@ namespace LineControl.Controllers
         return View("Index");
       }
     }
+
+    public ActionResult CreateDeviceMode()
+    {
+      var model = new DeviceModelViewModel();
+      return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateDeviceMode(DeviceModelViewModel model)
+    {
+      if (ModelState.IsValid)
+      {
+        // 2. Adaugă "await" aici!
+        await service.AddDeviceMode(model);
+        return RedirectToAction("Index");
+      }
+      else
+      {
+        return View("Index");
+      }
+    }
+
+    public ActionResult CreateDeviceClassMode()
+    {
+      var model = new DeviceClassModeViewModel();
+      return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateDeviceClassMode(DeviceClassModeViewModel model)
+    {
+      if (ModelState.IsValid)
+      {
+        // 2. Adaugă "await" aici!
+        await service.AddDeviceClassMode(model);
+        return RedirectToAction("Index");
+      }
+      else
+      {
+        return View("Index");
+      }
+    }
+
+    [HttpGet]
+    public ActionResult GetLastUser()
+    {
+      var currentUserName = User.Identity.Name ?? "Unknown";
+      var result = new[]
+      {
+        new
+        {
+            Id = currentUserName,
+            LastChangeUser = currentUserName
+        }
+    };
+      return Json(result);
+    }
   }
 }

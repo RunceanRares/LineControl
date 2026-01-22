@@ -12,6 +12,8 @@ namespace LineControllerCore.Model
 
     public string? Country { get; set; }
 
+    public string? CostCenter { get; set; }
+
     public virtual ICollection<User> Users { get; } = new List<User>();
 
   }

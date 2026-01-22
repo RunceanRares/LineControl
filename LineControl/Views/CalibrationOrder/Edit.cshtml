@@ -69,6 +69,28 @@
                         )
                   </div>
                 </div>
+                <div class="form-row form-group">
+                  <div class="col-12">
+                    <label class="s-label" asp-for="@Model.CalibrationDate">Calibration Date</label>
+                  </div>
+                  <div class="col-12">
+                    @(Html.Kendo().DateTimePickerFor(m => m.CalibrationDate)
+                        .HtmlAttributes(new { @class = "s-customTextArea" })
+                        .Deferred()
+                        )
+                  </div>
+                </div>
+                <div class="form-row form-group">
+                  <div class="col-12">
+                    <label class="s-label" asp-for="@Model.CalibrationResult">Calibration Result</label>
+                  </div>
+                  <div class="col-12">
+                    @(Html.Kendo().TextAreaFor(m => m.CalibrationResult)
+                        .HtmlAttributes(new { @class = "s-customTextArea" })
+                        .Deferred()
+                        )
+                  </div>
+                </div>
               </div>
               <!-- Coloana 2 -->
               <div class="col-md-6">
@@ -102,6 +124,60 @@
                         .Rows(1).Deferred(true))
                   </div>
                 </div>
+                <div class="form-row form-group">
+                  <div class="col-12">
+                    <label class="s-label" asp-for="@Model.CalibrationInterval">Calibration Interval</label>
+                  </div>
+                  <div class="col-12">
+                    @(Html.Kendo().TextAreaFor(m => m.CalibrationInterval)
+                        .HtmlAttributes(new { @class = "s-customTextArea" })
+                        .Rows(1).Deferred(true))
+                  </div>
+                </div>
+                @if (Model.Edited)
+                {
+                  <div class="form-row form-group">
+                    <div class="col-12">
+                      <label class="s-label" asp-for="@Model.CalibrationLocation">Calibration Location</label>
+                    </div>
+                    <div class="col-12">
+                      @(
+                        Html.Kendo().DropDownListFor(m => m.CalibrationLocation)
+                        .HtmlAttributes(new { @class = "s-device-location" })
+                        .DataTextField("Name")
+                        .DataValueField("Id")
+                        .DataSource(dataSource => dataSource.Read(read =>
+                        {
+                          read.Action("GetAllDeviceLocation", "CalibrationOrder");
+                        }))
+                        .AutoBind(true)
+                        .Deferred()
+                        )
+                    </div>
+                  </div>
+                }
+                else
+                {
+                  <div class="form-row form-group">
+                    <div class="col-12">
+                      <label class="s-label" asp-for="@Model.CalibrationLocation">Calibration Location</label>
+                    </div>
+                    <div class="col-12">
+                      @(
+                          Html.Kendo().DropDownListFor(m => m.CalibrationLocation)
+                          .HtmlAttributes(new { @class = "s-device-location", disabled = "disabled" })
+                          .DataTextField("Name")
+                          .DataValueField("Id")
+                          .DataSource(dataSource => dataSource.Read(read =>
+                          {
+                            read.Action("GetAllDeviceLocation", "CalibrationOrder");
+                          }))
+                          .AutoBind(true)
+                          .Deferred()
+                          )
+                    </div>
+                  </div>
+                }
               </div>
             </div>
           </div>

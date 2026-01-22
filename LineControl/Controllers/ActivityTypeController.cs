@@ -50,7 +50,7 @@ namespace LineControl.Controllers
       }
     }
 
-    public async Task<ActionResult> Create()
+    public ActionResult Create()
     {
       var model = new ActivityTypeViewModel();
       return View(model);

@@ -588,7 +588,7 @@ namespace LineControllerInfrastructure.Migrations
                     b.ToTable("DeviceClassMode", (string)null);
                 });
 
-            modelBuilder.Entity("LineControllerInfrastructure.Entities.DeviceHierarchy", b =>
+            modelBuilder.Entity("LineControllerInfrastructure.Entities.DeviceHierarchys", b =>
                 {
                     b.Property<int>("ParentId")
                         .HasColumnType("int");
@@ -603,7 +603,7 @@ namespace LineControllerInfrastructure.Migrations
 
                     b.ToTable((string)null);
 
-                    b.ToView("DeviceHierarchy", (string)null);
+                    b.ToView("DeviceHierarchys", (string)null);
                 });
 
             modelBuilder.Entity("LineControllerInfrastructure.Entities.DeviceHistory", b =>

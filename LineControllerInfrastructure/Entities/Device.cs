@@ -78,7 +78,13 @@ namespace LineControllerInfrastructure.Entities
 
     [ForeignKey(nameof(StoragePlace))]
     [Required]
-    public int StoragePlaceId { get; set; }
+    public int? StoragePlaceId { get; set; }
+
+    public DeviceClass? DeviceClass { get; set; }
+
+    [ForeignKey(nameof(DeviceClass))]
+    [Required]
+    public int DeviceClassId { get; set; }
 
     [ExcludeFromCodeCoverage]
     public virtual ICollection<Device> Children { get; } = new List<Device>();

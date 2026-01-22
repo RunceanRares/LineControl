@@ -103,6 +103,43 @@
                       )
                 </div>
               </div>
+              <div>
+                <div class="col-12">
+                  <label class="s-label" asp-for="ActivityTypeId">Accounting Type</label>
+                </div>
+                <div class="col-12">
+                  @(Html.Kendo().DropDownListFor(m => m.ActivityTypeId)
+                      .BindTo(Enum.GetValues(typeof(LineControllerInfrastructure.Entities.Enums.AccountingType))
+                      .Cast<LineControllerInfrastructure.Entities.Enums.AccountingType>()
+                      .Select(e => new SelectListItem
+                {
+                  Text = e.ToString(),
+                  Value = ((int)e).ToString()
+                }))
+                      .OptionLabel("Select accounting type...")
+                      .HtmlAttributes(new { @class = "s-customTextArea" })
+                      .Deferred(true)
+                      )
+                </div>
+              </div>
+              <div>
+                <div class="col-12">
+                  <label class="s-label" asp-for="@Model.InventoryLocationId">Inventory Location</label>
+                </div>
+                <div class="col-12">
+                  @(Html.Kendo().DropDownListFor(m => m.InventoryLocationId)
+                      .HtmlAttributes(new { @class = "s-device-location" })
+                      .DataTextField("Name")
+                      .DataValueField("Id")
+                      .DataSource(dataSource => dataSource.Read(read =>
+                      {
+                        read.Action("GetAllInventoryLocation", "Device");
+                      }))
+                      .AutoBind(true)
+                      .Deferred()
+                      )
+                </div>
+                </div>
             </div>
 
 
@@ -201,7 +238,18 @@
               <div class="col-md-6">
                 <label class="col-md-4 col-form-label" asp-for="CalibrationTester"></label>
                 <div class="col-md-8">
-                  @Html.EditorFor(m => m.CalibrationTester, new { @readonly = !Model.IsEditable })
+                  @(Html.Kendo().DropDownListFor(m => m.CalibrationTester)
+                      .HtmlAttributes(new { @class = "s-device-class" })
+                      .DataTextField("CalibrationTester")
+                      .DataValueField("Id")
+                      .OptionLabel("Select class...")
+                      .DataSource(dataSource => dataSource.Read(read =>
+                      {
+                        read.Action("GetCalibrationTester", "Device");
+                      }))
+                      .Events(e => e.DataBound("onCalibrationTesterDataBound"))
+                      .Deferred()
+                      )
                 </div>
               </div>
               <div class="col-md-6">
@@ -241,6 +289,23 @@
                 <div class="col-md-8">
                   @Html.EditorFor(m => m.IssueDate)
                 </div>
+              </div>
+              <div class="col-md-6">
+                <label class="col-md-4 col-form-label" asp-for="DeviceClassId">Device Class</label>
+                <div class="col-md-8">
+                  @(Html.Kendo().DropDownListFor(m => m.DeviceClassId)
+                      .HtmlAttributes(new { @class = "s-device-class" })
+                      .DataTextField("DeviceModelName")
+                      .DataValueField("Id")
+                      .OptionLabel("Select class...")
+                      .DataSource(dataSource => dataSource.Read(read =>
+                      {
+                        read.Action("GetAllDeviceClasses", "Device");
+                      }))
+                      .Deferred()
+                      )
+                </div>
+                <span asp-validation-for="DeviceClassId" class="text-danger"></span>
               </div>
             </div>
           </div>

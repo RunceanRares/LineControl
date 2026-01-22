@@ -36,9 +36,9 @@ namespace LineControl.Controllers
     [ValidateAntiForgeryToken]
     public IActionResult Create(DeviceCalibrationOrderViewModel model)
     {
-      if(model != null)
+      if(model != null )
       {
-        service.AddCalibratioOrder(model);
+        service.AddCalibrationOrder(model);
         return RedirectToAction("Index");
       }
       else
@@ -94,6 +94,44 @@ namespace LineControl.Controllers
     {
       var items = await service.GetItemNumbers(itemNumber).ConfigureAwait(false);
       return Json(items);
+    }
+
+    public async Task<JsonResult> GetAllDeviceLocation()
+    {
+      var result = await service.GetLocationAsync().ConfigureAwait(false);
+      return Json(result);
+    }
+
+    public async Task<JsonResult> GetCalibrationAction()
+    {
+      var result = await service.GetCalibrationAction().ConfigureAwait(false);
+      return Json(result);
+    }
+
+    public async Task<JsonResult> GetUserCalibration()
+    {
+      var result = await service.GetUserCalibration().ConfigureAwait(false);
+      return Json(result);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetDeviceCreatorByDeviceId(int deviceId)
+    {
+      var creator = await service.GetDeviceCreator(deviceId);
+      return Json(new
+      {
+        createdBy = creator?.CreatedBy ?? ""
+      });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetDeviceTestLocation(int deviceId)
+    {
+      var testLocation = await service.GetDeviceTestLocation(deviceId);
+      return Json(new
+      {
+        testLocation = testLocation?.StoragePlace ?? ""
+      });
     }
   }
 }

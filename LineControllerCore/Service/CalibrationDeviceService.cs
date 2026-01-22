@@ -8,7 +8,7 @@ namespace LineControllerCore.Service
 {
   public class CalibrationDeviceService : BaseService<DeviceCalibrationOrder>, ICalibrationDevice
   {
-    public CalibrationDeviceService(LineContextDb context, IMapper mapper, ILogger<CalibrationDeviceService> logger) : base(context, mapper, logger)
+    public CalibrationDeviceService(LineContextDb context, IMapper mapper, ILogger<CalibrationDeviceService> logger, IIdentityService identityService) : base(context, mapper, logger, identityService)
     {
     }
   }

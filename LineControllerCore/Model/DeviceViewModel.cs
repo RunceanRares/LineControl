@@ -44,7 +44,7 @@ namespace LineControl.Models
     public DateTime CalibrationDate { get; set; }
 
     [Display(Name = "Issue comment")]
-    public string IssueComment { get; set; }
+    public string? IssueComment { get; set; }
 
     [Display(Name = "Inventory location")]
     public string InventoryLocation { get; set; }
@@ -52,11 +52,11 @@ namespace LineControl.Models
     [Display(Name = "Storage place")]
     public string StoragePlace { get; set; }
 
-    public string InventoryNumber { get; set; }
+    public string? InventoryNumber { get; set; }
 
     public decimal? PassiveCostFactor { get; set; }
 
-    public string Comment { get; set; }
+    public string? Comment { get; set; }
 
     [Column(TypeName = "DECIMAL(18, 3)")]
     public decimal CostFactor { get; set; }
@@ -65,17 +65,17 @@ namespace LineControl.Models
     public int? ActivityTypeId { get; set; }
 
     [Display(Name = "Activity type")]
-    public string ActivityType { get; set; }
+    public string? ActivityType { get; set; }
 
     [Display(Name = "Calibration location")]
     public string CalibrationLocation { get; set; }
 
     [Display(Name = "Accessories")]
-    public string Accessories { get; set; }
+    public string? Accessories { get; set; }
 
 
     [Display(Name = "Equipment number")]
-    public string EquipmentNumber { get; set; }
+    public string? EquipmentNumber { get; set; }
 
 
     [Display(Name = "Calibration due on")]
@@ -84,7 +84,7 @@ namespace LineControl.Models
     public DateTime? CalibrationDueDate { get; set; }
 
     [Display(Name = "Calibration tester")]
-    public string CalibrationTester { get; set; }
+    public string? CalibrationTester { get; set; }
 
     [Display(Name = "Calibration interval")]
     public int? CalibrationInterval { get; set; }
@@ -102,16 +102,16 @@ namespace LineControl.Models
     public string CreatedBy { get; set; }
 
     [Display(Name = "Accounting number")]
-    public string AccountingNumber { get; set; }
+    public string? AccountingNumber { get; set; }
 
     public bool HasReservations { get; set; }
 
     public int? IssueId { get; set; }
 
-    public string CreatedByFirstName { get; set; }
+    public string? CreatedByFirstName { get; set; }
 
-    public string CreatedByLastName { get; set; }
+    public string? CreatedByLastName { get; set; }
 
-    public string CreatedByDepartment { get; set; }
+    public string? CreatedByDepartment { get; set; }
   }
 }

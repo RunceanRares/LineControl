@@ -9,11 +9,11 @@ namespace LineControllerCore.Model
 {
   public class DeviceHierarchyListViewModel
   {
-    public string Id { get; set; }
+    public int Id { get; set; }
 
     public int DeviceId { get; set; }
 
-    public string ParentId { get; set; }
+    public int? ParentId { get; set; }
 
     [Display(Name = "Item number")]
     public string ItemNumber { get; set; }
@@ -32,5 +32,7 @@ namespace LineControllerCore.Model
     public bool IsCalibrationDue { get; set; }
 
     public bool HasActiveCalibrationOrder { get; set; }
+
+    public bool HasChildren { get; set; }
   }
 }

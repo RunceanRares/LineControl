@@ -20,7 +20,12 @@ namespace LineControllerInfrastructure.ContextConfiguration
 
       builder.HasOne(r => r.Issue)
              .WithOne(i => i.Reservation)
+             .IsRequired(false)
              .HasForeignKey<DeviceReservation>(r => r.IssueId).OnDelete(DeleteBehavior.Restrict);
+
+      builder.HasIndex(r => r.IssueId)
+             .IsUnique()
+             .HasFilter("[IssueId] IS NOT NULL");
 
       builder.HasOne(r => r.Device)
              .WithMany(d => d.Reservations)
@@ -30,12 +35,13 @@ namespace LineControllerInfrastructure.ContextConfiguration
       builder.HasOne(r => r.InventoryLocation)
              .WithMany()
              .HasForeignKey(r => r.InventoryLocationId)
-             .IsRequired().OnDelete(DeleteBehavior.NoAction);
+             .IsRequired(false)
+             .OnDelete(DeleteBehavior.NoAction);
 
       builder.HasOne(m => m.CreatedBy)
              .WithMany()
              .HasForeignKey(m => m.CreatedById)
-             .IsRequired()
+             .IsRequired(false)
              .OnDelete(DeleteBehavior.Restrict);
 
       base.Configure(builder);

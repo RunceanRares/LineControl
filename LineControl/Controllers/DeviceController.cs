@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using LineControllerCore.Interface;
 using LineControllerInfrastructure.Entities;
+using Microsoft.AspNetCore.Authorization;
+using System.ComponentModel.DataAnnotations;
 
 namespace LineControl.Controllers
 {
@@ -19,13 +21,15 @@ namespace LineControl.Controllers
     private readonly IIdentityService identityService;
     private readonly IDeviceService deviceService;
     private readonly IDeviceIntegrationService integrationService;
+    private readonly IDeviceReservationService reservationService;
 
-    public DeviceController(IDeviceService service, IIdentityService identityService, IDeviceService deviceService, IDeviceIntegrationService deviceIntegrationService)// IUserRoleService userRoleService, IUserService userService)
+    public DeviceController(IDeviceService service, IIdentityService identityService, IDeviceService deviceService, IDeviceIntegrationService deviceIntegrationService, IDeviceReservationService reservationService)// IUserRoleService userRoleService, IUserService userService)
     {
       this.service = service;
       this.identityService = identityService;
       this.deviceService = deviceService;
       this.integrationService = deviceIntegrationService;
+      this.reservationService = reservationService;
       //this.userRoleService = userRoleService;
       //this.userService = userService;
     }
@@ -37,8 +41,14 @@ namespace LineControl.Controllers
 
     public ActionResult GetDevices([DataSourceRequest] DataSourceRequest request)
     {
-      var deviceViewModel = service.GetDevices();
-      return Json(deviceViewModel.ToList().ToDataSourceResult(request));
+      var deviceQuery = service.GetDevices();
+
+      // 2. .ToList() execută SQL-ul acum. 
+      // Dacă Mapper-ul e reparat, aici nu va mai crăpa.
+      var deviceList = deviceQuery.ToList();
+
+      // 3. Trimite datele la Kendo Grid
+      return Json(deviceList.ToDataSourceResult(request));
     }
 
     public async Task<ActionResult> Create()
@@ -46,7 +56,8 @@ namespace LineControl.Controllers
       var model = new DeviceEditViewModel()
       {
         Id = 0,
-        IsDisplay = false
+        IsDisplay = true
+
       };
 
       return View("Create", model);
@@ -54,11 +65,12 @@ namespace LineControl.Controllers
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Create(DeviceEditViewModel model)
+    public async Task<IActionResult> Create(DeviceEditViewModel model)
     {
       if (ModelState.IsValid)
       {
-        service.AddDevice(model);
+        // 2. Adaugă "await" aici!
+        await service.AddDevice(model);
         return RedirectToAction("Index");
       }
       else
@@ -67,15 +79,57 @@ namespace LineControl.Controllers
       }
     }
 
+    [HttpGet]
+    public IActionResult GetAllDeviceClasses()
+    {
+      var classes = service.GettAllDeviceClass();
+
+      // Returnezi JSON pentru Kendo UI
+      return Json(classes);
+    }
+
+    [HttpGet]
+    public IActionResult GetAllInventoryLocation()
+    {
+      var location = service.GetAllInventotyLocation();
+
+      return Json(location);
+    }
+
+    [HttpGet]
+    public ActionResult GetCalibrationTester()
+    {
+      var currentUserName = User.Identity.Name ?? "Unknown"; 
+      var result = new[]
+      {
+        new
+        { 
+            Id = currentUserName,
+            CalibrationTester = currentUserName
+        }
+    };
+      return Json(result);
+    }
+
+
     public ActionResult Edit(int id)
     {
       var device = service.GetDeviceById(id);
+
+      // Verificare de siguranță crucială:
+      if (device == null)
+      {
+        return NotFound($"Dispozitivul cu ID-ul {id} nu a fost găsit.");
+      }
+
+      device.IsDisplay = true;
       var isUserAuthenticated = User.Identity.IsAuthenticated;
       if (!isUserAuthenticated)
       {
         return RedirectToAction("Details", new { id });
       }
 
+      device.HasEditRight = true;
       return View(device);
     }
 
@@ -87,11 +141,11 @@ namespace LineControl.Controllers
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Edit(DeviceEditViewModel model)
+    public async Task<IActionResult> Edit(DeviceEditViewModel model)
     {
       if (ModelState.IsValid)
       {
-        service.Update(model);
+        await service.Update(model);
         return RedirectToAction("Index");
       }
       
@@ -106,9 +160,15 @@ namespace LineControl.Controllers
       return View();
     }
 
-    public ActionResult Reservation()
+    //public ActionResult Reservation()
+    //{
+    //  return View();
+    //}
+
+    public async Task<IActionResult> Reservation(string? itemNumber)
     {
-      return View();
+      var model = await service.GetDeviceReservationEditViewModelAsync(itemNumber);
+      return View(model);
     }
 
     public async Task<JsonResult> GetMeasurementRanges(int deviceClassId)
@@ -124,23 +184,25 @@ namespace LineControl.Controllers
       return Json(result);
     }
 
-    public async Task<ActionResult> Integrate([DataSourceRequest] DataSourceRequest request, [FromQuery] int parentId, DeviceChildViewModel device)
+
+    [HttpPost]
+    public async Task<ActionResult> Integrate([DataSourceRequest] DataSourceRequest request, DeviceChildViewModel device)
     {
       if (string.IsNullOrEmpty(device.ItemNumber))
       {
         ModelState.AddModelError(nameof(device.ItemNumber), "The 'Item number' field is required.");
       }
 
-      if (ModelState.IsValid)
+      try
       {
-        var response = await service.IntegrateAsync(parentId, device).ConfigureAwait(false);
-        if (response != null)
-        {
-          return Json(response);
-        }
+        var result = await service.IntegrateAsync(device.ParentId, device);
+        return Json(new[] { result }.ToDataSourceResult(request, ModelState));
       }
-      var result = await new[] { device }.ToDataSourceResultAsync(request, ModelState).ConfigureAwait(false);
-      return Json(result);
+      catch (ArgumentException ex)
+      {
+        ModelState.AddModelError("ItemNumber", ex.Message);
+        return Json(new[] { device }.ToDataSourceResult(request, ModelState));
+      }
     }
 
     public async Task<IActionResult> GetHierarchy([DataSourceRequest] DataSourceRequest request, int deviceId)
@@ -149,5 +211,38 @@ namespace LineControl.Controllers
       var result = await children.ToTreeDataSourceResultAsync(request, c => c.Id, c => c.ParentId, c => c).ConfigureAwait(false);
       return Json(result);
     }
+
+    public async Task<JsonResult> GetReservationMeasurementRanges(int id)
+    {
+      var result = await reservationService.GetMeasurementRangesAsync(id).ConfigureAwait(false);
+      return Json(result);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> History(string itemNumber)
+    {
+      // Modelul inițial (gol)
+      var model = new DeviceHistoryViewModel();
+
+      // Dacă nu s-a căutat nimic, returnăm pagina goală
+      if (string.IsNullOrWhiteSpace(itemNumber))
+      {
+        return View(model);
+      }
+
+      // Apelăm serviciul
+      var result = await service.GetDeviceHistoryAsync(itemNumber);
+
+      if (result == null)
+      {
+        // Dacă nu am găsit, adăugăm eroare și păstrăm ItemNumber în input ca să vadă userul ce a tastat
+        ModelState.AddModelError("", $"Device with Item Number '{itemNumber}' not found.");
+        model.ItemNumber = itemNumber;
+        return View(model);
+      }
+
+      return View(result);
+    }
+
   }
 }

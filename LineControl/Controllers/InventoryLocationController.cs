@@ -7,11 +7,11 @@ namespace LineControl.Controllers
 {
   public class InventoryLocationController : Controller
   {
-    private readonly IInventoryLocationService inventoryLocation;
+    private readonly IInventoryLocationService service;
 
     public InventoryLocationController(IInventoryLocationService inventoryLocation)
     {
-      this.inventoryLocation = inventoryLocation;
+      this.service = inventoryLocation;
     }
 
     public IActionResult Index()
@@ -21,7 +21,7 @@ namespace LineControl.Controllers
 
     public async Task<JsonResult> GetInventoryLocation()
     {
-      var company = await inventoryLocation.GetInventoryLocationAsync();
+      var company = await service.GetInventoryLocationAsync().ConfigureAwait(false);
       return Json(company);
     }
   }

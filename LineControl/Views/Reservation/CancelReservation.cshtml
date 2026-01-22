@@ -1,0 +1,117 @@
+﻿@model DeviceReservationSelectViewModel
+@{
+  ViewData["Title"] = "Cancel Reservation";
+}
+<div class="row">
+  <div class="col">
+    <h2> Cancel Reservation</h2>
+  </div>
+</div>
+
+<div class="container-fluid mt-4">
+  <div class="row">
+    <div class="col-12 col-lg-5">
+      <div class="card h-100">
+        <div class="card-body">
+          <form method="post" class="s-device-issue-editor s-device-issue-form">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.DeviceId)
+            <div class="row mb-3">
+              <label class="col-md-4 col-form-label" asp-for="@Model.ItemNumber">Item Number</label>
+              <div class="col-md-8">
+                @(Html.Kendo().TextAreaFor(m => m.ItemNumber)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true))
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label class="col-md-4 col-form-label">Manufacturer</label>
+              <div class="col-md-8">
+                @(Html.Kendo().TextAreaFor(m => m.Manufacturer)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true))
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <label class="col-md-4 col-form-label" asp-for="@Model.DeviceModel">Device Model</label>
+              <div class="col-md-8">
+                @(Html.Kendo().TextAreaFor(m => m.DeviceModel)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true))
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label class="col-md-4 col-form-label" asp-for="@Model.Designation">Designation</label>
+              <div class="col-md-8">
+                @(Html.Kendo().TextAreaFor(m => m.Designation)
+                    .HtmlAttributes(new { @class = "s-customTextArea" })
+                    .Rows(1).Deferred(true))
+              </div>
+            </div>
+            <div class="mb-3 d-flex gap-2">
+              @{
+                var buttonContent = "Cancel";
+              }
+              @(Html.Kendo().Button()
+                  .Name("cancelReservation")
+                  .ThemeColor(ThemeColor.Primary)
+                  .Content(buttonContent)
+                  .HtmlAttributes(new { type = "submit", formaction = Url.Action("CancelReservation", "Reservation") })
+                  .Deferred()
+                  )
+              @(Html.Kendo().Button()
+                  .Name("deviceBack")
+                  .Tag("a")
+                  .Content("Back")
+                  .HtmlAttributes(new { href = Url.Action("Index", "Device") })
+                  .Deferred()
+                  )
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-7">
+      <div class="row mb-3">
+        <div class="col-12">
+          <h2 class="mb-0">Device Structure</h2>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          @(Html.Kendo().TreeList<DeviceReserveHierarchyListViewModel>()
+              .Name("childrenTree")
+              .Columns(columns =>
+              {
+                columns.Add().Field(m => m.ItemNumber).Width(200);
+                columns.Add().Field(m => m.Manufacturer);
+                columns.Add().Field(m => m.DeviceModel);
+                columns.Add().Field(m => m.Designation);
+                columns.Add().Field(m => m.CalibrationDue).HtmlAttributes(new { @class = "s-device-column-calibrationdue" });
+                columns.Add().Field(m => m.InventoryLocation);
+              })
+              .Sortable()
+              .HtmlAttributes(new { @class = "s-device-reserve-children" })
+              .DataSource(dataSource => dataSource.Read("GetReserveHierarchyTree", "Reservation", new { deviceId = Model.DeviceId })
+              .ServerOperation(false)
+              .Model(model =>
+              {
+                model.Id(f => f.Id);
+                model.ParentId(f => f.ParentId);
+                model.Expanded(true);
+                model.Field(f => f.ItemNumber);
+                model.Field(f => f.Designation);
+                model.Field(f => f.Manufacturer);
+                model.Field(f => f.DeviceModel);
+                model.Field(f => f.InventoryLocation);
+                model.Field(f => f.IsCalibrationDue);
+                model.Field(f => f.HasActiveCalibrationOrder);
+              }))
+              .Deferred()
+              )
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

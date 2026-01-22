@@ -29,7 +29,7 @@ namespace LineControl.Controllers
 
     public IActionResult Create()
     {
-      return View();
+      return View(new CompanyLocationViewModel());
     }
 
     [HttpPost]

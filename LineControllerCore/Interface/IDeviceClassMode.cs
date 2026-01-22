@@ -16,5 +16,9 @@ namespace LineControllerCore.Interface
 
     DeviceModelViewModel UpdateDeviceModel(DeviceModelViewModel model);
 
+    Task<DeviceModelViewModel> AddDeviceMode(DeviceModelViewModel model);
+
+    Task<DeviceClassModeViewModel> AddDeviceClassMode(DeviceClassModeViewModel model);
+
   }
 }

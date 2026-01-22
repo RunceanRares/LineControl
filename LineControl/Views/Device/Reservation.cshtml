@@ -1,5 +1,172 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model DeviceReservationEditViewModel
 @{
+  ViewData["Title"] ="Reservation";
 }
+
+<div class="row s-pageTitle">
+  <div class="col">
+      <h2>Reservation</h2>
+  </div>
+</div>
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-body">
+      <form class="s-device-reservation-form" asp-action="Reservation" asp-controller="Reservation">
+      @Html.AntiForgeryToken()
+      @Html.HiddenFor(m => m.ReservationId)
+      @Html.HiddenFor(m => m.DeviceId, new { @class = "s-device-reservation-deviceid" })
+      @Html.HiddenFor(m => m.DeviceClassId)
+      @Html.HiddenFor(m => m.IsUniversal, new { @class = "s-device-reservation-isuniversal" })
+      @Html.HiddenFor(m => m.HasMultipleMeasurementRanges, new { @class = "s-device-reservation-hasranges" })
+      @Html.HiddenFor(m => m.CheckCalibrationDue, new { @class = "s-device-reservation-checkcalibration"})
+      <div class="row mb-3">
+        <label class="col-md-4 col-form-label" asp-for="ItemNumber"></label>
+        <div class="col-md-8">
+          @(Html.Kendo().ComboBoxFor(m => m.ItemNumber)
+              .Placeholder("Type item number...")
+              .DataTextField("ItemNumber")
+              .DataValueField("ItemNumber")
+              .Filter("contains")
+              .MinLength(2)
+              .AutoBind(false)
+              .Suggest(true)
+              .Events(e => e.Select("onItemNumberChangeReservation"))
+              .DataSource(source =>
+              {
+                source.Read(read =>
+                {
+                    read.Action("SearchItemNumbers", "DeviceIssues").Data("getSearchParameters");
+                  })
+                .ServerFiltering(true);
+              })
+              .HtmlAttributes(new { @class = "s-device-itemnumber" })
+              )
+        </div>
+      </div>
+      <div class="row mb-3">
+        <label class="col-md-4 col-form-label" asp-for="Manufacturer"></label>
+        <div class="col-md-8">
+          @Html.EditorFor(m => m.Manufacturer, new { @readonly = "readonly" })
+        </div>
+      </div>
+      <div class="row mb-3">
+        <label class="col-md-4 col-form-label" asp-for="DeviceModel"></label>
+        <div class="col-md-8">
+          @Html.EditorFor(m => m.DeviceModel, new { @readonly = "readonly" })
+        </div>
+      </div>
+      <div class="row mb-3">
+        <label class="col-md-4 col-form-label" asp-for="Designation"></label>
+        <div class="col-md-8">
+          @Html.EditorFor(m => m.Designation, new { @readonly = "readonly" })
+        </div>
+      </div>
+      <div class="row mb-3">
+        <label class="col-md-4 col-form-label" asp-for="InventoryLocationId"></label>
+        <div class="col-md-8">
+         @*  @Html.HiddenFor(m => m.IsAccountingMandatory, new { @class = "s-device-reservation-isaccountingmandatory" }) *@
+          @(Html.Kendo().DropDownListFor(m => m.InventoryLocationId)
+              .DataTextField("Name")
+              .DataValueField("Id")
+              //.Enable(Model.CanReserve && Model.ReservationId == 0 && Model.DeviceId == null && Model.DeviceClassId != null)
+              .OptionLabel("Select an inventory location ...")
+              .DataSource(dataSource => dataSource.Read(read =>
+              {
+                read.Action("GetInventoryLocation", "InventoryLocation");
+              }))
+              .AutoBind(true)
+              .Deferred()
+              )
+         @*  @Html.HiddenFor(m => m.InventoryLocationId) *@
+        </div>
+      </div>
+      <div class="row mb-3">
+        <label class="col-md-4 col-form-label" asp-for="StartDate"></label>
+        <div class="col-md-8">
+          @Html.EditorFor(m => m.StartDate, new { disabled = !Model.CanReserve || !Model.IsEditable, min = DateTime.Today })
+        </div>
+      </div>
+      <div class="row mb-3">
+        <label class="col-md-4 col-form-label" asp-for="PeriodId"></label>
+        <div class="col-md-8">
+          @(Html.Kendo().DropDownListFor(m => m.PeriodId)
+              .DataTextField("Name")
+              .DataValueField("Id")
+              .OptionLabel("Select a period ...")
+              .DataSource(dataSource => dataSource.Read("GetPeriods", "Reservation"))
+              .Deferred()
+              )
+        </div>
+      </div>
+      <div class="row mb-3">
+        <label class="col-md-4 col-form-label s-device-reservation-accountinglabel" asp-for="AccountingNumber"></label>
+        <div class="col-md-8">
+          @Html.EditorFor(m => m.AccountingNumber, new { disabled = !Model.CanReserve || !Model.IsEditable })
+        </div>
+      </div>
+      <div class="mb-3 d-flex gap-2">
+        @(Html.Kendo().Button()
+            .Name("saveReserve")
+            .ThemeColor(ThemeColor.Primary)
+            .Content("Reserve")
+            .Enable(Model.CanReserve && Model.IsEditable)
+            .HtmlAttributes(new { type = "submit" })
+            .Deferred()
+            )
+        @(Html.Kendo().Button()
+            .Name("reserveBack")
+            .Tag("a")
+            .Content("Back")
+            .HtmlAttributes(new { href = Url.Action("Index", Model.DeviceClassId != null ? "DeviceClass" : "Device") })
+            .Deferred()
+            )
+      </div>
+    </form>
+  </div>
+  @if (Model.DeviceId != null)
+  {
+    <div class="col-12 col-lg-7">
+      <div class="row mb-3">
+        <div class="col-12">
+          <h2 class="mb-0">Device Structure</h2>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          @(Html.Kendo().TreeList<DeviceReserveHierarchyListViewModel>()
+              .Name("childrenTree")
+              .Columns(columns =>
+              {
+                columns.Add().Field(m => m.ItemNumber).Width(200);
+                columns.Add().Field(m => m.Manufacturer);
+                columns.Add().Field(m => m.DeviceModel);
+                columns.Add().Field(m => m.Designation);
+                columns.Add().Field(m => m.CalibrationDue).HtmlAttributes(new { @class = "s-device-column-calibrationdue" });
+                columns.Add().Field(m => m.InventoryLocation);
+              })
+              .Sortable()
+              .HtmlAttributes(new { @class = "s-device-reserve-children" })
+              .DataSource(dataSource => dataSource.Read("GetReserveHierarchy", "Device", new { deviceId = Model.DeviceId })
+              .ServerOperation(false)
+              .Model(model =>
+              {
+                model.Id(f => f.Id);
+                model.ParentId(f => f.ParentId);
+                model.Expanded(true);
+                model.Field(f => f.ItemNumber);
+                model.Field(f => f.Designation);
+                model.Field(f => f.Manufacturer);
+                model.Field(f => f.DeviceModel);
+                model.Field(f => f.InventoryLocation);
+                model.Field(f => f.IsCalibrationDue);
+                model.Field(f => f.HasActiveCalibrationOrder);
+              }))
+              //.Events(events => events.Error("reservation.dataSourceError")))
+              //.Events(events => events.DataBound("reservation.hierarchyDataBound"))
+              .Deferred()
+              )
+        </div>
+      </div>
+    </div>
+  }
+</div>

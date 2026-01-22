@@ -9,11 +9,12 @@ namespace LineControllerCore.Service
   public abstract class BaseService<TEntity>
      where TEntity : class
   {
-    protected BaseService(LineContextDb context, IMapper mapper, ILogger logger) 
+    protected BaseService(LineContextDb context, IMapper mapper, ILogger logger, IIdentityService identityService) 
     {
       Context = context;
       Mapper = mapper;
       Logger = logger;
+      IdentityService = identityService;
     }
 
     protected BaseService(IMapper mapper)

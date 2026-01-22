@@ -1,4 +1,7 @@
 ﻿using LineControllerCore.Interface;
+using LineControllerCore.Service;
+
+using LineControllerInfrastructure;
 using LineControllerInfrastructure.Entities;
 using System.Globalization;
 using System.Security.Claims;
@@ -9,36 +12,31 @@ namespace LineControl.Common
   {
     private readonly IUserGroupService userGroupService;
     private readonly IHttpContextAccessor httpContextAccessor;
+    private readonly LineContextDb context;
 
-
-    public IdentityService(IHttpContextAccessor httpContextAccessor, IUserGroupService userGroupService)
+    public IdentityService(IHttpContextAccessor httpContextAccessor, IUserGroupService userGroupService, LineContextDb context)
     {
       this.httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
       this.userGroupService = userGroupService;
+      this.context = context;
     }
 
-    private ClaimsPrincipal User => httpContextAccessor.HttpContext!.User;
+    private ClaimsPrincipal User => httpContextAccessor.HttpContext?.User;
 
-    public bool IsAuthenticated
-    {
-      get
-      {
-        return User.Identity!.IsAuthenticated && User.FindFirst("USERID") != null;
-      }
-    }
+    public bool IsAuthenticated => User?.Identity?.IsAuthenticated ?? false;
 
     public int? UserId
     {
       get
       {
-        Claim? claim = User.FindFirst("USERID");
+        var windowsName = httpContextAccessor.HttpContext?.User?.Identity?.Name;
+        string userName = windowsName.Split('\\')[0];
 
-        if (claim == null)
-        {
-          return null;
-        }
+        if (string.IsNullOrEmpty(userName)) return null;
 
-        return int.Parse(claim.Value, CultureInfo.InvariantCulture);
+        var user = context.Users.FirstOrDefault(u => u.UserName == userName);
+
+        return user?.Id;
       }
     }
 

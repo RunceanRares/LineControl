@@ -25,9 +25,11 @@ namespace LineControllerInfrastructure.Entities
     public decimal? MeasurementMax { get; set; }
 
     [StringLength(450)]
-    public string MeasurementUnit { get; set; }
-    public DateTime StartDate { get; set; }
-    public string AccountingNumber { get; set; }
+    public string? MeasurementUnit { get; set; }
+    public DateTime? StartDate { get; set; }
+
+    public DateTime? EndDate { get; set; }
+    public string? AccountingNumber { get; set; }
 
     public User User { get; set; }
 
@@ -48,12 +50,18 @@ namespace LineControllerInfrastructure.Entities
     public InventoryLocation InventoryLocation { get; set; }
 
     [ForeignKey(nameof(InventoryLocation))]
-    public int InventoryLocationId { get; set; }
+    public int? InventoryLocationId { get; set; }
     public DateTime CreationDate { get; set; }
 
     [ForeignKey(nameof(CreatedBy))]
-    public int CreatedById { get; set; }
+    public int? CreatedById { get; set; }
 
-    public User CreatedBy { get; set; }
+    public User? CreatedBy { get; set; }
+
+    public ReservationPeriod? ReservationPeriod { get; set; }
+
+    [ForeignKey(nameof(ReservationPeriod))]
+    public int? ReservationPeriodId { get; set; }
+
   }
 }

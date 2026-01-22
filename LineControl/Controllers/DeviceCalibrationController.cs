@@ -39,7 +39,7 @@
 //    {
 //      if (ModelState.IsValid)
 //      {
-//        service.AddCalibratioOrder(model);
+//        service.AddCalibrationOrder(model);
 //        return RedirectToAction("Index");
 //      }
 //      else
