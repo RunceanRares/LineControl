@@ -160,10 +160,6 @@ namespace LineControl.Controllers
       return View();
     }
 
-    //public ActionResult Reservation()
-    //{
-    //  return View();
-    //}
 
     public async Task<IActionResult> Reservation(string? itemNumber)
     {

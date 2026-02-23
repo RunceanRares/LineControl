@@ -29,12 +29,12 @@ namespace LineControllerCore.Service
       //this.userRoleService = userRoleService;
     }
 
-    public IQueryable<DeviceViewModel> GetDevices() 
+    public IEnumerable<DeviceViewModel> GetDevices() 
     {
       return Context.Devices
        .AsNoTracking()
        .Where(d => d.ItemNumber != null)
-       .ProjectTo<DeviceViewModel>(Mapper.ConfigurationProvider);
+       .ProjectTo<DeviceViewModel>(Mapper.ConfigurationProvider).ToList();
     }
 
     public DeviceEditViewModel GetDeviceById(int id) 

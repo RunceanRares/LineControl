@@ -1,0 +1,34 @@
+name: .NET CI Pipeline
+
+# Pipeline-ul pornește la fiecare Push pe ramura main
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Copiază codul de pe GitHub pe serverul de build
+    - uses: actions/checkout@v4
+
+    # 2. Instalează mediul .NET
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0
+
+    # 3. Descarcă bibliotecile (NuGet packages)
+    - name: Restore dependencies
+      run: dotnet restore
+
+    # 4. Compilează codul (Build)
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+
+    # 5. Rulează testele (dacă ai proiect de teste)
+    - name: Test
+      run: dotnet test --no-build --verbosity normal

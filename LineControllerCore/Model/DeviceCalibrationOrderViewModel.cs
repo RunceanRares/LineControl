@@ -145,6 +145,6 @@ namespace LineControllerCore.Models
 
     }
 
-    public int? NoChannels { get; internal set; }
+    public int? NoChannels { get; set; }
   }
 }

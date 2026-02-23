@@ -6,7 +6,7 @@ namespace LineControllerCore.Service
   public interface IDeviceService
   {
     //Task<IEnumerable<DeviceViewModel>> GetAsync(Func<LinkViewModel, string> getDeviceDetailsUrl, Func<LinkViewModel, string> getCalibrationOrderUrl);
-    IQueryable<DeviceViewModel> GetDevices();
+    IEnumerable<DeviceViewModel> GetDevices();
 
     DeviceEditViewModel GetDeviceById(int id);
 

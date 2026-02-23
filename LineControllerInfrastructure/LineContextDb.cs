@@ -99,12 +99,8 @@ namespace LineControllerInfrastructure
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
       var auditEntries = OnBeforeSaveChanges();
-
-      // 2. Salvăm modificările normale (Device, Reservation, etc.)
       var result = await base.SaveChangesAsync(cancellationToken);
 
-      // 3. Dacă avem istoric de salvat, îl salvăm acum
-      // Facem asta după pasul 2 pentru a avea ID-ul generat în caz de "Add" (Create)
       if (auditEntries.Any())
       {
         foreach (var history in auditEntries)
