@@ -3,7 +3,7 @@ name: .NET CI Pipeline
 # Pipeline-ul pornește la fiecare Push pe ramura main
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
 
