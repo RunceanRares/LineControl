@@ -23,7 +23,7 @@ jobs:
 
     # 3. Descarcă bibliotecile (NuGet packages)
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore --ignore-failed-sources
 
     # 4. Compilează codul (Build)
     - name: Build
