@@ -21,9 +21,9 @@ jobs:
       with:
         dotnet-version: 6.0
     
-    - name: Add Telerik NuGet Source
+    - name: Add or Update Telerik NuGet Source
       run: |
-        dotnet nuget add source https://nuget.telerik.com/v3/index.json -n Telerik -u ${{ secrets.TELERIK_USERNAME }} -p ${{ secrets.TELERIK_PASSWORD }} --store-password-in-clear-text
+       dotnet nuget add source https://nuget.telerik.com/v3/index.json -n Telerik -u ${{ secrets.TELERIK_USERNAME }} -p ${{ secrets.TELERIK_PASSWORD }} --store-password-in-clear-text || dotnet nuget update source Telerik -u ${{ secrets.TELERIK_USERNAME }} -p ${{ secrets.TELERIK_PASSWORD }} --store-password-in-clear-text
 
     # 3. Descarcă bibliotecile (NuGet packages)
     - name: Restore dependencies
